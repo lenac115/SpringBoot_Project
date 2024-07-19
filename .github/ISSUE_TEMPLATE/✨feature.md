@@ -11,8 +11,8 @@ assignees: ''
 작업 내용을 설명해주세요.
 
 ## To Do
-- [] todo
-- [] todo
+- [ ] todo
+- [ ] todo
 
 ## ETC
 추가로 작성이 필요한 내용을 작성해주세요.
