@@ -1,5 +1,5 @@
 ---
-name: "✨Feature"
+name: "✨ Feature"
 about: 작업 사항을 정리해주세요.
 title: "[FEAT]"
 labels: documentation, enhancement
