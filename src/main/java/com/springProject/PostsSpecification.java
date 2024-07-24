@@ -1,7 +1,6 @@
-package com.springProject.repository;
+package com.springProject;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 import org.springframework.data.jpa.domain.Specification;
 

@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-@Getter
+/*@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder*/
 public class PostsDto {
 	public static PostsDto convertToDto(Posts posts) {
 		return null;
