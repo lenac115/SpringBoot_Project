@@ -47,6 +47,6 @@ public class Posts {
 	@Column
 	private Timestamp updated_at;
 
-	@Column
+	@Column(name="isNotice")
 	private boolean isNotice;
 }

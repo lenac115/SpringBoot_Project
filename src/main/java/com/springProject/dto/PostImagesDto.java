@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-@Getter
+/*@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder*/
 public class PostImagesDto {}
