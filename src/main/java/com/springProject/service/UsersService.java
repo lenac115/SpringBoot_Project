@@ -4,6 +4,7 @@ import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
 import com.springProject.entity.Users;
 import com.springProject.repository.UsersRepository;
+import com.springProject.utils.ConvertUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -173,5 +174,20 @@ public class UsersService {
         cookie.setMaxAge(0);
         cookie.setPath(request.getContextPath() + "/");
         response.addCookie(cookie);
+    }
+
+
+    public UsersDto unActivate(Long userId) {
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setActivated(false);
+
+        return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    public UsersDto activate(Long userId) {
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setActivated(true);
+
+        return ConvertUtils.convertUsersToDto(findUsers);
     }
 }

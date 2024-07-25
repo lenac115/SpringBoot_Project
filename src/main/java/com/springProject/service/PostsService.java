@@ -3,6 +3,7 @@ package com.springProject.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.springProject.utils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,9 +47,16 @@ public class PostsService {
 
 		page.forEach(p -> log.info("title = {}, star = {}", p.getTitle(), p.getStar()));
 		return page.stream()
-			.map(PostsDto::convertToDto)
+			.map(ConvertUtils::convertPostsToDto)
 			.collect(Collectors.toList());
 	}
 
+	public void deletePostByAdmin(Long postId) {
+		postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
+	}
+
+	public void createNotice(PostsDto postsDto) {
+		postsRepository.save(ConvertUtils.convertDtoToPosts(postsDto));
+	}
 
 }

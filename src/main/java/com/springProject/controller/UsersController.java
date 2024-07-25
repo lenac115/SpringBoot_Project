@@ -5,6 +5,7 @@ import com.springProject.dto.UsersDto;
 import com.springProject.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -132,4 +133,25 @@ public class UsersController {
     //권한 - 권한에 따른 접근 불가 페이지로 이동
     @GetMapping("/accessDenied")
     public String accessDenied() {return "login/accessDenied";}
+
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public String getAdminPage() {
+        return "login/admin";
+    }
+
+    @PutMapping("/unActivate/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId) {
+        UsersDto usersDto =  usersService.unActivate(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @PutMapping("/activate/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UsersDto> activate(@PathVariable Long userId) {
+        UsersDto usersDto = usersService.activate(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
 }

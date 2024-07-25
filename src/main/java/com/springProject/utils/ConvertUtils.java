@@ -25,25 +25,25 @@ public class ConvertUtils {
                 .build();
     }
 
-    /*public static Users convertDtoToUsers(UsersDto usersDto) {
+    public static Users convertDtoToUsers(UsersDto usersDto) {
         return Users.builder()
                 .nickname(usersDto.getNickname())
-                .auth(usersDto.getRole())
+                .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
-                .activated(usersDto.isActivated())
+                .activated(usersDto.getActivated())
                 .build();
     }
 
     public static UsersDto convertUsersToDto(Users users) {
         return UsersDto.builder()
                 .nickname(users.getNickname())
-                .role(users.getRole())
+                .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
-                .activated(users.isActivated())
+                .activated(users.getActivated())
                 .build();
-    }*/
+    }
 
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
@@ -52,8 +52,8 @@ public class ConvertUtils {
                 .body(posts.getBody())
                 .star(posts.getStar())
                 .hashtags(posts.getHashtags())
-                .createdAt(posts.getCreatedAt())
-                .updatedAt(posts.getUpdatedAt())
+                .createdAt(posts.getCreated_at())
+                .updatedAt(posts.getUpdated_at())
                 .build();
     }
 
@@ -64,8 +64,8 @@ public class ConvertUtils {
                 .body(postsDto.getBody())
                 .star(postsDto.getStar())
                 .hashtags(postsDto.getHashtags())
-                .createdAt(postsDto.getCreatedAt())
-                .updatedAt(postsDto.getUpdatedAt())
+                .created_at(postsDto.getCreatedAt())
+                .updated_at(postsDto.getUpdatedAt())
                 .build();
     }
 }

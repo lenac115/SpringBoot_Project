@@ -19,4 +19,6 @@ public class UsersDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Users.UserAuth auth;
+    private Boolean activated;
+
 }
