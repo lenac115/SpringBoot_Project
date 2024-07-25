@@ -1,15 +1,13 @@
 package com.springProject.controller;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.springProject.SearchData;
@@ -17,6 +15,7 @@ import com.springProject.dto.PostsDto;
 import com.springProject.service.PostsService;
 
 import lombok.extern.slf4j.Slf4j;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -43,18 +42,21 @@ public class PostsController {
 		return ResponseEntity.ok(posts);
 	}
 
-	@DeleteMapping("/admin/{postId}")
-	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<String> deletePostByAdmin(@PathVariable Long postId) {
-		postsService.deletePostByAdmin(postId);
+	@DeleteMapping("/{postId}")
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
+
+		postsService.deletePost(postId, users.getUsername());
 		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
 	}
 
 	@PostMapping("/admin/notice")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto) {
-		postsService.createNotice(postsDto);
-		return ResponseEntity.status(HttpStatus.OK).body(postsDto);
+	public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
+
+		PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
+
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
 	}
 
 }

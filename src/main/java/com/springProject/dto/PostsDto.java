@@ -18,6 +18,7 @@ public class PostsDto {
     private String body;
     private String hashtags;
     private String category;
+    private String location;
 
     private Timestamp createdAt;
     private Timestamp updatedAt;

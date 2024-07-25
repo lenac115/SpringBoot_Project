@@ -179,14 +179,14 @@ public class UsersService {
 
     public UsersDto unActivate(Long userId) {
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        findUsers.setActivated(false);
+        findUsers.setIsActivated(false);
 
         return ConvertUtils.convertUsersToDto(findUsers);
     }
 
     public UsersDto activate(Long userId) {
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        findUsers.setActivated(true);
+        findUsers.setIsActivated(true);
 
         return ConvertUtils.convertUsersToDto(findUsers);
     }

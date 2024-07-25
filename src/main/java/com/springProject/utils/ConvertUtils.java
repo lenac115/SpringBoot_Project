@@ -31,7 +31,7 @@ public class ConvertUtils {
                 .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
-                .activated(usersDto.getActivated())
+                .isActivated(usersDto.getIsActivated())
                 .build();
     }
 
@@ -41,7 +41,7 @@ public class ConvertUtils {
                 .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
-                .activated(users.getActivated())
+                .isActivated(users.getIsActivated())
                 .build();
     }
 
@@ -51,6 +51,7 @@ public class ConvertUtils {
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
+                .location(posts.getLocation())
                 .hashtags(posts.getHashtags())
                 .createdAt(posts.getCreated_at())
                 .updatedAt(posts.getUpdated_at())
@@ -63,6 +64,7 @@ public class ConvertUtils {
                 .category(postsDto.getCategory())
                 .body(postsDto.getBody())
                 .star(postsDto.getStar())
+                .location(postsDto.getLocation())
                 .hashtags(postsDto.getHashtags())
                 .created_at(postsDto.getCreatedAt())
                 .updated_at(postsDto.getUpdatedAt())
