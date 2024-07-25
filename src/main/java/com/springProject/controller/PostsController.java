@@ -71,10 +71,9 @@ public class PostsController {
 
 	@DeleteMapping("/notice/delete/{id}")
 	@PreAuthorize("hasAnyRole('ADMIN')")
-	public ResponseEntity<String> deleteNotice(@RequestBody PostsDto postsDto,
-												 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+	public ResponseEntity<String> deleteNotice(@AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
 
-		postsService.deleteNotice(postsDto, users.getUsername(), id);
+		postsService.deleteNotice(users.getUsername(), id);
 
 		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
 	}

@@ -112,7 +112,7 @@ public class PostsService {
         return ConvertUtils.convertPostsToDto(findPosts);
     }
 
-    public void deleteNotice(PostsDto postsDto, String username, Long id) {
+    public void deleteNotice(String username, Long id) {
 
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
