@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/users")
 public class UsersController {
@@ -141,17 +143,31 @@ public class UsersController {
         return "login/admin";
     }
 
-    @PutMapping("/unActivate/{userId}")
+    @PutMapping("/admin/unActivate/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId) {
         UsersDto usersDto =  usersService.unActivate(userId);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
-    @PutMapping("/activate/{userId}")
+    @PutMapping("/admin/activate/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<UsersDto> activate(@PathVariable Long userId) {
         UsersDto usersDto = usersService.activate(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @GetMapping("/admin/getUserList")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<List<UsersDto>> getAllUsers () {
+        List<UsersDto> usersDto = usersService.getAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @GetMapping("/admin/getUser/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UsersDto> getUsers (@PathVariable Long id) {
+        UsersDto usersDto = usersService.getUsers(id);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 }

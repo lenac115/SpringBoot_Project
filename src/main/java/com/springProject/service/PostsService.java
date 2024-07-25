@@ -20,16 +20,19 @@ import com.springProject.entity.Posts;
 import com.springProject.repository.PostsRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class PostsService {
 
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
+    @Transactional(readOnly = true)
     public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
         log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
                 searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
@@ -71,6 +74,7 @@ public class PostsService {
 
     // 공지사항 포스팅
     public PostsDto createNotice(PostsDto postsDto, String username) {
+
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts savePost = postsRepository.save(ConvertUtils.convertDtoToPosts(postsDto));
 
@@ -85,4 +89,41 @@ public class PostsService {
         return ConvertUtils.convertPostsToDto(savePost);
     }
 
+    public PostsDto updateNotice(PostsDto postsDto, String username, Long id) {
+
+        Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findPosts.isNotice()) {
+            throw new IllegalArgumentException("수정 가능한 게시물이 아닙니다.");
+        }
+        if(!findUsers.getAuth().equals(Users.UserAuth.admin)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
+        findPosts.setTitle(postsDto.getTitle());
+        findPosts.setStar(postsDto.getStar());
+        findPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+        findPosts.setBody(postsDto.getBody());
+        findPosts.setCategory(postsDto.getCategory());
+        findPosts.setHashtags(postsDto.getHashtags());
+        findPosts.setLocation(postsDto.getLocation());
+
+        return ConvertUtils.convertPostsToDto(findPosts);
+    }
+
+    public void deleteNotice(PostsDto postsDto, String username, Long id) {
+
+        Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findPosts.isNotice()) {
+            throw new IllegalArgumentException("수정 가능한 게시물이 아닙니다.");
+        }
+        if(!findUsers.getAuth().equals(Users.UserAuth.admin)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
+        postsRepository.delete(findPosts);
+    }
 }

@@ -50,13 +50,33 @@ public class PostsController {
 		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
 	}
 
-	@PostMapping("/admin/notice")
+	@PostMapping("/notice/save")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
 
 		PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
 
 		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
+
+	@PutMapping("/notice/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<PostsDto> updateNotice(@RequestBody PostsDto postsDto,
+												 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+
+		PostsDto savedPost = postsService.updateNotice(postsDto, users.getUsername(), id);
+
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
+
+	@DeleteMapping("/notice/delete/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<String> deleteNotice(@RequestBody PostsDto postsDto,
+												 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+
+		postsService.deleteNotice(postsDto, users.getUsername(), id);
+
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
 	}
 
 }

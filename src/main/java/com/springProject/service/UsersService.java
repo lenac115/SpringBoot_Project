@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -177,6 +180,7 @@ public class UsersService {
     }
 
 
+    @Transactional
     public UsersDto unActivate(Long userId) {
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(false);
@@ -184,10 +188,22 @@ public class UsersService {
         return ConvertUtils.convertUsersToDto(findUsers);
     }
 
+    @Transactional
     public UsersDto activate(Long userId) {
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(true);
 
         return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsersDto> getAllUsers() {
+        return Optional.ofNullable(usersRepository.findAll()).orElse(Collections.emptyList())
+                .stream().map(ConvertUtils::convertUsersToDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public UsersDto getUsers(Long id) {
+        return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 }

@@ -31,7 +31,10 @@ public class ConvertUtils {
                 .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
+                .createdAt(usersDto.getCreatedAt())
+                .updatedAt(usersDto.getUpdatedAt())
                 .isActivated(usersDto.getIsActivated())
+                .name(usersDto.getName())
                 .build();
     }
 
@@ -42,6 +45,9 @@ public class ConvertUtils {
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
                 .isActivated(users.getIsActivated())
+                .createdAt(users.getCreatedAt())
+                .updatedAt(users.getUpdatedAt())
+                .name(users.getName())
                 .build();
     }
 
