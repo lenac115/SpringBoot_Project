@@ -4,49 +4,54 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Posts {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long post_id;
 
-	@Column
-	private Long user_id;
+    @Id @Column(name = "post_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-	@Column
-	private String title;
+    private Long user_id;
 
-	@Column
-	private String body;
+    @Column(nullable = false)
+    private String title;
 
-	@Column
-	private String category;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String body;
 
-	@Column
-	private String location;
+    @Column(nullable = false)
+    private String category;
 
-	@Column
-	private Integer star;
+    @Column
+    private String location;
 
-	@Column
-	private String hashtags;
+    @Column
+    private Integer star;
 
-	@Column
-	private Timestamp created_at;
+    @Column
+    private String hashtags;
 
-	@Column
-	private Timestamp updated_at;
+    @Column
+    private Timestamp created_at;
 
-	@Column(name="isNotice")
-	private boolean isNotice;
+    @Column
+    private Timestamp updated_at;
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
+    private List<Comments> comments;
+
+    @Column(name = "isNotice")
+    private boolean isNotice;
 }

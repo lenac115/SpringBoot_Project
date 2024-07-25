@@ -1,17 +1,18 @@
 package com.springProject.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Users {
@@ -39,6 +40,12 @@ public class Users {
 
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	@Column(nullable = false)
+	private Boolean activated;
+
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Comments> comments = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	private UserAuth auth = UserAuth.user;

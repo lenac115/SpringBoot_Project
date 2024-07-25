@@ -1,12 +1,19 @@
 package com.springProject.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
-/*@Getter
+import java.time.LocalDateTime;
+
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder*/
-public class CommentsDto {}
+@Setter
+@Builder
+public class CommentsDto {
+
+    private String body;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+}
