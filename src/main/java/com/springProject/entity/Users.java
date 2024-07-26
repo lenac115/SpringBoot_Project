@@ -41,11 +41,14 @@ public class Users {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@Column(nullable = false)
-	private Boolean activated;
+	@Column(columnDefinition = "boolean default true")
+	private Boolean isActivated;
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Comments> comments = new ArrayList<>();
+
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Posts> posts = new ArrayList<>();
 
 	@Enumerated(EnumType.STRING)
 	private UserAuth auth = UserAuth.user;

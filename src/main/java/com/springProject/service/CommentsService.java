@@ -3,11 +3,14 @@ package com.springProject.service;
 import com.springProject.dto.CommentWithParent;
 import com.springProject.dto.CommentsDto;
 import com.springProject.entity.Comments;
+import com.springProject.entity.Posts;
+import com.springProject.entity.Users;
 import com.springProject.repository.CommentsRepository;
 import com.springProject.repository.PostsRepository;
 import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,31 +81,63 @@ public class CommentsService {
     }
 
     // 업데이트, 내용을 업데이트하고 updateAt 갱신
-    public CommentsDto update(Long id, CommentsDto commentsDto) {
+    public CommentsDto update(Long id, CommentsDto commentsDto, String username) {
+
         Comments updatedComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        updatedComments.setBody(commentsDto.getBody());
-        updatedComments.setUpdatedAt(LocalDateTime.now());
+        Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findUsers.getIsActivated())
+            throw new AccessDeniedException("정지된 사용자입니다.");
+
+        // 코멘트의 user와 수정을 시도하는 user가 동일한지 검사
+        if(findUsers.getId().equals(updatedComments.getUsers().getId())){
+            updatedComments.setBody(commentsDto.getBody());
+            updatedComments.setUpdatedAt(LocalDateTime.now());
+        } else {
+            throw new AccessDeniedException("권한이 없습니다");
+        }
         return ConvertUtils.convertCommentsToDto(updatedComments);
     }
 
     // 댓글 삭제, 부모 댓글이 삭제되면 계층형 댓글 구조에 문제가 생겨서 Activated를 false 처리
-    public void delete(Long id) {
+    public void delete(Long id, String username) {
+
         Comments findComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        findComments.setActivated(false);
+        Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findUsers.getIsActivated())
+            throw new AccessDeniedException("정지된 사용자입니다.");
+
+        // admin 권한이거나 코멘트 작성 user와 동일한 user이면 비활성화
+        if(findUsers.getAuth() == Users.UserAuth.admin) {
+            findComments.setActivated(false);
+        } else if(findUsers.getId().equals(findComments.getUsers().getId())) {
+            findComments.setActivated(false);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
     }
 
     // 부모가 없는 댓글 생성
     public CommentsDto nonReply(String username, CommentsDto commentsDto, Long postId) {
+
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
+
+        Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findUser.getIsActivated())
+            throw new AccessDeniedException("정지된 사용자입니다.");
 
         // 만들 댓글의 정보를 commments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);
         createdComments.setActivated(true);
 
         // 만든 댓글의 연관관계를 설정
-        createdComments.setUser(usersRepository.findByLoginId(username)); // 임시 메소드
-        createdComments.setPost(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
+        createdComments.setUser(findUser);
+        createdComments.setPost(findPost);
+
         // 영속화
         commentsRepository.save(createdComments);
 
@@ -115,12 +150,18 @@ public class CommentsService {
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
 
+        Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if(!findUser.getIsActivated())
+            throw new AccessDeniedException("정지된 사용자입니다.");
+
         // 만들 댓글의 정보를 comments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);
+        createdComments.setActivated(true);
 
         // 연관관계 설정, 부모가 존재하는 댓글이기 때문에 comments 도메인 내부의 연관관계도 설정
         createdComments.setUser(usersRepository.findByLoginId(username)); // 임시 메소드
-        createdComments.setActivated(true);
         createdComments.setPost(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
         createdComments.addReplyComment(commentsRepository.findById(commentId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
         // 영속화

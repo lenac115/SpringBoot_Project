@@ -22,6 +22,7 @@ public class CommentsController {
 
     private final CommentsService commentsService;
 
+    // post에 귀속된 comment 출력
     @GetMapping("/{postId}")
     public ResponseEntity<List<CommentWithParent>> getComments(@PathVariable Long postId, @RequestParam int page) {
         Pageable pageable = PageRequest.of(page, 10);
@@ -30,24 +31,30 @@ public class CommentsController {
         return ResponseEntity.status(HttpStatus.OK).body(commentsDtoList);
     }
 
+    // comment 수정
     @PutMapping("/{commentId}")
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<CommentsDto> updateComment(@PathVariable Long commentId, @RequestBody CommentsDto commentsDto) {
+    public ResponseEntity<CommentsDto> updateComment(@PathVariable Long commentId,
+                                                     @RequestBody CommentsDto commentsDto,
+                                                     @AuthenticationPrincipal UserDetails users) {
 
-        CommentsDto updatedDto = commentsService.update(commentId, commentsDto);
+        CommentsDto updatedDto = commentsService.update(commentId, commentsDto, users.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedDto);
     }
 
+    // comment 삭제
     @DeleteMapping("/{commentId}")
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<String> deleteComment(
+            @PathVariable Long commentId, @AuthenticationPrincipal UserDetails users) {
 
-        commentsService.delete(commentId);
+        commentsService.delete(commentId, users.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
     }
 
+    //
     @PostMapping("/{postId}/nonReply")
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<CommentsDto> createNonReplyComment(@PathVariable Long postId,
