@@ -1,25 +1,21 @@
 package com.springProject.controller;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import com.springProject.SearchData;
 import com.springProject.dto.PostsDto;
 import com.springProject.service.PostsService;
 
 import lombok.extern.slf4j.Slf4j;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -46,5 +42,40 @@ public class PostsController {
 		return ResponseEntity.ok(posts);
 	}
 
+	@DeleteMapping("/{postId}")
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
+
+		postsService.deletePost(postId, users.getUsername());
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+	}
+
+	@PostMapping("/notice/save")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
+
+		PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
+
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
+
+	@PutMapping("/notice/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<PostsDto> updateNotice(@RequestBody PostsDto postsDto,
+												 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+
+		PostsDto savedPost = postsService.updateNotice(postsDto, users.getUsername(), id);
+
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
+
+	@DeleteMapping("/notice/delete/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<String> deleteNotice(@AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+
+		postsService.deleteNotice(users.getUsername(), id);
+
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+	}
 
 }

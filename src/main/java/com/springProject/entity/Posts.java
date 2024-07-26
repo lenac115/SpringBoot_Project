@@ -31,7 +31,7 @@ public class Posts {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
 
-    @Column(nullable = false)
+    @Column
     private String category;
 
     @Column
@@ -51,6 +51,9 @@ public class Posts {
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<Comments> comments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users users;
 
     @Column(name = "isNotice")
     private boolean isNotice;

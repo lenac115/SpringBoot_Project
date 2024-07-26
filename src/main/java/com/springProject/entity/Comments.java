@@ -3,6 +3,7 @@ package com.springProject.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,12 +28,12 @@ public class Comments {
 
 	// 삭제 여부
 	@ColumnDefault("true")
-	@Column(nullable = false, name = "activated")
-	private boolean activated;
+	@Column(nullable = false)
+	private boolean isActivated;
 
 	// 댓글 깊이
 	@ColumnDefault("0")
-	@Column(nullable = false, name = "depth")
+	@Column(nullable = false)
 	private int depth;
 
 	// 댓글의 부모 표기
@@ -45,11 +46,11 @@ public class Comments {
 	private List<Comments> children = new ArrayList<>();
 
 	// 생성 시간, 생성때 한번 설정된 이후로 재설정 x
-	@Column(nullable = false, name = "created_at")
+	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
 	// 갱신 시간, 갱신때마다 재설정
-	@Column(nullable = false, name = "updated_at")
+	@Column(nullable = false)
 	private LocalDateTime updatedAt;
 
 	// 외래키

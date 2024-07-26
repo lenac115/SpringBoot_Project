@@ -4,6 +4,7 @@ import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
 import com.springProject.entity.Users;
 import com.springProject.repository.UsersRepository;
+import com.springProject.utils.ConvertUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -173,5 +177,33 @@ public class UsersService {
         cookie.setMaxAge(0);
         cookie.setPath(request.getContextPath() + "/");
         response.addCookie(cookie);
+    }
+
+
+    @Transactional
+    public UsersDto unActivate(Long userId) {
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setIsActivated(false);
+
+        return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    @Transactional
+    public UsersDto activate(Long userId) {
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setIsActivated(true);
+
+        return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsersDto> getAllUsers() {
+        return Optional.ofNullable(usersRepository.findAll()).orElse(Collections.emptyList())
+                .stream().map(ConvertUtils::convertUsersToDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public UsersDto getUsers(Long id) {
+        return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 }

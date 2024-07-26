@@ -1,18 +1,26 @@
 package com.springProject.dto;
 
-import com.springProject.entity.Posts;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-/*@Getter
-@NoArgsConstructor
+import java.sql.Timestamp;
+
+@Getter
+@Builder
 @AllArgsConstructor
-@Builder*/
+@NoArgsConstructor
 public class PostsDto {
-	public static PostsDto convertToDto(Posts posts) {
-		return null;
-	}
+
+    private String title;
+    private int star;
+    private String body;
+    private String hashtags;
+    private String category;
+    private String location;
+
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
+
 }
