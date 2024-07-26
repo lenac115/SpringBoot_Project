@@ -1,7 +1,7 @@
 package com.springProject.entity;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +9,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Entity
 @Table(name = "posts")
@@ -23,6 +24,7 @@ public class Posts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+    @Column(nullable = false)
     private Long user_id;
 
     @Column(nullable = false)
@@ -57,4 +59,8 @@ public class Posts {
 
     @Column(name = "isNotice")
     private boolean isNotice;
+
+    @Column(nullable = false)
+    private Long post_id;
+
 }
