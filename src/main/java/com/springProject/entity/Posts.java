@@ -1,44 +1,63 @@
 package com.springProject.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
 import java.sql.Timestamp;
+
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Entity
 @Table(name = "posts")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Posts {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    @Column(nullable = false)
-    private Long post_id;
+    @Id @Column(name = "post_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
     @Column(nullable = false)
     private Long user_id;
 
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
+
     @Column(nullable = false)
     private String category;
-    @Column(nullable = false)
-    private int star;
-    @Column(nullable = false)
+
+    @Column
+    private String location;
+
+    @Column
+    private Integer star;
+
+    @Column
     private String hashtags;
-    @Column(nullable = false)
+
+    @Column
     private Timestamp created_at;
-    @Column(nullable = false)
+
+    @Column
     private Timestamp updated_at;
-    @Column(nullable = false)
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
+    private List<Comments> comments;
+
+    @Column(name = "isNotice")
     private boolean isNotice;
 
+    @Column(nullable = false)
+    private Long post_id;
 
 }

@@ -1,6 +1,8 @@
 package com.springProject.dto;
 
 import jakarta.persistence.Column;
+import com.springProject.entity.Posts;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +26,8 @@ public class PostsDto {
     private Timestamp updated_at;
 
     private boolean isNotice;
+
+	public static PostsDto convertToDto(Posts posts) {
+		return null;
+	}
 }
