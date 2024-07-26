@@ -28,11 +28,15 @@ public class PostsService {
 	}
 
 
+	// 공지사항 출력 용 메서드
+	public List<PostsDto> getFirst5ByIsNoticeTrueOrderByCreated_atDesc() {
+		return postsRepository.getFirst5ByIsNoticeTrueOrderByCreated_atDesc()
+			.stream().map(PostsDto::convertToDto)
+			.collect(Collectors.toList());
+	}
+
 	// 검색 조건에 맞게 데이터 검색하는 메서드
 	public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
-		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
-			searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
-			searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
 		// 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
 		Pageable pageable = PageRequest.of(nowPage-1, 12);
