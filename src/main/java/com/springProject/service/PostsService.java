@@ -63,9 +63,9 @@ public class PostsService {
 
     public PostsDto getPostsDtoById(Long id) {
         return posts.stream()
-                .map(ConvertUtils::convertPostsToDto)
                 .filter(post -> post.getUser_id().equals(id))
                 .findFirst()
+                .map(ConvertUtils::convertPostsToDto)
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
 
