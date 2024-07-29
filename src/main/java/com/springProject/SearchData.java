@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchData {
+	private String keyword;
 	private	String category;
 	private String location;
 	private int star;

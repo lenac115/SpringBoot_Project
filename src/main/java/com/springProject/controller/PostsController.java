@@ -74,6 +74,7 @@ public class PostsController {
         return ResponseEntity.ok(updatedPostDto);
     }
 
+	// 검색 결과 추출 컨트롤러
 	// ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
 	@GetMapping("/search")
 	public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
@@ -85,6 +86,13 @@ public class PostsController {
 
 		List<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
 		return ResponseEntity.ok(posts);
+	}
+
+	// 공지사항 추출 컨트롤러
+	@GetMapping("/search")
+	public ResponseEntity<List<PostsDto>> getNoticeFive() {
+		List<PostsDto> notices = postsService.getNoticeFive();
+		return ResponseEntity.ok(notices);
 	}
 
 	@DeleteMapping("/{postId}")
