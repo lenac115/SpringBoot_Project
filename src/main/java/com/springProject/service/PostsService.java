@@ -43,6 +43,7 @@ public class PostsService {
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)
     public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
+        isBanned();
         log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
                 searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
@@ -65,7 +66,7 @@ public class PostsService {
 
     // delete
     public void deletePost(Long postId, String username) {
-
+        isBanned();
         // 도메인 불러오기
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts post = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
@@ -83,7 +84,7 @@ public class PostsService {
 
     // 공지사항 포스팅
     public PostsDto createNotice(PostsDto postsDto, String username) {
-
+        isBanned();
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts savePost = postsRepository.save(ConvertUtils.convertDtoToPosts(postsDto));
 
@@ -99,7 +100,7 @@ public class PostsService {
     }
 
     public PostsDto updateNotice(PostsDto postsDto, String username, Long id) {
-
+        isBanned();
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -122,7 +123,7 @@ public class PostsService {
     }
 
     public void deleteNotice(String username, Long id) {
-
+        isBanned();
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -137,15 +138,12 @@ public class PostsService {
     }
 
     public List<PostsDto> getNotice() {
-
+        isBanned();
         return Optional.ofNullable(postsRepository.findAllByNotice())
                 .orElseGet(Collections::emptyList).stream().map(ConvertUtils::convertPostsToDto).toList();
     }
 
-    @Transactional
-    @BeforeTransaction
-    public void isBanned() {
-
+    private void isBanned() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {

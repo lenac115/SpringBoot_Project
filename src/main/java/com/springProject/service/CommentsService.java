@@ -39,7 +39,7 @@ public class CommentsService {
     // 계층형 댓글 출력
     @Transactional(readOnly = true)
     public List<CommentWithParent> findCommentsByPostId(Long id) {
-
+        isBanned();
         // 쿼리 결과값
         List<CommentWithParent> result = new ArrayList<>();
         // 정렬을 위한 Map
@@ -88,7 +88,7 @@ public class CommentsService {
 
     // 업데이트, 내용을 업데이트하고 updateAt 갱신
     public CommentsDto update(Long id, CommentsDto commentsDto, String username) {
-
+        isBanned();
         Comments updatedComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -107,7 +107,7 @@ public class CommentsService {
 
     // 댓글 삭제, 부모 댓글이 삭제되면 계층형 댓글 구조에 문제가 생겨서 Activated를 false 처리
     public void delete(Long id, String username) {
-
+        isBanned();
         Comments findComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -126,7 +126,7 @@ public class CommentsService {
 
     // 부모가 없는 댓글 생성
     public CommentsDto nonReply(String username, CommentsDto commentsDto, Long postId) {
-
+        isBanned();
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
 
@@ -153,6 +153,7 @@ public class CommentsService {
 
     // 부모가 존재하는 댓글 설정
     public CommentsDto reply(Long postId, Long commentId, CommentsDto commentsDto, String username) {
+        isBanned();
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
 
@@ -176,9 +177,7 @@ public class CommentsService {
         return ConvertUtils.convertCommentsToDto(createdComments);
     }
 
-    @BeforeTransaction
-    public void isBanned() {
-
+    private void isBanned() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
@@ -189,7 +188,7 @@ public class CommentsService {
 
         if (findUser.getBannedUser() == null)
             return;
-        if (findUser.getBannedUser().getBannedDate() != null && LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
             findUser.setIsActivated(true);
             bannedUserRepository.deleteByUsersId(findUser.getId());
             return;

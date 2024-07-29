@@ -191,6 +191,7 @@ public class UsersService {
 
     @Transactional
     public UsersDto unActivate(Long userId, BannedDateReasonForm bannedForm) {
+        isBanned();
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(false);
 
@@ -208,6 +209,7 @@ public class UsersService {
 
     @Transactional
     public UsersDto activate(Long userId) {
+        isBanned();
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(true);
         bannedUserRepository.deleteByUsersId(findUsers.getId());
@@ -217,17 +219,18 @@ public class UsersService {
 
     @Transactional(readOnly = true)
     public List<UsersDto> getAllUsers() {
+        isBanned();
         return Optional.ofNullable(usersRepository.findAll()).orElse(Collections.emptyList())
                 .stream().map(ConvertUtils::convertUsersToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public UsersDto getUsers(Long id) {
+        isBanned();
         return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 
-    @BeforeTransaction
-    public void isBanned() {
+    private void isBanned() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
