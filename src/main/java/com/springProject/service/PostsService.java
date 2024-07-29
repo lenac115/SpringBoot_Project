@@ -2,6 +2,7 @@ package com.springProject.service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,6 @@ import com.springProject.entity.Posts;
 import com.springProject.repository.PostsRepository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -39,6 +39,54 @@ public class PostsService {
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
     private final BannedUserRepository bannedUserRepository;
+
+
+    List<Posts> posts = new ArrayList<>();
+    private Long nextPostId = 1L;
+
+    public PostsDto createPost(PostsDto postsDto) {
+        Posts post = convertToPostEntity(postsDto);
+        post.setId(nextPostId++);
+        post.setCreated_at(new Timestamp(System.currentTimeMillis()));
+        posts.add(post);
+        return ConvertUtils.convertPostsToDto(post);
+    }
+
+    private static Posts convertToPostEntity(PostsDto postsDto) {
+        Posts post = new Posts();
+        post.setTitle(postsDto.getTitle());
+        post.setBody(postsDto.getBody());
+        return post;
+    }
+
+    public List<PostsDto> getAllPosts() {
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToDto)
+                .collect(Collectors.toList());
+    }
+
+    public PostsDto getPostsDtoById(Long id) {
+        return posts.stream()
+                .filter(post -> post.getUsers().getId().equals(id))
+                .findFirst()
+                .map(ConvertUtils::convertPostsToDto)
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
+    }
+
+    private Posts findPostById(Long id) {
+        return posts.stream()
+                .filter(post -> post.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
+    }
+
+    public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
+        Posts post = findPostById(id);
+        post.setTitle(updatePostsDto.getTitle());
+        post.setBody(updatePostsDto.getBody());
+        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+        return ConvertUtils.convertPostsToDto(post);
+    }
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)

@@ -13,14 +13,14 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class PostsDto {
 
-    private String title;
-    private int star;
+	private String title;
     private String body;
-    private String hashtags;
     private String category;
-    private String location;
-
+	private String location;
+    private int star;
+    private String hashtags;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
+    private boolean isNotice;
 }

@@ -22,67 +22,90 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PostsController {
 
-    private final PostsService postsService;
+	private final PostsService postsService;
 
-    @Autowired
-    public PostsController(PostsService postsService) {
-        this.postsService = postsService;
-    }
+	@Autowired
+	public PostsController(PostsService postsService) {
+		this.postsService = postsService;
+	}
 
-    // ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
-    @GetMapping("/search")
-    public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
-                                                                        @RequestParam(value = "sort", defaultValue = "newPost") String sortBy,
-                                                                        @RequestParam(value = "page") int nowPage) {
-        log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
-                searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
-                searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
+	//생성
+	@PostMapping
+	public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto) {
+		PostsDto createdPostDto = postsService.createPost(postsDto);
+		return ResponseEntity.ok(createdPostDto);
+	}
 
-        List<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
-        return ResponseEntity.ok(posts);
-    }
+	//조회
+	@GetMapping
+	public ResponseEntity<List<PostsDto>> getAllPosts() {
+		List<PostsDto> postsDto = postsService.getAllPosts();
+		return ResponseEntity.ok(postsDto);
+	}
 
-    @DeleteMapping("/{postId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
+	//상세조회
+	@GetMapping("/{id}")
+	public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id){
+		PostsDto postsDto = postsService.getPostsDtoById(id);
+		return ResponseEntity.ok(postsDto);
+	}
 
-        postsService.deletePost(postId, users.getUsername());
-        return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-    }
+	//수정
+	@PutMapping("/{id}")
+	public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody
+	PostsDto updatePostsDto){
+		PostsDto updatedPostDto = postsService.updatePosts(id,updatePostsDto);
 
-    @GetMapping("/notice/get")
-    public ResponseEntity<List<PostsDto>> getNotice() {
+		return ResponseEntity.ok(updatedPostDto);
+	}
 
-        List<PostsDto> postsDtoList = postsService.getNotice();
-		return ResponseEntity.status(HttpStatus.OK).body(postsDtoList);
-    }
+	// ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
+	@GetMapping("/search")
+	public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
+		@RequestParam(value = "sort", defaultValue = "newPost") String sortBy,
+		@RequestParam(value="page") int nowPage) {
+		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
+			searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
+			searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
-    @PostMapping("/notice/save")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
+		List<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
+		return ResponseEntity.ok(posts);
+	}
 
-        PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
+	@DeleteMapping("/{postId}")
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(savedPost);
-    }
+		postsService.deletePost(postId, users.getUsername());
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+	}
 
-    @PutMapping("/notice/update/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<PostsDto> updateNotice(@RequestBody PostsDto postsDto,
-                                                 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+	@PostMapping("/notice/save")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
 
-        PostsDto savedPost = postsService.updateNotice(postsDto, users.getUsername(), id);
+		PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
 
-        return ResponseEntity.status(HttpStatus.OK).body(savedPost);
-    }
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
 
-    @DeleteMapping("/notice/delete/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<String> deleteNotice(@AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+	@PutMapping("/notice/update/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<PostsDto> updateNotice(@RequestBody PostsDto postsDto,
+												 @AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
 
-        postsService.deleteNotice(users.getUsername(), id);
+		PostsDto savedPost = postsService.updateNotice(postsDto, users.getUsername(), id);
 
-        return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-    }
+		return ResponseEntity.status(HttpStatus.OK).body(savedPost);
+	}
+
+	@DeleteMapping("/notice/delete/{id}")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<String> deleteNotice(@AuthenticationPrincipal UserDetails users, @PathVariable Long id) {
+
+		postsService.deleteNotice(users.getUsername(), id);
+
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+	}
 
 }

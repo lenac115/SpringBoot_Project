@@ -21,8 +21,6 @@ public class Posts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    private Long user_id;
-
     @Column(nullable = false)
     private String title;
 
