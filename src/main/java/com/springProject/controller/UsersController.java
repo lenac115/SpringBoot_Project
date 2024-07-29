@@ -1,5 +1,6 @@
 package com.springProject.controller;
 
+import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
 import com.springProject.service.UsersService;
@@ -145,8 +146,8 @@ public class UsersController {
 
     @PutMapping("/admin/unActivate/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId) {
-        UsersDto usersDto =  usersService.unActivate(userId);
+    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId, @RequestBody BannedDateReasonForm bannedForm) {
+        UsersDto usersDto =  usersService.unActivate(userId, bannedForm);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
@@ -157,7 +158,7 @@ public class UsersController {
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
-    @GetMapping("/admin/getUserList")
+    @GetMapping("/admin/getUser/list")
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<List<UsersDto>> getAllUsers () {
         List<UsersDto> usersDto = usersService.getAllUsers();
@@ -166,7 +167,7 @@ public class UsersController {
 
     @GetMapping("/admin/getUser/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UsersDto> getUsers (@PathVariable Long id) {
+    public ResponseEntity<UsersDto> getUsers(@PathVariable Long id) {
         UsersDto usersDto = usersService.getUsers(id);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }

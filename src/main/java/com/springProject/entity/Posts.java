@@ -1,13 +1,11 @@
 package com.springProject.entity;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -31,22 +29,21 @@ public class Posts {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
 
-    @Column
+    @Column(nullable = false)
     private String category;
 
-    @Column
+    @Column(nullable = false)
     private String location;
 
-    @Column
+    @ColumnDefault("0")
     private Integer star;
 
-    @Column
     private String hashtags;
 
-    @Column
+    @Column(nullable = false)
     private Timestamp created_at;
 
-    @Column
+    @Column(nullable = false)
     private Timestamp updated_at;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)

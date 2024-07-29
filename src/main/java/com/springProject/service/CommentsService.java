@@ -5,13 +5,18 @@ import com.springProject.dto.CommentsDto;
 import com.springProject.entity.Comments;
 import com.springProject.entity.Posts;
 import com.springProject.entity.Users;
+import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.CommentsRepository;
 import com.springProject.repository.PostsRepository;
 import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -28,6 +33,7 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
     private final UsersRepository usersRepository;
     private final PostsRepository postsRepository;
+    private final BannedUserRepository bannedUserRepository;
 
 
     // 계층형 댓글 출력
@@ -168,5 +174,27 @@ public class CommentsService {
         commentsRepository.save(createdComments);
 
         return ConvertUtils.convertCommentsToDto(createdComments);
+    }
+
+    @BeforeTransaction
+    public void isBanned() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if (findUser.getBannedUser() == null)
+            return;
+        if (findUser.getBannedUser().getBannedDate() != null && LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+            findUser.setIsActivated(true);
+            bannedUserRepository.deleteByUsersId(findUser.getId());
+            return;
+        }
+
+        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 }

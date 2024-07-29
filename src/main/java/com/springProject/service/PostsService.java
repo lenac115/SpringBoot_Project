@@ -1,10 +1,14 @@
 package com.springProject.service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.springProject.entity.Users;
+import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.springProject.SearchData;
@@ -20,6 +27,7 @@ import com.springProject.entity.Posts;
 import com.springProject.repository.PostsRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -30,6 +38,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
+    private final BannedUserRepository bannedUserRepository;
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)
@@ -125,5 +134,34 @@ public class PostsService {
         }
 
         postsRepository.delete(findPosts);
+    }
+
+    public List<PostsDto> getNotice() {
+
+        return Optional.ofNullable(postsRepository.findAllByNotice())
+                .orElseGet(Collections::emptyList).stream().map(ConvertUtils::convertPostsToDto).toList();
+    }
+
+    @Transactional
+    @BeforeTransaction
+    public void isBanned() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if (findUser.getBannedUser() == null)
+            return;
+        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+            findUser.setIsActivated(true);
+            bannedUserRepository.deleteByUsersId(findUser.getId());
+            return;
+        }
+
+        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 }

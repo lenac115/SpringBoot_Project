@@ -4,11 +4,8 @@ import com.springProject.dto.CommentWithParent;
 import com.springProject.dto.CommentsDto;
 import com.springProject.service.CommentsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +22,6 @@ public class CommentsController {
     // post에 귀속된 comment 출력
     @GetMapping("/{postId}")
     public ResponseEntity<List<CommentWithParent>> getComments(@PathVariable Long postId, @RequestParam int page) {
-        Pageable pageable = PageRequest.of(page, 10);
         List<CommentWithParent> commentsDtoList = commentsService.findCommentsByPostId(postId);
 
         return ResponseEntity.status(HttpStatus.OK).body(commentsDtoList);
