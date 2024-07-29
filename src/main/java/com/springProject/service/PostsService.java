@@ -41,18 +41,11 @@ public class PostsService {
     private Long nextPostId = 1L;
 
     public PostsDto createPost(PostsDto postsDto) {
-        Posts post = convertToPostEntity(postsDto);
+        Posts post = ConvertUtils.convertDtoToPosts(postsDto);
         post.setPost_id(nextPostId++);
         post.setCreated_at(new Timestamp(System.currentTimeMillis()));
         posts.add(post);
         return ConvertUtils.convertPostsToDto(post);
-    }
-
-    private static Posts convertToPostEntity(PostsDto postsDto) {
-        Posts post = new Posts();
-        post.setTitle(postsDto.getTitle());
-        post.setBody(postsDto.getBody());
-        return post;
     }
 
     public List<PostsDto> getAllPosts() {
@@ -108,6 +101,14 @@ public class PostsService {
         return page.stream()
                 .map(ConvertUtils::convertPostsToDto)
                 .collect(Collectors.toList());
+    }
+
+    // 공지사항 따로 추출
+    public List<PostsDto> getNoticeFive() {
+        return postsRepository.getNoticeFive()
+            .stream()
+            .map(ConvertUtils::convertPostsToDto)
+            .collect(Collectors.toList());
     }
 
     // delete
