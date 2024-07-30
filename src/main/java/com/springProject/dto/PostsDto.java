@@ -1,8 +1,5 @@
 package com.springProject.dto;
 
-import jakarta.persistence.Column;
-import com.springProject.entity.Posts;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,23 +8,19 @@ import lombok.AllArgsConstructor;
 import java.sql.Timestamp;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PostsDto {
-    private Long user_id;
 
-    private String title;
+	private String title;
     private String body;
     private String category;
+	private String location;
     private int star;
     private String hashtags;
-    private Timestamp created_at;
-    private Timestamp updated_at;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
     private boolean isNotice;
-
-	public static PostsDto convertToDto(Posts posts) {
-		return null;
-	}
 }

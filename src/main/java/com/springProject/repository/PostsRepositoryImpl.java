@@ -33,6 +33,7 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 	// SQL 언어 수행 메서드
 	@Override
 	public Page<Posts> searchPosts(SearchData searchData, String sortBy, Pageable pageable) {
+		String keyword = searchData.getKeyword();
 		String category = searchData.getCategory();
 		String location = searchData.getLocation();
 		int star = searchData.getStar();
@@ -57,6 +58,8 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 		JPAQuery<Posts> query = queryFactory
 			.selectFrom(posts)
 			.where(posts.star.goe(star)
+			.where(posts.isNotice.isFalse()
+				.and(posts.star.goe(star))
 				.or(eqCategory(category))
 				.or(eqLocation(location))
 				.or(containsHashtag(hashtag))
@@ -68,6 +71,22 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 		// 쿼리 실행이 끝난 데이터를 리스트 형태로 받은 후 Page<>에 담아 반환
 		return new PageImpl<>(query.fetch());
 	}
+
+	// 일치하는 제목 혹은 내용을 포함하는 데이터 찾기 -> 대소문자 구분 X
+	private BooleanExpression containsKeyword(String keyword) {
+		if(keyword != null || !keyword.equals("null")) {
+			return (Expressions.stringTemplate(
+					"LOWER({0})", posts.title)
+				.contains(Expressions.stringTemplate(
+					"LOWER({0})",keyword)))
+				.or(Expressions.stringTemplate(
+					"LOWER({0})", posts.body)
+				.contains(Expressions.stringTemplate(
+					"LOWER({0})",keyword)));
+			}
+		return (posts.title.contains(keyword)).or(posts.body.contains(keyword));
+	}
+
 
 	// 일치하는 카테고리를 가진 데이터 찾기 -> 대소문자 구분 X
 	private BooleanExpression eqCategory(String category) {

@@ -19,4 +19,15 @@ public class UsersDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Users.UserAuth auth;
+    private Boolean isActivated;
+}
+public class UsersDto {
+    private String loginId;
+    private String password;
+    private String name;
+    private String nickname;
+    private String email;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Users.UserAuth auth;
 }

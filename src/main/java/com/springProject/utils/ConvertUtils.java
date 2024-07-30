@@ -26,12 +26,18 @@ public class ConvertUtils {
     }
 
     /*public static Users convertDtoToUsers(UsersDto usersDto) {
+    public static Users convertDtoToUsers(UsersDto usersDto) {
         return Users.builder()
                 .nickname(usersDto.getNickname())
                 .auth(usersDto.getRole())
+                .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
                 .activated(usersDto.isActivated())
+                .createdAt(usersDto.getCreatedAt())
+                .updatedAt(usersDto.getUpdatedAt())
+                .isActivated(usersDto.getIsActivated())
+                .name(usersDto.getName())
                 .build();
     }
 
@@ -39,11 +45,17 @@ public class ConvertUtils {
         return UsersDto.builder()
                 .nickname(users.getNickname())
                 .role(users.getRole())
+                .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
                 .activated(users.isActivated())
+                .isActivated(users.getIsActivated())
+                .createdAt(users.getCreatedAt())
+                .updatedAt(users.getUpdatedAt())
+                .name(users.getName())
                 .build();
     }*/
+    }
 
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
@@ -51,9 +63,12 @@ public class ConvertUtils {
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
+                .location(posts.getLocation())
                 .hashtags(posts.getHashtags())
                 .createdAt(posts.getCreatedAt())
                 .updatedAt(posts.getUpdatedAt())
+                .createdAt(posts.getCreated_at())
+                .updatedAt(posts.getUpdated_at())
                 .build();
     }
 
@@ -63,9 +78,12 @@ public class ConvertUtils {
                 .category(postsDto.getCategory())
                 .body(postsDto.getBody())
                 .star(postsDto.getStar())
+                .location(postsDto.getLocation())
                 .hashtags(postsDto.getHashtags())
                 .createdAt(postsDto.getCreatedAt())
                 .updatedAt(postsDto.getUpdatedAt())
+                .created_at(postsDto.getCreatedAt())
+                .updated_at(postsDto.getUpdatedAt())
                 .build();
     }
 }
