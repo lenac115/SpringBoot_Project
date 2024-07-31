@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,7 +27,7 @@ import com.springProject.service.PostsService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
+@Controller
 @RequestMapping("/api/posts")
 @Slf4j
 public class PostsController {
@@ -74,24 +76,38 @@ public class PostsController {
         return ResponseEntity.ok(updatedPostDto);
     }
 
-	// 검색 결과 추출 컨트롤러
+	// 검색 결과 추출 및 공지사항 추출 컨트롤러
 	// ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
 	@GetMapping("/search")
-	public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
-		@RequestParam(value = "sort", defaultValue = "newPost") String sortBy,
-		@RequestParam(value="page") int nowPage) {
+	public String getSearch(
+		@ModelAttribute SearchData searchData,
+		@RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
+		@RequestParam(value="page", required = false) int nowPage,
+		Model model){
 		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
 			searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
 			searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
 		List<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
+		model.addAttribute("posts", posts);
+
+		List<PostsDto> notices = postsService.getNoticeFive();
+		model.addAttribute("notices", notices);
+
+		getPostsBySearchDataAndSortBy(posts);
+		getNoticeFive(notices);
+
+		return "post/search";
+	}
+
+	// HTTP 전송 용 코드
+	public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(List<PostsDto> posts)
+	{
 		return ResponseEntity.ok(posts);
 	}
 
-	// 공지사항 추출 컨트롤러
-	@GetMapping("/search")
-	public ResponseEntity<List<PostsDto>> getNoticeFive() {
-		List<PostsDto> notices = postsService.getNoticeFive();
+	public ResponseEntity<List<PostsDto>> getNoticeFive(List<PostsDto> notices)
+	{
 		return ResponseEntity.ok(notices);
 	}
 

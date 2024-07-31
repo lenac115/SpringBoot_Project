@@ -41,8 +41,9 @@ public class PostsService {
     private Long nextPostId = 1L;
 
     public PostsDto createPost(PostsDto postsDto) {
+
         Posts post = ConvertUtils.convertDtoToPosts(postsDto);
-        post.setPost_id(nextPostId++);
+        post.setId(nextPostId++);
         post.setCreated_at(new Timestamp(System.currentTimeMillis()));
         posts.add(post);
         return ConvertUtils.convertPostsToDto(post);
@@ -56,7 +57,7 @@ public class PostsService {
 
     public PostsDto getPostsDtoById(Long id) {
         return posts.stream()
-                .filter(post -> post.getUser_id().equals(id))
+                .filter(post -> post.getUsers().getId().equals(id))
                 .findFirst()
                 .map(ConvertUtils::convertPostsToDto)
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
@@ -69,7 +70,7 @@ public class PostsService {
 
     private Posts findPostById(Long id) {
         return posts.stream()
-                .filter(post -> post.getPost_id().equals(id))
+                .filter(post -> post.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
@@ -81,7 +82,6 @@ public class PostsService {
         post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
         return ConvertUtils.convertPostsToDto(post);
     }
-
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)

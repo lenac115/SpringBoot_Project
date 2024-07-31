@@ -53,6 +53,7 @@ public class ConvertUtils {
 
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
+                .id(posts.getId())
                 .title(posts.getTitle())
                 .category(posts.getCategory())
                 .body(posts.getBody())
@@ -66,6 +67,7 @@ public class ConvertUtils {
 
     public static Posts convertDtoToPosts(PostsDto postsDto) {
         return Posts.builder()
+                .id(postsDto.getId())
                 .title(postsDto.getTitle())
                 .category(postsDto.getCategory())
                 .body(postsDto.getBody())

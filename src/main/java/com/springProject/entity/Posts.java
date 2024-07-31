@@ -5,9 +5,7 @@ import java.sql.Timestamp;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -20,12 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 public class Posts {
 
-    @Id @Column(name = "post_id")
+    @Id @Column(name = "posts_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
-    @Column(nullable = false)
-    private Long user_id;
 
     @Column(nullable = false)
     private String title;
@@ -55,12 +50,10 @@ public class Posts {
     private List<Comments> comments;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
     private Users users;
 
-    @Column(name = "isNotice")
+    @Column(name = "is_notice")
     private boolean isNotice;
-
-    @Column(nullable = false)
-    private Long post_id;
 
 }
