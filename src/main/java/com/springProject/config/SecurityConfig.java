@@ -49,8 +49,9 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement) -> sessionManagement
                         .maximumSessions(1) // 최대 1개 세션 허용(중복 로그인 방지)
                         .maxSessionsPreventsLogin(false) // 다른 장치에서 로그인 시 기존 세션 만료하지 않음(로그아웃 후 다시 로그인 처리가 되기 위해)
-                        .expiredUrl("/api/users/login?expired=true"));// 세션이 만료된 경우 이동할 경로
-
+                        .expiredUrl("/api/users/login?expired=true"))// 세션이 만료된 경우 이동할 경로
+                .csrf((csrf) -> csrf
+                        .ignoringRequestMatchers("/api/**"));
         return httpSecurity.build();
     }
 
