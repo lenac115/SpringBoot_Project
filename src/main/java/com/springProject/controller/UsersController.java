@@ -42,6 +42,7 @@ public class UsersController {
     //회원가입 - 유저 등록
     @PostMapping
     public String createUsers(@ModelAttribute UsersDto usersDto) {
+        usersDto.setIsActivated(true); // 유저 등록 시 정지된 권한 기본 값 부여
         usersService.signUp(usersDto);
         return "redirect:/api/users/login";
     }
