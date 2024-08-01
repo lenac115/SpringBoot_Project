@@ -2,7 +2,6 @@ package com.springProject.controller;
 
 import java.util.List;
 
-import com.springProject.dto.PostsWithUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +47,10 @@ public class PostsController {
 
     //상세조회
     @GetMapping("/{id}")
-    public ResponseEntity<PostsWithUser> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
-        PostsWithUser postsDto = postsService.getPostsDtoById(id);
+    public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
+        PostsDto postsDto = postsService.getPostsDtoById(id);
         if (userDetails != null) {
-            postsDto.getUsersDto().setIsEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
+            postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
         }
         return ResponseEntity.ok(postsDto);
     }

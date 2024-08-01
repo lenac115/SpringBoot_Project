@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.springProject.dto.NickAndLoginId;
-import com.springProject.dto.PostsWithUser;
+import com.springProject.dto.UsersDto;
 import com.springProject.entity.Users;
 import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.UsersRepository;
@@ -69,7 +68,7 @@ public class PostsService {
                 .collect(Collectors.toList());
     }
 
-    public PostsWithUser getPostsDtoById(Long id) {
+    public PostsDto getPostsDtoById(Long id) {
         return ConvertUtils.convertPostsToWith(postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 
@@ -211,7 +210,7 @@ public class PostsService {
         throw new AccessDeniedException("정지된 사용자입니다.");
     }
 
-    public Boolean isEqual(NickAndLoginId usersDto, String username) {
+    public Boolean isEqual(UsersDto usersDto, String username) {
         return usersDto.getLoginId().equals(username);
     }
 }

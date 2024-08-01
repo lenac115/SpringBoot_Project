@@ -63,8 +63,8 @@ public class ConvertUtils {
                 .build();
     }
 
-    public static PostsWithUser convertPostsToWith(Posts posts) {
-        return PostsWithUser.builder()
+    public static PostsDto convertPostsToWith(Posts posts) {
+        return PostsDto.builder()
                 .title(posts.getTitle())
                 .category(posts.getCategory())
                 .body(posts.getBody())
@@ -73,10 +73,9 @@ public class ConvertUtils {
                 .hashtags(posts.getHashtags())
                 .createdAt(posts.getCreated_at())
                 .updatedAt(posts.getUpdated_at())
-                .usersDto(NickAndLoginId.builder()
+                .usersDto(UsersDto.builder()
                         .loginId(posts.getUsers().getLoginId())
                         .nickname(posts.getUsers().getNickname())
-                        .isEqual(false)
                         .build())
                 .build();
     }
