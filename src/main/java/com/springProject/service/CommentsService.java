@@ -5,13 +5,18 @@ import com.springProject.dto.CommentsDto;
 import com.springProject.entity.Comments;
 import com.springProject.entity.Posts;
 import com.springProject.entity.Users;
+import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.CommentsRepository;
 import com.springProject.repository.PostsRepository;
 import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -28,12 +33,13 @@ public class CommentsService {
     private final CommentsRepository commentsRepository;
     private final UsersRepository usersRepository;
     private final PostsRepository postsRepository;
+    private final BannedUserRepository bannedUserRepository;
 
 
     // 계층형 댓글 출력
     @Transactional(readOnly = true)
     public List<CommentWithParent> findCommentsByPostId(Long id) {
-
+        isBanned();
         // 쿼리 결과값
         List<CommentWithParent> result = new ArrayList<>();
         // 정렬을 위한 Map
@@ -49,15 +55,23 @@ public class CommentsService {
                         commentWithParent = CommentWithParent.builder()
                                 .body(c.getBody())
                                 .id(c.getId())
-                                .author(c.getUsers().getName())
+                                .author(c.getUsers().getNickname())
+                                .loginId(c.getUsers().getLoginId())
+                                .updatedAt(c.getUpdatedAt())
+                                .depth(c.getDepth())
                                 .children(new ArrayList<>())
+                                .isActivated(c.isActivated())
                                 .build();
                     } else {
                         commentWithParent = CommentWithParent.builder()
                                 .body("삭제된 댓글입니다.")
                                 .id(c.getId())
-                                .author(c.getUsers().getName())
+                                .author(c.getUsers().getNickname())
+                                .loginId(c.getUsers().getLoginId())
+                                .updatedAt(c.getUpdatedAt())
+                                .depth(c.getDepth())
                                 .children(new ArrayList<>())
+                                .isActivated(c.isActivated())
                                 .build();
                     }
 
@@ -82,7 +96,7 @@ public class CommentsService {
 
     // 업데이트, 내용을 업데이트하고 updateAt 갱신
     public CommentsDto update(Long id, CommentsDto commentsDto, String username) {
-
+        isBanned();
         Comments updatedComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -101,7 +115,7 @@ public class CommentsService {
 
     // 댓글 삭제, 부모 댓글이 삭제되면 계층형 댓글 구조에 문제가 생겨서 Activated를 false 처리
     public void delete(Long id, String username) {
-
+        isBanned();
         Comments findComments = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -120,15 +134,12 @@ public class CommentsService {
 
     // 부모가 없는 댓글 생성
     public CommentsDto nonReply(String username, CommentsDto commentsDto, Long postId) {
-
+        isBanned();
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
 
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if(!findUser.getIsActivated())
-            throw new AccessDeniedException("정지된 사용자입니다.");
 
         // 만들 댓글의 정보를 commments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);
@@ -137,6 +148,9 @@ public class CommentsService {
         // 만든 댓글의 연관관계를 설정
         createdComments.setUser(findUser);
         createdComments.setPost(findPost);
+
+        System.out.println(createdComments.getBody());
+
 
         // 영속화
         commentsRepository.save(createdComments);
@@ -147,14 +161,12 @@ public class CommentsService {
 
     // 부모가 존재하는 댓글 설정
     public CommentsDto reply(Long postId, Long commentId, CommentsDto commentsDto, String username) {
+        isBanned();
         commentsDto.setCreatedAt(LocalDateTime.now());
         commentsDto.setUpdatedAt(LocalDateTime.now());
 
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if(!findUser.getIsActivated())
-            throw new AccessDeniedException("정지된 사용자입니다.");
 
         // 만들 댓글의 정보를 comments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);
@@ -168,5 +180,25 @@ public class CommentsService {
         commentsRepository.save(createdComments);
 
         return ConvertUtils.convertCommentsToDto(createdComments);
+    }
+
+    private void isBanned() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if (findUser.getBannedUser() == null)
+            return;
+        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+            findUser.setIsActivated(true);
+            bannedUserRepository.deleteByUsersId(findUser.getId());
+            return;
+        }
+
+        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 }
