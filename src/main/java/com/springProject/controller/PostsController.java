@@ -3,6 +3,7 @@ package com.springProject.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,10 +20,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springProject.SearchData;
 import com.springProject.dto.PostsDto;
+import com.springProject.entity.Posts;
 import com.springProject.service.PostsService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -82,14 +85,14 @@ public class PostsController {
 	public String getSearch(
 		@ModelAttribute SearchData searchData,
 		@RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
-		@RequestParam(value="page", required = false) int nowPage,
+		@RequestParam(value="page", defaultValue = "1", required = false) int nowPage,
 		Model model){
 		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
 			searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
 			searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
-		List<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
-		model.addAttribute("posts", posts);
+		Page<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
+		model.addAttribute("page", posts);
 
 		List<PostsDto> notices = postsService.getNoticeFive();
 		model.addAttribute("notices", notices);
@@ -101,11 +104,13 @@ public class PostsController {
 	}
 
 	// HTTP 전송 용 코드
-	public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(List<PostsDto> posts)
+	@ResponseBody
+	public ResponseEntity<Page<PostsDto>> getPostsBySearchDataAndSortBy(Page<PostsDto> posts)
 	{
 		return ResponseEntity.ok(posts);
 	}
 
+	@ResponseBody
 	public ResponseEntity<List<PostsDto>> getNoticeFive(List<PostsDto> notices)
 	{
 		return ResponseEntity.ok(notices);

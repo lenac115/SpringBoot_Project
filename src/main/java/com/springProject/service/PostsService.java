@@ -15,6 +15,7 @@ import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -85,25 +86,21 @@ public class PostsService {
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)
-    public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
+    public Page<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
 
         // 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
         Pageable pageable = PageRequest.of(nowPage - 1, 12);
 
 		// 검색 및 정렬 기능 수행 후 설정된 pageable에 맞게 페이지 반환
-		Page<Posts> page = postsRepository.searchPosts(searchData, sortBy, pageable);
-		page.isEmpty(); // 페이지가 비어있는지 확인
-		page.getTotalPages(); // 전체 페이지 개수 확인
-		page.hasPrevious(); // 이전 블록 존재 여부 확인
-		page.hasNext(); // 다음 블록 존재 여부 확인
-
+		Page<PostsDto> page = postsRepository.searchPosts(searchData, sortBy, pageable);
+        log.info("pageable={}, page={}", page.getNumber(), page.getTotalPages());
         page.forEach(p -> log.info("title = {}, star = {}", p.getTitle(), p.getStar()));
-        return page.stream()
-                .map(ConvertUtils::convertPostsToDto)
-                .collect(Collectors.toList());
+
+        return page;
     }
 
     // 공지사항 따로 추출
+    @Transactional(readOnly = true)
     public List<PostsDto> getNoticeFive() {
         return postsRepository.getNoticeFive()
             .stream()

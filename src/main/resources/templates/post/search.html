@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
+    <link rel="stylesheet" th:href="@{/css/search.css}" />
 </head>
 <body>
 <header></header>
@@ -12,21 +13,112 @@
     <h1>마음에 드는 게시물을 찾아보세요!</h1>
     <section>
         <img>
-        <p></p>
-        <span id="arrow"></span>
+        <p>공지사항</p>
+        <div>
+            <ul th:each="notice : ${notices}">
+                <li>
+                    <a th:text="${notice.title}" th:href="@{/api/posts/{id}(id=${notice.id})}"></a>
+                </li>
+            </ul>
+        </div>
+        <span class="arrow" id="up"></span>
+        <span class="arrow" id="down"></span>
     </section>
     <div>
         <form th:action="@{/api/posts/search}" method="get">
-            <label></label>
-
+            <label for="keyword">제목 및 내용</label>
+            <input type="text" id="keyword" name="keyword" />
+            <label for="category">카테고리</label>
+            <select id="category" name="category">
+                <option value="">선택</option>
+                <option value="한식">한식</option>
+                <option value="일식">일식</option>
+                <option value="중식">중식</option>
+                <option value="양식">양식</option>
+                <option value="카페">카페</option>
+                <option value="기타">기타</option>
+            </select>
+            <label for="location">위치</label>
+            <select id="location" name="location">
+                <option value="">선택</option>
+                <option value="서울">서울</option>
+                <option value="경기">경기</option>
+                <option value="인천">인천</option>
+                <option value="인천">부산</option>
+                <option value="인천">대구</option>
+                <option value="인천">광주</option>
+                <option value="인천">대전</option>
+                <option value="인천">울산</option>
+                <option value="인천">세종</option>
+                <option value="강원">강원</option>
+                <option value="충북">충북</option>
+                <option value="충남">충남</option>
+                <option value="경북">경북</option>
+                <option value="경남">경남</option>
+                <option value="전북">전북</option>
+                <option value="전남">전남</option>
+                <option value="제주">제주</option>
+                <option value="기타">기타</option>
+            </select>
+            <label for="star">별점</label>
+            <select id="star" name="star">
+                <option value="">선택</option>
+                <option value=5>
+                    <img src="../../static/img/star5.png" />
+                </option>
+                <option value=4>
+                    <img src="../../static/img/star4.png" />
+                </option>
+                <option value=3>
+                    <img src="../../static/img/star3.png" />
+                </option>
+                <option value=2>
+                    <img src="../../static/img/star2.png" />
+                </option>
+                <option value=1>
+                    <img src="../../static/img/star1.png" />
+                </option>
+            </select>
+            <label for="hashtags">해시태그</label>
+            <input type="text" id="hashtags" name="hashtags" placeholder="태그를 입력하세요"/>
+            <div id = "date">
+                <label for="date">등록된 날짜</label>
+                <input type="date" name="startDate" placeholder="시작 범위"/>
+                <p>~</p>
+                <input type="date" name="endDate" placeholder="끝 범위"/>
+            </div>
+            <button type="submit">검색</button>
         </form>
-        <div>
-            <ul>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
+        <div th:if="${!page.isEmpty()}">
+            <ul class="post-list">
+                <li th:each="post : ${page}">
+                    <img />
+                    <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
+                    <div>
+                        <img th:src="@{/img/star{num}.png(num=${post.star})}">
+                        <!--<img th:if="${}"/>
+                        <img th:unless=""/>
+                        <img th:if=""/>
+                        <img th:unless=""/>-->
+                    </div>
+                </li>
             </ul>
+            <div>
+                <span class="arrow" id="left" th:if="${page.hasPrevious}">
+                    <a th:href="@{|?page=${(page.number)-1}|}"></a>
+                </span>
+                <ul class="post-page">
+                    <li th:each="num : ${#numbers.sequence(1, page.totalPages)}" th:value="${page.getTotalPages()}"
+                        th:classappend="${num == page.number} ? 'active'"
+                        th:if="${num >= page.number -5 and num <= page.number +5}">
+                        <a th:text="${num}" th:href="@{|?page=${num}|}"></a>
+                    </li>
+                </ul>
+                <span class="arrow" id="right" th:if="${page.hasNext}">
+                    <a th:href="@{|?page=${ page.number +1}|}"></a>
+                </span>
+            </div>
+
         </div>
     </div>
 </main>

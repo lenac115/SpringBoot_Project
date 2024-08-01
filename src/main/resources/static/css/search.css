@@ -1,0 +1,30 @@
+
+.arrow {
+
+}
+.arrow::after {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 12.35px;
+    height: 12.35px;
+    border-top: 5px solid;
+    border-right: 5px solid;
+    transform: rotate(315deg);
+    border-color: rgba(196, 196, 196, 1);
+}
+
+#up {
+
+}
+#down {
+    visibility: hidden;
+    transform: rotate(135deg);
+}
+#left {
+    transform: rotate(45deg);
+}
+#right {
+    transform: rotate(225deg);
+}

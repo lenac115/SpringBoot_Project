@@ -21,7 +21,7 @@ public class BookMarks {
 	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "users_id")
-	private Users user;
+	private Users users;
 
 	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)

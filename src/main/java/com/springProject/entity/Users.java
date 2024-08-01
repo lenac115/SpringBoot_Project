@@ -51,6 +51,12 @@ public class Users {
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
 
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BookMarks> bookmarks = new ArrayList<>();
+
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Prefers> prefers = new ArrayList<>();
+
 	@Enumerated(EnumType.STRING)
 	private UserAuth auth = UserAuth.user;
 

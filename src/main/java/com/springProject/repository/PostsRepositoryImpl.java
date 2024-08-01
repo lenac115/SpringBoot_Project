@@ -1,21 +1,20 @@
 package com.springProject.repository;
 
-import static com.querydsl.jpa.JPAExpressions.*;
 import static com.springProject.entity.QPosts.*;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.stream.Collectors;
 
-import org.apache.catalina.valves.rewrite.InternalRewriteMap;
-import org.springframework.context.annotation.Bean;
+import com.springProject.dto.PostsDto;
+import com.springProject.utils.ConvertUtils;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.querydsl.core.Query;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -34,7 +33,7 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 	// SQL 언어 수행 메서드
 	// 공지사항 외 검색 조건에 맞는 검색 결과 찾기
 	@Override
-	public Page<Posts> searchPosts(SearchData searchData, String sortBy, Pageable pageable) {
+	public Page<PostsDto> searchPosts(SearchData searchData, String sortBy, Pageable pageable) {
 		String keyword = searchData.getKeyword();
 		String category = searchData.getCategory();
 		String location = searchData.getLocation();
@@ -63,7 +62,10 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 			.limit(pageable.getPageSize()); // offset 부터 몇 개의 데이터를 출력될 지가 정의됨
 
 		// 쿼리 실행이 끝난 데이터를 리스트 형태로 받은 후 Page<>에 담아 반환
-		return new PageImpl<>(query.fetch());
+		return new PageImpl<>(
+			query.fetch().stream()
+			.map(ConvertUtils::convertPostsToDto)
+				.collect(Collectors.toList()));
 	}
 
 	// 정렬 방법 정하기
