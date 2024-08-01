@@ -3,7 +3,6 @@ package com.springProject.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class Comments {
 
 	// 댓글 깊이
 	@ColumnDefault("0")
-	@Column(nullable = false)
 	private int depth;
 
 	// 댓글의 부모 표기

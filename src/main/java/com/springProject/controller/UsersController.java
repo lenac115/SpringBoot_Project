@@ -1,5 +1,6 @@
 package com.springProject.controller;
 
+import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
 import com.springProject.service.UsersService;
@@ -139,35 +140,35 @@ public class UsersController {
 
 
     @GetMapping("/admin")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
     public String getAdminPage() {
         return "login/admin";
     }
 
     @PutMapping("/admin/unActivate/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId) {
-        UsersDto usersDto =  usersService.unActivate(userId);
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId, @RequestBody BannedDateReasonForm bannedForm) {
+        UsersDto usersDto =  usersService.unActivate(userId, bannedForm);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
     @PutMapping("/admin/activate/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
     public ResponseEntity<UsersDto> activate(@PathVariable Long userId) {
         UsersDto usersDto = usersService.activate(userId);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
-    @GetMapping("/admin/getUserList")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/admin/getUser/list")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
     public ResponseEntity<List<UsersDto>> getAllUsers () {
         List<UsersDto> usersDto = usersService.getAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }
 
     @GetMapping("/admin/getUser/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UsersDto> getUsers (@PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> getUsers(@PathVariable Long id) {
         UsersDto usersDto = usersService.getUsers(id);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
     }

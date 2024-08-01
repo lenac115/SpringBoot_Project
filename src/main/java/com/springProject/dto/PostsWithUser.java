@@ -1,28 +1,26 @@
 package com.springProject.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostsDto {
+public class PostsWithUser {
 
-	private Long id;
-	private String title;
+    private String title;
     private String body;
     private String category;
-	private String location;
-    private Integer star;
+    private String location;
+    private int star;
     private String hashtags;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    private boolean isNotice;
-
-    private UsersDto usersDto;
-    private boolean isEqual;
+    private NickAndLoginId usersDto;
 }

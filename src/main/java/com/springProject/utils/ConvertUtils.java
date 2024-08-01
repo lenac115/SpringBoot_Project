@@ -55,6 +55,7 @@ public class ConvertUtils {
         return PostsDto.builder()
                 .id(posts.getId())
                 .title(posts.getTitle())
+                .author(posts.getUsers().getNickname())
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
@@ -62,6 +63,23 @@ public class ConvertUtils {
                 .hashtags(posts.getHashtags())
                 .createdAt(posts.getCreated_at())
                 .updatedAt(posts.getUpdated_at())
+                .build();
+    }
+
+    public static PostsDto convertPostsToWith(Posts posts) {
+        return PostsDto.builder()
+                .title(posts.getTitle())
+                .category(posts.getCategory())
+                .body(posts.getBody())
+                .star(posts.getStar())
+                .location(posts.getLocation())
+                .hashtags(posts.getHashtags())
+                .createdAt(posts.getCreated_at())
+                .updatedAt(posts.getUpdated_at())
+                .usersDto(UsersDto.builder()
+                        .loginId(posts.getUsers().getLoginId())
+                        .nickname(posts.getUsers().getNickname())
+                        .build())
                 .build();
     }
 
