@@ -155,6 +155,7 @@ body {
 
 #sectionComment #btn-comment-submit {
     margin-top: 38px;
+    margin-bottom: 38px;
     float: right;
 }
 
@@ -185,6 +186,12 @@ body {
     resize:none;
 }
 
+#div-comment .comment .comment-sec .reply-textarea {
+    width: 70%;
+    min-height: 180px;
+    resize:none;
+}
+
 #div-comment .comment .comment-sec .comment-btn {
     width:10%;
 }
@@ -200,4 +207,24 @@ body {
 
 .comment-btn .delete-btn {
     margin-top:50%;
+}
+
+.comment-btn .reply-btn {
+    margin-top:10%;
+}
+
+.submit-reply-btn {
+    margin-bottom:5%;
+}
+
+.comment-sec-line {
+    border: 1px solid #9095A0;
+    align-content: center;
+}
+
+.reply-container .reply-textarea{
+    width: 80%;
+    resize: none;
+    margin-bottom:30px;
+    min-height: 180px;
 }

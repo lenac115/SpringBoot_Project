@@ -153,6 +153,7 @@
             comments.forEach(function (comment) {
                 const marginLeft = (comment.depth + 1) * 27;
                 const commentHTML = `
+                    <div class="comment-sec-line"></div>
                     <div class="comment" data-id="${comment.id}" data-user-id="${comment.loginId}">
                         <div class="comment-sec">
                             <p class="comment-author">${comment.author}</p>
@@ -163,6 +164,7 @@
                             <div class="comment-btn">
                                 <button class="edit-btn btn-square-small" data-comment-id="${comment.id}">수정</button>
                                 <button class="delete-btn btn-square-small" data-comment-id="${comment.id}">삭제</button>
+                                <button class="reply-btn btn-square-small" data-comment-id="${comment.id}" data-comment-depth="${comment.depth}">답글</button>
                             </div>
                         </div>
                         <div class="replies" style="margin-left: ${marginLeft}px;"></div>
@@ -170,9 +172,19 @@
                 const commentElement = $(commentHTML);
                 container.append(commentElement);
                 renderComment(comment.children, commentElement.find('.replies'));
-                if (comment.loginId !== username || comment.activated === false) {
+                if (comment.loginId !== username) {
                     commentElement.find('.edit-btn').hide();
                     commentElement.find('.delete-btn').hide();
+                }
+
+                if(comment.activated === false) {
+                    commentElement.find('.edit-btn').hide();
+                    commentElement.find('.delete-btn').hide();
+                    commentElement.find('.reply-btn').hide();
+                }
+
+                if (comment.loginId === null) {
+                    commentElement.find('.reply-btn').hide();
                 }
                 console.log(comment);
             })
@@ -189,7 +201,7 @@
             const commentText = commentTextElement.text();
 
             if (!$(`#edit-textarea-${commentId}`).length) {
-                const textarea = $(`<textarea id="edit-textarea-${commentId}" class="edit-textarea">${commentText}</textarea>`);
+                const textarea = $(`<textarea id="edit-textarea-${commentId}" class="edit-textarea" style="margin-top:10px;">${commentText}</textarea>`);
                 commentTextElement.replaceWith(textarea);
             }
 
@@ -207,6 +219,33 @@
             }
         });
 
+        $('#div-comment').on('click', '.reply-btn', function() {
+            const commentId = $(this).data('comment-id');
+            const commentElement = $(this).closest('.comment');
+            const repliesDiv = commentElement.find('> .replies');
+            const commentDepth = $(this).data('comment-depth');
+
+            $('.reply-container').remove();
+
+            const replyContainer = $(`
+            <div class="reply-container" style="margin-left:(${commentDepth} + 1) * 27px">
+                <textarea id="reply-textarea-${commentId}" class="reply-textarea" placeholder="답글을 입력하세요"></textarea>
+                <button class="submit-reply-btn btn-square-small" data-comment-id="${commentId}">등록</button>
+            </div>
+            `);
+
+            repliesDiv.before(replyContainer);
+        });
+
+        $('#div-comment').on('click', '.submit-reply-btn', function() {
+            const parentCommentId = $(this).data('comment-id');
+            const replyTextarea = $(`#reply-textarea-${parentCommentId}`);
+            const replyText = replyTextarea.val();
+
+            if (replyText) {
+                replyToComment(parentCommentId, replyText);
+            }
+        });
 
         function deleteComment(commentId) {
             $.ajax({
@@ -243,6 +282,28 @@
                 },
                 error: function (error) {
                     alert('댓글 수정에 실패했습니다.');
+                    location.href = postUrl;
+                }
+            });
+        }
+
+        function replyToComment(parentCommentId, replyText) {
+            $.ajax({
+                url: '/api/comments/reply?postId=' + urlParams.get('postId')+ '&commentId=' + parentCommentId,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                        body: replyText,
+                        createdAt: null,
+                        updatedAt: null
+                    }),
+                success: function (response) {
+                    alert("댓글 입력에 성공했습니다.");
+                    location.href = postUrl;
+
+                },
+                error: function (error) {
+                    alert('댓글 입력에 실패했습니다.');
                     location.href = postUrl;
                 }
             });
