@@ -41,7 +41,7 @@ public class Users {
 	private LocalDateTime updatedAt;
 
 	@Column(columnDefinition = "boolean default true")
-	private Boolean isActivated;
+	private Boolean isActivated = true;
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Comments> comments = new ArrayList<>();

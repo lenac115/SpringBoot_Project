@@ -1,8 +1,6 @@
 package com.springProject.utils;
 
-import com.springProject.dto.CommentsDto;
-import com.springProject.dto.PostsDto;
-import com.springProject.dto.UsersDto;
+import com.springProject.dto.*;
 import com.springProject.entity.Comments;
 import com.springProject.entity.Posts;
 import com.springProject.entity.Users;
@@ -54,6 +52,7 @@ public class ConvertUtils {
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
                 .title(posts.getTitle())
+                .author(posts.getUsers().getNickname())
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
@@ -61,6 +60,24 @@ public class ConvertUtils {
                 .hashtags(posts.getHashtags())
                 .createdAt(posts.getCreated_at())
                 .updatedAt(posts.getUpdated_at())
+                .build();
+    }
+
+    public static PostsWithUser convertPostsToWith(Posts posts) {
+        return PostsWithUser.builder()
+                .title(posts.getTitle())
+                .category(posts.getCategory())
+                .body(posts.getBody())
+                .star(posts.getStar())
+                .location(posts.getLocation())
+                .hashtags(posts.getHashtags())
+                .createdAt(posts.getCreated_at())
+                .updatedAt(posts.getUpdated_at())
+                .usersDto(NickAndLoginId.builder()
+                        .loginId(posts.getUsers().getLoginId())
+                        .nickname(posts.getUsers().getNickname())
+                        .isEqual(false)
+                        .build())
                 .build();
     }
 

@@ -55,15 +55,23 @@ public class CommentsService {
                         commentWithParent = CommentWithParent.builder()
                                 .body(c.getBody())
                                 .id(c.getId())
-                                .author(c.getUsers().getName())
+                                .author(c.getUsers().getNickname())
+                                .loginId(c.getUsers().getLoginId())
+                                .updatedAt(c.getUpdatedAt())
+                                .depth(c.getDepth())
                                 .children(new ArrayList<>())
+                                .isActivated(c.isActivated())
                                 .build();
                     } else {
                         commentWithParent = CommentWithParent.builder()
                                 .body("삭제된 댓글입니다.")
                                 .id(c.getId())
-                                .author(c.getUsers().getName())
+                                .author(c.getUsers().getNickname())
+                                .loginId(c.getUsers().getLoginId())
+                                .updatedAt(c.getUpdatedAt())
+                                .depth(c.getDepth())
                                 .children(new ArrayList<>())
+                                .isActivated(c.isActivated())
                                 .build();
                     }
 
@@ -133,9 +141,6 @@ public class CommentsService {
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
-        if(!findUser.getIsActivated())
-            throw new AccessDeniedException("정지된 사용자입니다.");
-
         // 만들 댓글의 정보를 commments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);
         createdComments.setActivated(true);
@@ -143,6 +148,9 @@ public class CommentsService {
         // 만든 댓글의 연관관계를 설정
         createdComments.setUser(findUser);
         createdComments.setPost(findPost);
+
+        System.out.println(createdComments.getBody());
+
 
         // 영속화
         commentsRepository.save(createdComments);
@@ -159,9 +167,6 @@ public class CommentsService {
 
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if(!findUser.getIsActivated())
-            throw new AccessDeniedException("정지된 사용자입니다.");
 
         // 만들 댓글의 정보를 comments로 convert
         Comments createdComments = ConvertUtils.convertDtoToComments(commentsDto);

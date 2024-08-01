@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.springProject.dto.NickAndLoginId;
+import com.springProject.dto.PostsWithUser;
 import com.springProject.entity.Users;
 import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.UsersRepository;
@@ -42,13 +44,15 @@ public class PostsService {
 
 
     List<Posts> posts = new ArrayList<>();
-    private Long nextPostId = 1L;
 
-    public PostsDto createPost(PostsDto postsDto) {
-        Posts post = convertToPostEntity(postsDto);
-        post.setId(nextPostId++);
+    public PostsDto createPost(PostsDto postsDto, String username) {
+        Posts post = ConvertUtils.convertDtoToPosts(postsDto);
+        Users findUsers = usersRepository.findByLoginId(username);
+
         post.setCreated_at(new Timestamp(System.currentTimeMillis()));
-        posts.add(post);
+        post.setUsers(findUsers);
+        findUsers.getPosts().add(post);
+        postsRepository.save(post);
         return ConvertUtils.convertPostsToDto(post);
     }
 
@@ -65,12 +69,8 @@ public class PostsService {
                 .collect(Collectors.toList());
     }
 
-    public PostsDto getPostsDtoById(Long id) {
-        return posts.stream()
-                .filter(post -> post.getUsers().getId().equals(id))
-                .findFirst()
-                .map(ConvertUtils::convertPostsToDto)
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
+    public PostsWithUser getPostsDtoById(Long id) {
+        return ConvertUtils.convertPostsToWith(postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 
     private Posts findPostById(Long id) {
@@ -209,5 +209,9 @@ public class PostsService {
         }
 
         throw new AccessDeniedException("정지된 사용자입니다.");
+    }
+
+    public Boolean isEqual(NickAndLoginId usersDto, String username) {
+        return usersDto.getLoginId().equals(username);
     }
 }

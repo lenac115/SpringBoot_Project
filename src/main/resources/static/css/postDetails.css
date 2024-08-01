@@ -1,0 +1,203 @@
+main {
+    margin-left:236px;
+    margin-right:236px;
+}
+
+body {
+    margin:0 auto;
+}
+
+#titleLine {
+    border: 1px solid #9095A0;
+}
+
+#commentLine {
+    border: 1px solid #9095A0;
+    align-content: center;
+    margin-top:149px;
+    margin-left:109px;
+    margin-right: 109px;
+}
+
+.btn-hashtags {
+    width: 139px;
+    height: 62px;
+    background: #98DB2E;
+    border-radius: 31px;
+    border:none;
+    cursor:pointer;
+    align-content: center;
+}
+
+.btn-text {
+    font-size: 18px;
+    text-align: center;
+}
+
+#category {
+    width: 104px;
+    height: 62px;
+    background-color: #FBCFCF;
+    border-radius: 31px;
+    border:none;
+    cursor:pointer;
+    align-content: center;
+}
+
+#location {
+    width: 104px;
+    height: 62px;
+    background-color: rgba(242, 194, 99, 0.74);
+    border-radius: 31px;
+    border:none;
+    cursor:pointer;
+    align-content: center;
+}
+
+#btn-list {
+    min-height: 62px;
+    display: flex;
+}
+
+.btn-list-ul {
+    list-style: none;
+    display: flex;
+    gap: 36px;
+    padding-right: 36px;
+    padding-left:0;
+    text-align: center;
+}
+
+.area-post-detail {
+    color: #555;
+    font-size:16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: space-between;
+}
+
+.area-post-detail .author {
+    color: #555;
+    font-size:16px;
+}
+
+.area-post-detail .dates {
+    color: #555;
+    font-size:16px;
+    text-align: right;
+}
+
+#starImg {
+    padding-left: 0;
+}
+.btn-update-delete-area {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top:132px;
+    margin-bottom:34px;
+}
+
+.btn-square {
+    width: 184px;
+    height: 54px;
+    background: #98DB2E;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-square-small {
+    width: 52px;
+    height: 36px;
+    background: #98DB2E;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-square:hover {
+    width: 184px;
+    height: 54px;
+    background: #9095A0;
+    border-radius: 6px;
+    border: none;
+    cursor:pointer;
+}
+
+.btn-square-small:hover {
+    width: 52px;
+    height: 36px;
+    background: #9095A0;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+#sectionComment {
+    margin-left: 140px;
+    margin-right:140px;
+    margin-top: 47px;
+    display: flex;
+    flex-direction: column;
+}
+
+#sectionComment #comment-body {
+    width:100%;
+    height:216px;
+    border: 1px solid #9095A0;
+    border-radius: 6px;
+    text-align: left;
+    padding-left: 10px;
+    padding-top: 10px;
+    resize: none;
+}
+
+#sectionComment #btn-comment-submit {
+    margin-top: 38px;
+    float: right;
+}
+
+#div-comment {
+    margin-left: 180px;
+    margin-right:180px;
+}
+
+#div-comment .comment-sec {
+    width: 100%;
+    min-height: 180px;
+    display: flex;
+}
+
+#div-comment .comment .comment-sec .comment-author {
+    width: 20%;
+}
+
+#div-comment .comment .comment-sec .comment-body-date {
+    width: 70%;
+    display:flex;
+    flex-direction: column;
+}
+
+#div-comment .comment .comment-sec .edit-textarea {
+    width: 70%;
+    min-height: 180px;
+    resize:none;
+}
+
+#div-comment .comment .comment-sec .comment-btn {
+    width:10%;
+}
+
+.comment-btn .edit-btn {
+    margin-right: 30px;
+    margin-top:50%;
+}
+
+.comment-btn .save-btn{
+    margin-right: 30px;
+}
+
+.comment-btn .delete-btn {
+    margin-top:50%;
+}
