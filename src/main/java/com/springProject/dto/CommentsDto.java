@@ -19,8 +19,6 @@ import java.time.LocalDateTime;
 public class CommentsDto {
 
     private String body;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 }

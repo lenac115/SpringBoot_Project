@@ -1,8 +1,12 @@
 package com.springProject.controller;
 
+import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
+import com.springProject.dto.UsersDto;
+import com.springProject.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -11,18 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.springProject.dto.MessageDto;
-import com.springProject.dto.UsersDto;
-import com.springProject.service.UsersService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Controller
 @RequestMapping("/api/users")
@@ -66,7 +59,7 @@ public class UsersController {
     //아이디 - 아이디 찾기 페이지로 이동
     @GetMapping("/findAccountForm")
     public String findAccountForm() {return "account/findAccount";}
-
+    
     //아이디 - 사용자 유무 체크(fetch 비동기 처리)
     @PostMapping("/findAccount")
     @ResponseBody
@@ -74,7 +67,7 @@ public class UsersController {
         boolean found = usersService.isFindAccount(name, email);
         return ResponseEntity.ok(found);
     }
-
+    
     //비밀번호 - 임시 비밀번호 발급 페이지로 이동
     @GetMapping("/findPasswordForm")
     public String findPasswordForm() {return "account/tempPassword";}
@@ -144,4 +137,39 @@ public class UsersController {
     //권한 - 권한에 따른 접근 불가 페이지로 이동
     @GetMapping("/accessDenied")
     public String accessDenied() {return "login/accessDenied";}
+
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public String getAdminPage() {
+        return "login/admin";
+    }
+
+    @PutMapping("/admin/unActivate/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> unActivate(@PathVariable Long userId, @RequestBody BannedDateReasonForm bannedForm) {
+        UsersDto usersDto =  usersService.unActivate(userId, bannedForm);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @PutMapping("/admin/activate/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> activate(@PathVariable Long userId) {
+        UsersDto usersDto = usersService.activate(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @GetMapping("/admin/getUser/list")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<UsersDto>> getAllUsers () {
+        List<UsersDto> usersDto = usersService.getAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    @GetMapping("/admin/getUser/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> getUsers(@PathVariable Long id) {
+        UsersDto usersDto = usersService.getUsers(id);
+        return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
 }

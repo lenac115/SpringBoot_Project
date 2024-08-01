@@ -51,9 +51,12 @@ public class SecurityConfig {
                         .maxSessionsPreventsLogin(false) // 다른 장치에서 로그인 시 기존 세션 만료하지 않음(로그아웃 후 다시 로그인 처리가 되기 위해)
                         .expiredUrl("/api/users/login?expired=true"))// 세션이 만료된 경우 이동할 경로
                 .csrf((csrf) -> csrf
-                        .ignoringRequestMatchers("/api/**"));
+                        .ignoringRequestMatchers("/api/**")
+                );
+
         return httpSecurity.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

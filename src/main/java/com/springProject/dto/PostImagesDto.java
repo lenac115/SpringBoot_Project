@@ -4,12 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
+/*
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class PostImagesDto {
-    private Long post_id;
-    private Long post_image;
-}
+@Builder*/
+public class PostImagesDto {}

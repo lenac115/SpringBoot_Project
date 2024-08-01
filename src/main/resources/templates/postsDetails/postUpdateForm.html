@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title class="postTitle">Title</title>
+</head>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<body>
+<main>
+    <h1>내 게시물 수정하기</h1>
+
+</main>
+</body>
+<script>
+    $(document).ready(function () {
+        var pathArray = window.location.pathname.split('/');
+        var postId = pathArray[pathArray.length - 1];
+        $.ajax({
+            type: "GET",
+            url: "/api/posts/" + postId,
+            success: function (data) {
+                $('#postBody').text(data.body);
+                $('.postTitle').text(data.title);
+                $('#updated').text(data.updatedAt);
+                $('#created').text(data.createdAt);
+                $('#userName').text(data.author);
+                $('#category').text(data.category);
+                $('#location').text(data.location);
+                for (let i = 0; i < data.star; i++) {
+                    image.insertAdjacentHTML('beforeend', '<img src="/img/star.png" height="41" width="41" alt="별점 이미지입니다."/>');
+                }
+
+                var splitHashtags = data.hashtags.split('/');
+                for (let i = 0; i < splitHashtags.length; i++) {
+                    hashtag.insertAdjacentHTML('beforeend',
+                        '<li><button class="btn-hashtags"><span class="btn-text">' + splitHashtags[i] + '</span></button></li>');
+                }
+
+                hashtags = data.hashtags;
+            },
+            error: function (error) {
+                alert('조회에 실패했습니다.');
+            }
+
+        });
+    });
+</script>
+</html>

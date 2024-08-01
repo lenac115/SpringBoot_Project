@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-/*@Getter
+/*
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder*/

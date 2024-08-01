@@ -1,22 +1,32 @@
 package com.springProject.service;
 
+import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
+import com.springProject.entity.BannedUser;
 import com.springProject.entity.Users;
+import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.UsersRepository;
+import com.springProject.utils.ConvertUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +36,16 @@ public class UsersService {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UsersRepository usersRepository;
+    private final BannedUserRepository bannedUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
-    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UsersService(UsersRepository usersRepository, PasswordEncoder passwordEncoder,
+                        EmailService emailService, BannedUserRepository bannedUserRepository) {
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.bannedUserRepository = bannedUserRepository;
     }
 
     @Transactional
@@ -55,7 +68,7 @@ public class UsersService {
     public boolean isFindAccount(String name, String email) {
         Users user = usersRepository.findByNameAndEmail(name, email);
 
-        if(user != null) {
+        if (user != null) {
             emailService.sendUserLoginIdEmail(email, user.getLoginId());
             return true;
         }
@@ -66,7 +79,7 @@ public class UsersService {
     public boolean isFindPassword(String loginId, String email) {
         Users user = usersRepository.findByLoginIdAndEmail(loginId, email);
 
-        if(user != null) {
+        if (user != null) {
             //임시 비밀번호 생성
             String tempPassword = createRandomPassword();
             //임시 비밀번호 저장
@@ -85,12 +98,12 @@ public class UsersService {
         Users user = usersRepository.findByLoginId(loginId);
 
         //입력한 loginId가 DB에 존재하지 않는 경우
-        if(user == null) {
+        if (user == null) {
             return new MessageDto("idNotFound", "일치하는 사용자가 없습니다.");
         }
 
         //입력한 비밀번호와 DB의 비밀번호가 다를 경우
-        if(!passwordEncoder.matches(password, user.getPassword())) { // 입력한 비밀번호, DB 비밀번호 검증 절차
+        if (!passwordEncoder.matches(password, user.getPassword())) { // 입력한 비밀번호, DB 비밀번호 검증 절차
             return new MessageDto("passwordDiff", "입력하신 비밀번호가 기존 비밀번호와 일치하지 않습니다.");
         }
 
@@ -109,12 +122,12 @@ public class UsersService {
     public MessageDto withdrawUser(String loginId, String password, HttpServletRequest request, HttpServletResponse response) {
         Users user = usersRepository.findByLoginId(loginId);
         //DB에 일치하는 사용자 정보가 없을 경우
-        if(user == null) {
+        if (user == null) {
             return new MessageDto("idNotFound", "일치하는 사용자가 없습니다.");
         }
 
         //입력한 비밀번호와 DB에 저장된 비밀번호가 일치하지 않을 경우
-        if(!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             return new MessageDto("passwordDiff", "입력하신 비밀번호가 기존 비밀번호와 일치하지 않습니다.");
         }
 
@@ -122,7 +135,7 @@ public class UsersService {
             usersRepository.delete(user);
 
             //사용자 삭제 확인
-            if(usersRepository.findByLoginId(loginId) != null) {
+            if (usersRepository.findByLoginId(loginId) != null) {
                 return new MessageDto("error", "회원 탈퇴에 실패하였습니다.");
             }
 
@@ -133,7 +146,7 @@ public class UsersService {
             }
             //세션 무효화
             HttpSession session = request.getSession(false);
-            if(session != null) {
+            if (session != null) {
                 session.invalidate();
             }
             //보안 컨텍스트 클리어
@@ -174,5 +187,67 @@ public class UsersService {
         cookie.setMaxAge(0);
         cookie.setPath(request.getContextPath() + "/");
         response.addCookie(cookie);
+    }
+
+
+    @Transactional
+    public UsersDto unActivate(Long userId, BannedDateReasonForm bannedForm) {
+        isBanned();
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setIsActivated(false);
+
+        BannedUser user = BannedUser.builder()
+                .users(findUsers)
+                .bannedDate(bannedForm.getBannedDate())
+                .bannedReason(bannedForm.getBannedReason())
+                .build();
+
+        findUsers.setBannedUser(user);
+        bannedUserRepository.save(user);
+
+        return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    @Transactional
+    public UsersDto activate(Long userId) {
+        isBanned();
+        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        findUsers.setIsActivated(true);
+        bannedUserRepository.deleteByUsersId(findUsers.getId());
+
+        return ConvertUtils.convertUsersToDto(findUsers);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UsersDto> getAllUsers() {
+        isBanned();
+        return Optional.ofNullable(usersRepository.findAll()).orElse(Collections.emptyList())
+                .stream().map(ConvertUtils::convertUsersToDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public UsersDto getUsers(Long id) {
+        isBanned();
+        return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
+    }
+
+    private void isBanned() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return;
+        }
+
+        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+
+        if (findUser.getBannedUser() == null)
+            return;
+        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+            findUser.setIsActivated(true);
+            bannedUserRepository.deleteByUsersId(findUser.getId());
+            return;
+        }
+
+        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 }

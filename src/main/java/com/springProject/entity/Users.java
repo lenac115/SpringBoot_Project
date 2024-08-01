@@ -2,7 +2,6 @@ package com.springProject.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -76,13 +75,17 @@ public class Users {
 	private LocalDateTime updatedAt;
 
 	@Column(columnDefinition = "boolean default true")
-	private Boolean isActivated;
+	private Boolean isActivated = true;
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Comments> comments = new ArrayList<>();
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
+
+	@OneToOne
+	@JoinColumn(name = "banned_id")
+	private BannedUser bannedUser;
 
 	@Enumerated(EnumType.STRING)
 	private UserAuth auth = UserAuth.user;
