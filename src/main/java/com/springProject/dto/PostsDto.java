@@ -12,11 +12,9 @@ import java.sql.Timestamp;
 public class PostsDto {
 
 	private String title;
-    private String author;
     private String body;
     private String category;
 	private String location;
-    private String author;
     private int star;
     private String hashtags;
     private Timestamp createdAt;
