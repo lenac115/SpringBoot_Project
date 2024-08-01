@@ -58,7 +58,7 @@ public class PostsController {
 
     //상세조회
     @GetMapping("/{id}")
-    public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto postsDto = postsService.getPostsDtoById(id);
 		if (userDetails != null) {
 			postsDto.getUsersDto().setIsEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
@@ -67,10 +67,11 @@ public class PostsController {
     }
 
     //삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable("id") Long id){
-        postsService.deletePost(id);
-        return ResponseEntity.noContent().build();
+	@DeleteMapping("/{postId}")
+	@PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
+	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
+		postsService.deletePost(postId, users.getUsername());
+		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
     }
 
     //수정
@@ -106,13 +107,6 @@ public class PostsController {
 		return ResponseEntity.ok(posts);
 	}
 
-    @DeleteMapping("/{postId}")
-    @PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
-
-        postsService.deletePost(postId, users.getUsername());
-        return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-    }
 
     @PostMapping("/notice/save")
     @PreAuthorize("hasAnyRole('ROLE_admin')")
