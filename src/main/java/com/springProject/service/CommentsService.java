@@ -5,7 +5,6 @@ import com.springProject.dto.CommentsDto;
 import com.springProject.entity.Comments;
 import com.springProject.repository.CommentsRepository;
 import com.springProject.repository.PostsRepository;
-import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

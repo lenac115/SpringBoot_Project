@@ -19,10 +19,3 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     @Query("select u from Users u where u.loginId = :loginId")
     Optional<Users> findOptionalByLoginId(String loginId);
 }
-public interface UsersRepository extends JpaRepository<Users, Long> {
-    Users findByLoginId(String loginId); //Security 사용
-    boolean existsByLoginId(String loginId);
-    boolean existsByNickname(String nickname);
-    Users findByNameAndEmail(String name, String email);
-    Users findByLoginIdAndEmail(String loginId, String email);
-}

@@ -21,9 +21,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.springProject.SearchData;
-import com.springProject.dto.PostsDto;
-import com.springProject.entity.Posts;
-import com.springProject.repository.PostsRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,25 +34,24 @@ public class PostsService {
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
 
-    List<Posts> posts = new ArrayList<>();
-    private Long nextPostId = 1L;
 
     public PostsDto createPost(PostsDto postsDto) {
         Posts post = ConvertUtils.convertDtoToPosts(postsDto);
-        post.setPost_id(nextPostId++);
         post.setCreated_at(new Timestamp(System.currentTimeMillis()));
-        posts.add(post);
+        postsRepository.save(post);
         return ConvertUtils.convertPostsToDto(post);
     }
 
     public List<PostsDto> getAllPosts() {
-        return posts.stream()
+        return postsRepository.findAll()
+                .stream()
                 .map(ConvertUtils::convertPostsToDto)
                 .collect(Collectors.toList());
     }
 
     public PostsDto getPostsDtoById(Long id) {
-        return posts.stream()
+        return postsRepository.findById(id)
+                .stream()
                 .filter(post -> post.getUser_id().equals(id))
                 .findFirst()
                 .map(ConvertUtils::convertPostsToDto)
@@ -63,23 +59,29 @@ public class PostsService {
     }
 
     public void deletePost(Long id) {
-        Posts post = findPostById(id);
-        posts.remove(post);
+        postsRepository.findById(id).map(post -> {
+                    postsRepository.delete(post);
+                    return true;
+                })
+                .orElse(false);
     }
 
     private Posts findPostById(Long id) {
-        return posts.stream()
+        return postsRepository.findById(id)
+                .stream()
                 .filter(post -> post.getPost_id().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
 
     public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
-        Posts post = findPostById(id);
-        post.setTitle(updatePostsDto.getTitle());
-        post.setBody(updatePostsDto.getBody());
-        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
-        return ConvertUtils.convertPostsToDto(post);
+        return postsRepository.findById(id)
+                .map(existingposts -> {
+                    existingposts.setTitle(updatePostsDto.getTitle());
+                    existingposts.setBody(updatePostsDto.getBody());
+                    existingposts.setUpdated_at(updatePostsDto.getUpdatedAt());
+                    return PostsDto(postsRepository.save(existingposts));
+                });
     }
 
 

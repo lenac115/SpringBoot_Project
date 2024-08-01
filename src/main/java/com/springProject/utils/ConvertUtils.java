@@ -53,7 +53,7 @@ public class ConvertUtils {
                 .name(users.getName())
                 .build();
     }*/
-    }
+
 
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
@@ -63,8 +63,6 @@ public class ConvertUtils {
                 .star(posts.getStar())
                 .location(posts.getLocation())
                 .hashtags(posts.getHashtags())
-                .createdAt(posts.getCreatedAt())
-                .updatedAt(posts.getUpdatedAt())
                 .createdAt(posts.getCreated_at())
                 .updatedAt(posts.getUpdated_at())
                 .build();
@@ -78,10 +76,10 @@ public class ConvertUtils {
                 .star(postsDto.getStar())
                 .location(postsDto.getLocation())
                 .hashtags(postsDto.getHashtags())
-                .createdAt(postsDto.getCreatedAt())
-                .updatedAt(postsDto.getUpdatedAt())
                 .created_at(postsDto.getCreatedAt())
                 .updated_at(postsDto.getUpdatedAt())
                 .build();
     }
+}
+
 
