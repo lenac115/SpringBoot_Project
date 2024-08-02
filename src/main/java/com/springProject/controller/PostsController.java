@@ -1,6 +1,7 @@
 package com.springProject.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
 
 import org.springframework.ui.Model;
 
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.springProject.SearchData;
 import com.springProject.dto.PostsDto;
-import com.springProject.entity.Posts;
 import com.springProject.service.PostsService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -80,9 +79,9 @@ public class PostsController {
 
     //수정
     @PutMapping("/{id}")
-    public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody
+    public ResponseEntity<Optional<PostsDto>> updatePosts(@PathVariable("id") Long id, @RequestBody
     PostsDto updatePostsDto) {
-        PostsDto updatedPostDto = postsService.updatePosts(id, updatePostsDto);
+        Optional<PostsDto> updatedPostDto = postsService.updatePosts(id, updatePostsDto);
 
         return ResponseEntity.ok(updatedPostDto);
     }
