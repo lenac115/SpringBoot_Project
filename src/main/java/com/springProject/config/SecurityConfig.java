@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll() //개발 중에만 모든 url 접속 허용(개발 완료 후 설정 막음(특정 url을 기준으로 설정할 예정))
                 )
                 .formLogin((form) -> form
-                        .loginPage("/login").permitAll() // 로그인 페이지 경로 설정
+                        .loginPage("/api/users/login").permitAll() // 로그인 페이지 경로 설정
                         .defaultSuccessUrl("/api/users/main", true) // 로그인 성공 후 이동할 경로(추후 이동할 경로 변경)
                         .failureUrl("/api/users/login?error=true") // 로그인 실패 시
                 )
@@ -42,7 +42,11 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID") // 쿠키 삭제
                         .permitAll()
                 )
-                .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedPage("/api/users/accessDenied")) // 권한에 따른 접근 불가 페이지 설정
+                .exceptionHandling((exceptionHandling) -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> 
+                                response.sendRedirect("/api/users/login?expired=true") // 모든 인증 되지 않는 요청(세션 포함)을 로그인 페이지로 리다이렉트
+                        )
+                        .accessDeniedPage("/api/users/accessDenied")) // 권한에 따른 접근 불가 페이지 설정
                 .rememberMe((rememberMe) -> rememberMe
                         .key(rememberKey) // remember-me key 설정
                         .tokenValiditySeconds(3600)) // remember-me 유지 시간 설정
