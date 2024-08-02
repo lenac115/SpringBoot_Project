@@ -13,7 +13,13 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookMarks {
-	@Id
+	@Id @Column(name = "bookmark_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long bookmarK_id;
+	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Users users;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Posts posts;
 }

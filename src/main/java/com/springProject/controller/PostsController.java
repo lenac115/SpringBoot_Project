@@ -33,7 +33,8 @@ public class PostsController {
 
     //생성
     @PostMapping
-    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
         return ResponseEntity.ok(createdPostDto);
     }

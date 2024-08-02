@@ -8,13 +8,24 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <body>
 <main>
-    <h1 id="detailTitle" style="text-align: center"></h1>
+    <h1 id="detailTitle" style="text-align: center">
+        <!-- 타이틀 위치 -->
+    </h1>
     <div id="titleLine"></div>
     <div class="area-post-detail">
         <p class="author">작성자 : <span id="userName"></span></p>
         <p class="dates">작성된 날짜 : <span id="created"></span></p>
     </div>
     <p style="text-align: right">수정된 날짜 : <span id="updated"></span></p>
+    <section id="img-section-slide">
+        <div class="slider">
+            <!-- 이미지가 동적으로 추가될 예정 -->
+            <div class="controls">
+                <div class="control prev">Prev</div>
+                <div class="control next">Next</div>
+            </div>
+        </div>
+    </section>
     <ul id="starImg"></ul>
     <p id="postBody"></p>
     <div id="btn-list">
@@ -99,6 +110,49 @@
         })
     })
 
+    $(document).ready(function () {
+        let currentIndex = 0;
+        let images = [];
+
+        function showImage(index) {
+            $('.slider img').removeClass('active');
+            $('.slider img').eq(index).addClass('active');
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(currentIndex);
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage(currentIndex);
+        }
+
+
+        $.ajax({
+            url: '/api/images/get?postId=' + urlParams.get('postId'),  // 스프링 서버의 이미지 목록 엔드포인트
+            method: 'GET',
+            success: function (data) {
+                images = data;
+                let slider = $('.slider');
+                data.forEach(function (image) {
+                    slider.append('<img src="/api/images/display/' + image.storeFilename + '" alt="Image">');
+                    console.log(image.filePath);
+                    console.log(image.storeFilename);
+                });
+                // 첫 번째 이미지를 보여줍니다.
+                showImage(currentIndex);
+            },
+            error: function (error) {
+                console.log('Error fetching images', error);
+            }
+        });
+
+        $('.next').click(nextImage);
+        $('.prev').click(prevImage);
+    });
+
     function notUser() {
         if (isUser === false) {
             btnDelete.remove();
@@ -177,7 +231,7 @@
                     commentElement.find('.delete-btn').hide();
                 }
 
-                if(comment.activated === false) {
+                if (comment.activated === false) {
                     commentElement.find('.edit-btn').hide();
                     commentElement.find('.delete-btn').hide();
                     commentElement.find('.reply-btn').hide();
@@ -219,7 +273,7 @@
             }
         });
 
-        $('#div-comment').on('click', '.reply-btn', function() {
+        $('#div-comment').on('click', '.reply-btn', function () {
             const commentId = $(this).data('comment-id');
             const commentElement = $(this).closest('.comment');
             const repliesDiv = commentElement.find('> .replies');
@@ -237,7 +291,7 @@
             repliesDiv.before(replyContainer);
         });
 
-        $('#div-comment').on('click', '.submit-reply-btn', function() {
+        $('#div-comment').on('click', '.submit-reply-btn', function () {
             const parentCommentId = $(this).data('comment-id');
             const replyTextarea = $(`#reply-textarea-${parentCommentId}`);
             const replyText = replyTextarea.val();
@@ -289,14 +343,14 @@
 
         function replyToComment(parentCommentId, replyText) {
             $.ajax({
-                url: '/api/comments/reply?postId=' + urlParams.get('postId')+ '&commentId=' + parentCommentId,
+                url: '/api/comments/reply?postId=' + urlParams.get('postId') + '&commentId=' + parentCommentId,
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({
-                        body: replyText,
-                        createdAt: null,
-                        updatedAt: null
-                    }),
+                    body: replyText,
+                    createdAt: null,
+                    updatedAt: null
+                }),
                 success: function (response) {
                     alert("댓글 입력에 성공했습니다.");
                     location.href = postUrl;

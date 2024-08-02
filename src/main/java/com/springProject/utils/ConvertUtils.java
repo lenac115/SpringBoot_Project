@@ -1,9 +1,8 @@
 package com.springProject.utils;
 
 import com.springProject.dto.*;
-import com.springProject.entity.Comments;
-import com.springProject.entity.Posts;
-import com.springProject.entity.Users;
+import com.springProject.entity.*;
+
 
 public class ConvertUtils {
 
@@ -90,6 +89,21 @@ public class ConvertUtils {
                 .hashtags(postsDto.getHashtags())
                 .created_at(postsDto.getCreatedAt())
                 .updated_at(postsDto.getUpdatedAt())
+                .build();
+    }
+
+    public static PostImagesDto convertImagesToDto(PostImages postImages) {
+        return PostImagesDto.builder()
+                .originFilename(postImages.getOriginFilename())
+                .storeFilename(postImages.getStoreFilename())
+                .filePath(postImages.getFilePath())
+                .createdAt(postImages.getCreatedAt())
+                .build();
+    }
+
+    public static BookMarksDto convertBookMarksToDto(BookMarks bookMarks) {
+        return BookMarksDto.builder()
+                .postsDto(convertPostsToDto(bookMarks.getPosts()))
                 .build();
     }
 }

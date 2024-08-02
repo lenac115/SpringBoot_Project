@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,7 +46,13 @@ public class Posts {
     private Timestamp updated_at;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
-    private List<Comments> comments;
+    private List<Comments> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImages> postImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookMarks> bookMarks = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Users users;

@@ -5,8 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-/*@Getter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder*/
-public class BookMarksDto {}
+@Builder
+public class BookMarksDto {
+
+    private PostsDto postsDto;
+}

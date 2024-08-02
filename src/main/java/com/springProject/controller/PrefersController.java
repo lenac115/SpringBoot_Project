@@ -1,3 +1,14 @@
 package com.springProject.controller;
 
-public class PrefersController {}
+import com.springProject.repository.PrefersRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class PrefersController {
+
+    private final PrefersRepository prefersRepository;
+
+
+}

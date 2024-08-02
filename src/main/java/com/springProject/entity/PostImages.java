@@ -1,19 +1,30 @@
 package com.springProject.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "post_images")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostImages {
-	@Id
+	@Id @Column(name = "post_images_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long image_id;
+	private Long id;
+
+	private String originFilename;
+
+	private String storeFilename;
+
+	private String filePath;
+
+	private LocalDateTime createdAt;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Posts posts;
 }
