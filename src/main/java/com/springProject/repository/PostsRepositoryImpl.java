@@ -50,6 +50,7 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 		// 실행할 쿼리 정의
 		JPAQuery<Posts> query = queryFactory
 			.selectFrom(posts)
+			.where(posts.star.goe(star)
 			.where(posts.isNotice.isFalse()
 				.and((posts.star.goe(star))
 				.or(containsKeyword(keyword))
