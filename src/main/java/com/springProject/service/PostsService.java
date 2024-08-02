@@ -63,28 +63,42 @@ public class PostsService {
     }
 
     public List<PostsDto> getAllPosts() {
-        return posts.stream()
+        return postsRepository.findAll()
+                .stream()
                 .map(ConvertUtils::convertPostsToDto)
                 .collect(Collectors.toList());
     }
 
     public PostsDto getPostsDtoById(Long id) {
-        return ConvertUtils.convertPostsToWith(postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
+        return ConvertUtils.convertPostsToWith(
+                postsRepository.findById(id).orElseThrow(
+                        () -> new IllegalArgumentException("잘못된 ID 입니다.")));
+    }
+
+    public void deletePost(Long id) {
+        postsRepository.findById(id).map(post -> {
+                    postsRepository.delete(post);
+                    return true;
+                })
+                .orElse(false);
     }
 
     private Posts findPostById(Long id) {
-        return posts.stream()
+        return postsRepository.findById(id)
+                .stream()
                 .filter(post -> post.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
 
-    public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
-        Posts post = findPostById(id);
-        post.setTitle(updatePostsDto.getTitle());
-        post.setBody(updatePostsDto.getBody());
-        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
-        return ConvertUtils.convertPostsToDto(post);
+    public Optional<Posts> updatePosts(Long id, PostsDto updatePostsDto) {
+        return postsRepository.findById(id)
+                .map(existingposts -> {
+                    existingposts.setTitle(updatePostsDto.getTitle());
+                    existingposts.setBody(updatePostsDto.getBody());
+                    existingposts.setUpdated_at(updatePostsDto.getUpdatedAt());
+                    return ConvertUtils.convertDtoToPosts(updatePostsDto);
+                });
     }
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
