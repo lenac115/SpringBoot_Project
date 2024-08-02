@@ -96,13 +96,13 @@ public class PostsService {
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
 
-    public Optional<Posts> updatePosts(Long id, PostsDto updatePostsDto) {
+    public Optional<PostsDto> updatePosts(Long id, PostsDto updatePostsDto) {
         return postsRepository.findById(id)
                 .map(existingposts -> {
                     existingposts.setTitle(updatePostsDto.getTitle());
                     existingposts.setBody(updatePostsDto.getBody());
                     existingposts.setUpdated_at(updatePostsDto.getUpdatedAt());
-                    return ConvertUtils.convertDtoToPosts(updatePostsDto);
+                    return ConvertUtils.convertPostsToDto(existingposts);
                 });
     }
 
