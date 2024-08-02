@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 
 
-@Controller
 @RestController
 @RequestMapping("/api/posts")
 @Slf4j
@@ -66,7 +65,7 @@ public class PostsController {
     public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto postsDto = postsService.getPostsDtoById(id);
 		if (userDetails != null) {
-			postsDto.getUsersDto().setIsEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
+			postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
 		}
 		return ResponseEntity.ok(postsDto);
     }
@@ -101,9 +100,10 @@ public class PostsController {
 
     // ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
     @GetMapping("/search")
-    public ResponseEntity<List<PostsDto>> getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
-                                                                        @RequestParam(value = "sort", defaultValue = "newPost") String sortBy,
-                                                                        @RequestParam(value = "page") int nowPage) {
+    public ModelAndView getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
+         @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
+         @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
+		 Model model) {
         log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
                 searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
@@ -117,7 +117,7 @@ public class PostsController {
 		getPostsBySearchDataAndSortBy(posts);
 		getNoticeFive(notices);
 
-		return "post/search";
+		return new ModelAndView("post/search");
 	}
 
 	// HTTP 전송 용 코드
@@ -133,13 +133,6 @@ public class PostsController {
 		return ResponseEntity.ok(notices);
 	}
 
-	@DeleteMapping("/{postId}")
-	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
-
-		postsService.deletePost(postId, users.getUsername());
-		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
-	}
 
     @PostMapping("/notice/save")
     @PreAuthorize("hasAnyRole('ROLE_admin')")

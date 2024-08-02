@@ -57,15 +57,17 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 				.or(eqLocation(location))
 				.or(containsHashtag(hashtag))
 				.or(betweenDate(start, end))))
-			.orderBy(order)
-			.offset(pageable.getOffset()) // pageable에 설정된 값으로 몇번째 데이터 부터 보여줄 지가 정의됨
-			.limit(pageable.getPageSize()); // offset 부터 몇 개의 데이터를 출력될 지가 정의됨
+			.orderBy(order);
 
-		// 쿼리 실행이 끝난 데이터를 리스트 형태로 받은 후 Page<>에 담아 반환
-		return new PageImpl<>(
-			query.fetch().stream()
-			.map(ConvertUtils::convertPostsToDto)
-				.collect(Collectors.toList()));
+		long totalCount = query.stream().count(); // 쿼리 결과가 총 몇개인지 확인
+
+    	query = query.offset(pageable.getOffset()) // pageable에 설정된 값으로 몇번째 데이터 부터 보여줄 지가 정의됨
+					.limit(pageable.getPageSize()); // offset 부터 몇 개의 데이터를 출력될 지가 정의됨
+
+    // 쿼리 실행이 끝난 데이터를 리스트 형태로 받은 후 Page<>에 담아 반환
+    return new PageImpl<>(
+        query.fetch().stream().map(ConvertUtils::convertPostsToDto).collect(Collectors.toList()),
+        pageable, totalCount);
 	}
 
 	// 정렬 방법 정하기

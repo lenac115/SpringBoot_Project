@@ -64,20 +64,33 @@ public class PostsService {
 
     public PostsDto getPostsDtoById(Long id) {
         return posts.stream()
-                .filter(post -> post.getUser_id().equals(id))
+                .filter(post -> post.getId().equals(id))
                 .findFirst()
                 .map(ConvertUtils::convertPostsToDto)
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
 
-    public void deletePost(Long id) {
-        Posts post = findPostById(id);
-        posts.remove(post);
+    // delete
+    public void deletePost(Long postId, String username) {
+
+        isBanned();
+
+        // 도메인 불러오기
+        Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        Posts post = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        if(findUser.getAuth() == Users.UserAuth.admin) {
+            postsRepository.delete(post);
+        } else if (findUser.getId().equals(post.getUsers().getId())) {
+            postsRepository.delete(post);
+        } else{
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+        postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 
     private Posts findPostById(Long id) {
         return posts.stream()
-                .filter(post -> post.getPost_id().equals(id))
+                .filter(post -> post.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
     }
@@ -92,25 +105,20 @@ public class PostsService {
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)
-    public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
+    public Page<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
 
 		isBanned();
-
-		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
-                searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
-                searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
-    public Page<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
 
         // 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
         Pageable pageable = PageRequest.of(nowPage - 1, 12);
 
 		// 검색 및 정렬 기능 수행 후 설정된 pageable에 맞게 페이지 반환
 		Page<PostsDto> page = postsRepository.searchPosts(searchData, sortBy, pageable);
-        log.info("pageable={}, page={}", page.getNumber(), page.getTotalPages());
-        page.forEach(p -> log.info("title = {}, star = {}", p.getTitle(), p.getStar()));
+        log.info("getSize={}, getTotalPages={}, total ={}", page.getSize(), page.getTotalPages(), page.getTotalElements());
 
         return page;
     }
+
 
     // 공지사항 따로 추출
     @Transactional(readOnly = true)
@@ -119,24 +127,6 @@ public class PostsService {
             .stream()
             .map(ConvertUtils::convertPostsToDto)
             .collect(Collectors.toList());
-    }
-
-    // delete
-    public void deletePost(Long postId, String username) {
-        isBanned();
-        // 도메인 불러오기
-        Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        Posts post = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if(findUser.getAuth() == Users.UserAuth.admin) {
-            postsRepository.delete(post);
-        } else if (findUser.getId().equals(post.getUsers().getId())) {
-            postsRepository.delete(post);
-        } else{
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-
-        postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
 
     // 공지사항 포스팅

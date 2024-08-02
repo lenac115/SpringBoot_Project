@@ -55,7 +55,6 @@ public class ConvertUtils {
         return PostsDto.builder()
                 .id(posts.getId())
                 .title(posts.getTitle())
-                .author(posts.getUsers().getNickname())
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
