@@ -3,30 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
+    <link rel="stylesheet" th:href="@{/css/search.css}" />
 </head>
 <body>
 <header></header>
 <body></body>
 <header></header>
 <main>
-    <h1>마음에 드는 게시물을 찾아보세요!</h1>
-    <section>
-        <img>
-        <p></p>
-        <span id="arrow"></span>
-    </section>
-    <div>
-        <form th:action="@{/api/posts/search}" method="get">
-            <label></label>
-
-        </form>
+    <h1 id="search-title">마음에 드는 게시물을 찾아보세요!</h1>
+    <section id="notice-container">
         <div>
-            <ul>
-                <li></li>
-                <li></li>
-                <li></li>
-                <li></li>
+            <img th:src="@{/img/notice_pin.svg}" alt="pin">
+            <p>공지사항</p>
+        </div>
+        <ul th:each="notice : ${notices}">
+            <li>
+                <a class="notice-title" th:text="${notice.title}"
+                   th:href="@{/api/posts/{id}(id=${notice.id})}"></a>
+            </li>
+        </ul>
+        <button class="notice-button" id="up">
+            <span class="arrow"></span>
+        </button>
+        <button class="notice-button" id="down">
+            <span class="arrow"></span>
+        </button>
+    </section>
+    <div id="post-container">
+        <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
+            <label for="keyword">제목 및 내용</label>
+            <input type="text" id="keyword"
+                   name="keyword" placeholder="내용 입력" />
+            <label for="category">카테고리</label>
+            <select id="category" name="category">
+                <option value="">선택</option>
+                <option value="한식">한식</option>
+                <option value="일식">일식</option>
+                <option value="중식">중식</option>
+                <option value="양식">양식</option>
+                <option value="카페">카페</option>
+                <option value="기타">기타</option>
+            </select>
+            <label for="location">위치</label>
+            <select id="location" name="location">
+                <option value="">선택</option>
+                <option value="서울">서울</option>
+                <option value="경기">경기</option>
+                <option value="인천">인천</option>
+                <option value="인천">부산</option>
+                <option value="인천">대구</option>
+                <option value="인천">광주</option>
+                <option value="인천">대전</option>
+                <option value="인천">울산</option>
+                <option value="인천">세종</option>
+                <option value="강원">강원</option>
+                <option value="충북">충북</option>
+                <option value="충남">충남</option>
+                <option value="경북">경북</option>
+                <option value="경남">경남</option>
+                <option value="전북">전북</option>
+                <option value="전남">전남</option>
+                <option value="제주">제주</option>
+                <option value="기타">기타</option>
+            </select>
+            <ul id="rating">
+                <li>
+                    <label>별점</label>
+                </li>
+                <li>
+                    <input type="radio" value="5" name="star" id="rating5"/>
+                    <img th:src="@{/img/star5.png}" />
+                    <label for="rating5">5점 이상</label>
+                </li>
+                <li>
+                    <input type="radio" value="4" name="star" id="rating4"/>
+                    <img th:src="@{/img/star4.png}" />
+                    <label for="rating4">4점 이상</label>
+                </li>
+                <li>
+                    <input type="radio" value="3" name="star" id="rating3">
+                    <img th:src="@{/img/star3.png}" />
+                    <label for="rating3">3점 이상</label>
+                </li>
+                <li>
+                    <input type="radio" value="2" name="star" id="rating2"/>
+                    <img th:src="@{/img/star2.png}" />
+                    <label for="rating2">2점 이상</label>
+                </li>
+                <li>
+                    <input type="radio" value="1" name="star" id="rating1"/>
+                    <img th:src="@{/img/star1.png}" />
+                    <label for="rating1">1점 이상</label>
+                </li>
             </ul>
+            <label for="hashtags">해시태그</label>
+            <input type="text" id="hashtags" name="hashtags" placeholder="태그를 입력하세요"/>
+            <div id = "date">
+                <label for="date">등록된 날짜</label>
+                <input type="date" name="startDate" placeholder="시작 범위"/>
+                <p>~</p>
+                <input type="date" name="endDate" placeholder="끝 범위"/>
+            </div>
+            <button type="submit">검색</button>
+        </form>
+        <div th:if="${!page.isEmpty()}">
+            <ul id="post-list">
+                <li th:each="post : ${page}">
+                    <img />
+                    <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
+                    <div class="post-sub-images">
+                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
+                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}" />
+                        <img class="prefer" th:src="@{/img/before_prefer.svg}" />
+                        <!--<img th:if="${}"/>
+                        <img th:unless=""/>
+                        <img th:if=""/>
+                        <img th:unless=""/>-->
+                    </div>
+                </li>
+            </ul>
+            <div id="page-container">
+                <a id="left" th:href="@{|?page=${page.number}|}">
+                    <span class="arrow" th:if="${page.hasPrevious}"></span>
+                </a>
+                <ul id="post-page">
+                    <li th:each="num : ${#numbers.sequence(0, page.getTotalPages - 1)}"
+                        th:value = "${page.totalPages}"
+                        th:if="${(num >= (page.number - 5)) and (num <= (page.number + 5))}"
+                        th:classappend="${num == page.number} ? 'active'">
+                        <a th:text="${num + 1}" th:href="@{|?page=${num + 1}|}"></a>
+                    </li>
+                </ul>
+                <a id="right" th:href="@{|?page=${ page.number + 2}|}">
+                    <span class="arrow" th:if="${page.hasNext}"></span>
+                </a>
+            </div>
+
         </div>
     </div>
 </main>

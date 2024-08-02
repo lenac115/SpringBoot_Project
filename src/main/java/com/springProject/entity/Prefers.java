@@ -16,4 +16,14 @@ public class Prefers {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long prefer_id;
+
+	// 외래키
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "users_id")
+	private Users users;
+
+	// 외래키
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "posts_id")
+	private Posts posts;
 }

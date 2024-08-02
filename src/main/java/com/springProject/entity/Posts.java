@@ -2,11 +2,12 @@ package com.springProject.entity;
 
 import java.sql.Timestamp;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
+
 
 @Entity
 @Table(name = "posts")
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Posts {
 
-    @Id @Column(name = "post_id")
+    @Id @Column(name = "posts_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
@@ -27,29 +28,32 @@ public class Posts {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String body;
 
-    @Column(nullable = false)
+    @Column
     private String category;
 
-    @Column(nullable = false)
+    @Column
     private String location;
 
-    @ColumnDefault("0")
+    @Column
     private Integer star;
 
+    @Column
     private String hashtags;
 
-    @Column(nullable = false)
+    @Column
     private Timestamp created_at;
 
-    @Column(nullable = false)
+    @Column
     private Timestamp updated_at;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<Comments> comments;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id")
     private Users users;
 
-    @Column(name = "isNotice")
+    @Column(name = "is_notice")
     private boolean isNotice;
+
 }

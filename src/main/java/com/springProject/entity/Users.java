@@ -2,6 +2,7 @@ package com.springProject.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 public class Users {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "users_id")
 	private Long id;
 
 	@Column(name = "login_id")
@@ -82,6 +84,12 @@ public class Users {
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
+
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BookMarks> bookmarks = new ArrayList<>();
+
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Prefers> prefers = new ArrayList<>();
 
 	@OneToOne
 	@JoinColumn(name = "banned_id")
