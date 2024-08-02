@@ -2,10 +2,8 @@ package com.springProject.utils;
 
 import com.springProject.dto.CommentsDto;
 import com.springProject.dto.PostsDto;
-import com.springProject.dto.UsersDto;
 import com.springProject.entity.Comments;
 import com.springProject.entity.Posts;
-import com.springProject.entity.Users;
 
 public class ConvertUtils {
 
@@ -25,12 +23,15 @@ public class ConvertUtils {
                 .build();
     }
 
+    /*public static Users convertDtoToUsers(UsersDto usersDto) {
     public static Users convertDtoToUsers(UsersDto usersDto) {
         return Users.builder()
                 .nickname(usersDto.getNickname())
+                .auth(usersDto.getRole())
                 .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
+                .activated(usersDto.isActivated())
                 .createdAt(usersDto.getCreatedAt())
                 .updatedAt(usersDto.getUpdatedAt())
                 .isActivated(usersDto.getIsActivated())
@@ -41,15 +42,18 @@ public class ConvertUtils {
     public static UsersDto convertUsersToDto(Users users) {
         return UsersDto.builder()
                 .nickname(users.getNickname())
+                .role(users.getRole())
                 .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
+                .activated(users.isActivated())
                 .isActivated(users.getIsActivated())
                 .createdAt(users.getCreatedAt())
                 .updatedAt(users.getUpdatedAt())
                 .name(users.getName())
                 .build();
-    }
+    }*/
+
 
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
@@ -95,3 +99,5 @@ public class ConvertUtils {
                 .build();
     }
 }
+
+
