@@ -103,7 +103,7 @@ public class PostsController {
          @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
          @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
 		 Model model) {
-        log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
+        log.info("category = {}, location = {}, star = {}, hashtag = {}, startDate = {}, endDate = {}, sortBy = {}, page = {}",
                 searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 

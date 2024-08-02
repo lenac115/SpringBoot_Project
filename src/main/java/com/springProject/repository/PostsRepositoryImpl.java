@@ -24,8 +24,10 @@ import com.springProject.SearchData;
 import com.springProject.entity.Posts;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 public class PostsRepositoryImpl implements PostsRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
@@ -47,16 +49,21 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 
 		OrderSpecifier order = getOrder(sortBy);
 
+		log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}",
+			searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
+			searchData.getStartDate(), searchData.getEndDate(), sortBy);
+
+
 		// 실행할 쿼리 정의
 		JPAQuery<Posts> query = queryFactory
 			.selectFrom(posts)
 			.where(posts.isNotice.isFalse()
 				.and((posts.star.goe(star))
-				.or(containsKeyword(keyword))
+				.and(betweenDate(start, end))
+				.or((containsKeyword(keyword))
 				.or(eqCategory(category))
 				.or(eqLocation(location))
-				.or(containsHashtag(hashtag))
-				.or(betweenDate(start, end))))
+				.or(containsHashtag(hashtag)))))
 			.orderBy(order);
 
 		long totalCount = query.stream().count(); // 쿼리 결과가 총 몇개인지 확인
@@ -150,6 +157,7 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 				return stringToTimestamp;
 			} catch (ParseException e) {
 				e.printStackTrace();
+
 				// 시작점이 지정 안되었으면 첫번째 게시물부터 출력해야함
 				if (point.equals("start"))
 					return Timestamp.valueOf("1900-01-01 00:00:00.000");

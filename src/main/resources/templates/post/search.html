@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
-    <link rel="stylesheet" th:href="@{/css/search.css}" />
+    <link rel="stylesheet" th:href="@{/css/search.css}"/>
 </head>
 <body>
 <header></header>
@@ -32,89 +32,171 @@
     <div id="post-container">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
-            <input th:value="*{!keyword == null} ? *{keyword}" type="text" id="keyword"
-                   name="keyword" placeholder="내용 입력" />
+            <input th:value="${searchData.keyword != null} ? *{keyword} : null" type="text" id="keyword"
+                   name="keyword" placeholder="내용 입력"/>
             <label for="category">카테고리</label>
             <select id="category" name="category">
-                <option value="">선택</option>
-                <option value="한식">한식</option>
-                <option value="일식">일식</option>
-                <option value="중식">중식</option>
-                <option value="양식">양식</option>
-                <option value="카페">카페</option>
-                <option value="기타">기타</option>
+                <option value=null selected>선택</option>
+                <option value="한식"
+                        th:selected="${searchData.category == '한식'}">
+                    한식
+                </option>
+                <option value="일식"
+                        th:selected="${searchData.category == '일식'}">
+                    일식
+                </option>
+                <option value="중식"
+                        th:selected="${searchData.category == '중식'}">
+                    중식
+                </option>
+                <option value="양식"
+                        th:selected="${searchData.category == '양식'}">
+                    양식
+                </option>
+                <option value="카페"
+                        th:selected="${searchData.category == '카페'}">
+                    카페
+                </option>
+                <option value="기타"
+                        th:selected="${searchData.category == '기타'}">
+                    기타
+                </option>
             </select>
             <label for="location">위치</label>
             <select id="location" name="location">
-                <option value="">선택</option>
-                <option value="서울">서울</option>
-                <option value="경기">경기</option>
-                <option value="인천">인천</option>
-                <option value="인천">부산</option>
-                <option value="인천">대구</option>
-                <option value="인천">광주</option>
-                <option value="인천">대전</option>
-                <option value="인천">울산</option>
-                <option value="인천">세종</option>
-                <option value="강원">강원</option>
-                <option value="충북">충북</option>
-                <option value="충남">충남</option>
-                <option value="경북">경북</option>
-                <option value="경남">경남</option>
-                <option value="전북">전북</option>
-                <option value="전남">전남</option>
-                <option value="제주">제주</option>
-                <option value="기타">기타</option>
+                <option value=null>선택</option>
+                <option value="서울"
+                        th:selected="${searchData.location == '서울'}">
+                    서울
+                </option>
+                <option value="경기"
+                        th:selected="${searchData.location == '경기'}">
+                    경기
+                </option>
+                <option value="인천"
+                        th:selected="${searchData.location == '인천'}">
+                    인천
+                </option>
+                <option value="부산"
+                        th:selected="${searchData.location == '부산'}">
+                    부산
+                </option>
+                <option value="대구"
+                        th:selected="${searchData.location == '대구'}">
+                    대구
+                </option>
+                <option value="광주"
+                        th:selected="${searchData.location == '광주'}">
+                    광주
+                </option>
+                <option value="대전"
+                        th:selected="${searchData.location == '대전'}">
+                    대전
+                </option>
+                <option value="울산"
+                        th:selected="${searchData.location == '울산'}">
+                    울산
+                </option>
+                <option value="세종"
+                        th:selected="${searchData.location == '세종'}">
+                    세종
+                </option>
+                <option value="강원"
+                        th:selected="${searchData.location == '강원'}">
+                    강원
+                </option>
+                <option value="충북"
+                        th:selected="${searchData.location == '충북'}">
+                    충북
+                </option>
+                <option value="충남"
+                        th:selected="${searchData.location == '충남'}">
+                    충남
+                </option>
+                <option value="경북"
+                        th:selected="${searchData.location == '경북'}">
+                    경북
+                </option>
+                <option value="경남"
+                        th:selected="${searchData.location == '경남'}">
+                    경남
+                </option>
+                <option value="전북"
+                        th:selected="${searchData.location == '전북'}">
+                    전북
+                </option>
+                <option value="전남"
+                        th:selected="${searchData.location == '전남'}">
+                    전남
+                </option>
+                <option value="제주"
+                        th:selected="${searchData.location == '제주'}">
+                    제주
+                </option>
+                <option value="기타"
+                        th:selected="${searchData.location == '기타'}">
+                    기타
+                </option>
             </select>
             <ul id="rating">
                 <li>
                     <label>별점</label>
                 </li>
                 <li>
-                    <input type="radio" value="5" name="star" id="rating5"/>
-                    <img th:src="@{/img/star5.png}" />
+                    <input type="radio" value="5" name="star" id="rating5"
+                           th:checked="${searchData.star == 5}" />
+                    <img th:src="@{/img/star5.png}"/>
                     <label for="rating5">5점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="4" name="star" id="rating4"/>
-                    <img th:src="@{/img/star4.png}" />
+                    <input type="radio" value="4" name="star" id="rating4"
+                           th:checked="${searchData.star == 4}" />
+                    <img th:src="@{/img/star4.png}"/>
                     <label for="rating4">4점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="3" name="star" id="rating3">
-                    <img th:src="@{/img/star3.png}" />
+                    <input type="radio" value="3" name="star" id="rating3"
+                           th:checked="${searchData.star == 3}" />
+                    <img th:src="@{/img/star3.png}"/>
                     <label for="rating3">3점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="2" name="star" id="rating2"/>
-                    <img th:src="@{/img/star2.png}" />
+                    <input type="radio" value="2" name="star" id="rating2"
+                           th:checked="${searchData.star == 2}" />
+                    <img th:src="@{/img/star2.png}"/>
                     <label for="rating2">2점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="1" name="star" id="rating1"/>
-                    <img th:src="@{/img/star1.png}" />
+                    <input type="radio" value="1" name="star" id="rating1"
+                           th:checked="${searchData.star == 1}" />
+                    <img th:src="@{/img/star1.png}"/>
                     <label for="rating1">1점 이상</label>
                 </li>
             </ul>
             <label for="hashtags">해시태그</label>
-            <input type="text" id="hashtags" name="hashtags" placeholder="태그를 입력하세요"/>
-            <div id = "date">
+            <input type="text" id="hashtags" name="hashtags"
+                   placeholder="태그를 입력하세요"
+                   th:value="${searchData.hashtag != null} ? *{hashtag} : null" />
+            <div id="date">
                 <label for="date">등록된 날짜</label>
-                <input type="date" name="startDate" placeholder="시작 범위"/>
+                <input type="date" name="startDate" placeholder="시작 범위"
+                       th:value="${searchData.startDate != null} ? *{{startDate}} : null" />
                 <p>~</p>
-                <input type="date" name="endDate" placeholder="끝 범위"/>
+                <input type="date" name="endDate" placeholder="끝 범위"
+                       th:value="${searchData.endDate != null} ? *{{endDate}} : null" />
             </div>
+            <input type="text" name="page" value="1" hidden>
             <button type="submit">검색</button>
         </form>
         <div th:if="${!page.isEmpty()}">
             <ul id="post-list">
                 <li th:each="post : ${page}">
-                    <img />
+                    <!--<img th:src="${post.url}"/>-->
                     <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
                     <div class="post-sub-images">
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
-                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}" />
-                        <img class="prefer" th:src="@{/img/before_prefer.svg}" />
+                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
                         <!--<img th:if="${}"/>
                         <img th:unless=""/>
                         <img th:if=""/>
@@ -122,20 +204,26 @@
                     </div>
                 </li>
             </ul>
-            <div id="page-container">
-                <a id="left" th:href="@{|?page=${page.number}|}">
-                    <span class="arrow" th:if="${page.hasPrevious}"></span>
+            <div id="page-container" th:object="${searchData}">
+                <a id="left" class="move-page"
+                   th:if="${page.hasPrevious}"
+                   th:href="@{|?page=${page.number}|}">
+                    <span class="arrow"></span>
                 </a>
                 <ul id="post-page">
                     <li th:each="num : ${#numbers.sequence(0, page.getTotalPages - 1)}"
-                        th:value = "${page.totalPages}"
+                        th:value="${page.totalPages}"
                         th:if="${(num >= (page.number - 5)) and (num <= (page.number + 5))}"
                         th:classappend="${num == page.number} ? 'active'">
-                        <a th:text="${num + 1}" th:href="@{|?page=${num + 1}|}"></a>
+                        <a th:text="${num + 1}" class="move-page"
+                           th:href="@{|?page=${num + 1}|}">
+                        </a>
                     </li>
                 </ul>
-                <a id="right" th:href="@{|?page=${ page.number + 2}|}">
-                    <span class="arrow" th:if="${page.hasNext}"></span>
+                <a id="right" class="move-page"
+                   th:if="${page.hasNext}"
+                   th:href="@{|?page=${page.number + 2}|}">
+                    <span class="arrow"></span>
                 </a>
             </div>
 
@@ -143,5 +231,6 @@
     </div>
 </main>
 <footer></footer>
+    <script th:src="@{/js/search.js}"></script>
 </body>
 </html>
