@@ -30,7 +30,7 @@
         </button>
     </section>
     <div id="post-container">
-        <form th:action="@{/api/posts/search}" method="get">
+        <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
             <input type="text" id="keyword"
                    name="keyword" placeholder="내용 입력" />
@@ -71,34 +71,29 @@
                     <label>별점</label>
                 </li>
                 <li>
-                    <label for="rating5">
-                        <img th:src="@{/img/star5.png}" /> 5점 이상
-                        <input type="radio" value="5" name="star" id="rating5"/>
-                    </label>
+                    <input type="radio" value="5" name="star" id="rating5"/>
+                    <img th:src="@{/img/star5.png}" />
+                    <label for="rating5">5점 이상</label>
                 </li>
                 <li>
-                    <label for="rating4">
-                        <img th:src="@{/img/star4.png}" /> 4점 이상
-                        <input type="radio" value="4" name="star" id="rating4"/>
-                    </label>
+                    <input type="radio" value="4" name="star" id="rating4"/>
+                    <img th:src="@{/img/star4.png}" />
+                    <label for="rating4">4점 이상</label>
                 </li>
                 <li>
-                    <label for="rating3">
-                        <img th:src="@{/img/star3.png}" /> 3점 이상
-                        <input type="radio" value="3" name="star" id="rating3"/>
-                    </label>
+                    <input type="radio" value="3" name="star" id="rating3">
+                    <img th:src="@{/img/star3.png}" />
+                    <label for="rating3">3점 이상</label>
                 </li>
                 <li>
-                    <label for="rating2">
-                        <img th:src="@{/img/star2.png}" /> 2점 이상
-                        <input type="radio" value="2" name="star" id="rating2"/>
-                    </label>
+                    <input type="radio" value="2" name="star" id="rating2"/>
+                    <img th:src="@{/img/star2.png}" />
+                    <label for="rating2">2점 이상</label>
                 </li>
                 <li>
-                    <label for="rating1">
-                        <img th:src="@{/img/star1.png}" /> 1점 이상
-                        <input type="radio" value="1" name="star" id="rating1"/>
-                    </label>
+                    <input type="radio" value="1" name="star" id="rating1"/>
+                    <img th:src="@{/img/star1.png}" />
+                    <label for="rating1">1점 이상</label>
                 </li>
             </ul>
             <label for="hashtags">해시태그</label>
@@ -117,9 +112,9 @@
                     <img />
                     <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
                     <div class="post-sub-images">
-                        <img th:src="@{/img/star{num}.png(num=${post.star})}">
-                        <img th:src="@{/img/before_bookmark.svg}" />
-                        <img th:src="@{/img/before_prefer.svg}" />
+                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
+                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}" />
+                        <img class="prefer" th:src="@{/img/before_prefer.svg}" />
                         <!--<img th:if="${}"/>
                         <img th:unless=""/>
                         <img th:if=""/>
@@ -128,9 +123,9 @@
                 </li>
             </ul>
             <div id="page-container">
-                <span class="arrow" id="left" th:if="${page.hasPrevious}">
-                    <a th:href="@{|?page=${page.number}|}"></a>
-                </span>
+                <a id="left" th:href="@{|?page=${page.number}|}">
+                    <span class="arrow" th:if="${page.hasPrevious}"></span>
+                </a>
                 <ul id="post-page">
                     <li th:each="num : ${#numbers.sequence(0, page.getTotalPages - 1)}"
                         th:value = "${page.totalPages}"
@@ -139,9 +134,9 @@
                         <a th:text="${num + 1}" th:href="@{|?page=${num + 1}|}"></a>
                     </li>
                 </ul>
-                <span class="arrow" id="right" th:if="${page.hasNext}">
-                    <a th:href="@{|?page=${ page.number + 2}|}"></a>
-                </span>
+                <a id="right" th:href="@{|?page=${ page.number + 2}|}">
+                    <span class="arrow" th:if="${page.hasNext}"></span>
+                </a>
             </div>
 
         </div>

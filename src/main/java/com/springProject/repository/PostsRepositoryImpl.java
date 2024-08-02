@@ -150,7 +150,15 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 				return stringToTimestamp;
 			} catch (ParseException e) {
 				e.printStackTrace();
+				// 시작점이 지정 안되었으면 첫번째 게시물부터 출력해야함
+				if (point.equals("start"))
+					return Timestamp.valueOf("1900-01-01 00:00:00.000");
+
+					// 끝 점이 지정 안되었으면 지금까지 게시된 게시물까지 출력해야함
+				else
+					return new Timestamp(System.currentTimeMillis());
 			}
+
 		}
 
 		// 시작점이 지정 안되었으면 첫번째 게시물부터 출력해야함

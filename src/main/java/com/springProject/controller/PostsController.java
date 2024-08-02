@@ -108,6 +108,9 @@ public class PostsController {
                 searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
+		model.addAttribute("searchData", searchData);
+		model.addAttribute("sortBy", sortBy);
+
 		Page<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
 		model.addAttribute("page", posts);
 
