@@ -32,7 +32,7 @@
     <div id="post-container">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
-            <input type="text" id="keyword"
+            <input th:value="*{!keyword == null} ? *{keyword}" type="text" id="keyword"
                    name="keyword" placeholder="내용 입력" />
             <label for="category">카테고리</label>
             <select id="category" name="category">
