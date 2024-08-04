@@ -17,4 +17,13 @@ public interface PostsRepository extends JpaRepository<Posts, Long>, PostsReposi
 
   	@Query("select p from Posts p where p.isNotice = true order by p.created_at DESC limit 5")
   	List<Posts> getNoticeFive();
+
+    @Query("SELECT p FROM Posts p WHERE p.isNotice = true ORDER BY p.created_at DESC")
+    List<Posts> getAllNotice();
+
+    @Query("Select p FROM Posts p WHERE p.isNotice = false ORDER BY p.created_at DESC")
+    List<Posts> getAllPosts();
+
+    @Query("SELECT p FROM Posts p WHERE p.title LIKE %:title% AND p.isNotice = false")
+    List<Posts> searchByTitleLike(String title);
 }

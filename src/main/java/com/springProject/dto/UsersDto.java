@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UsersDto {
+    private Long id;
     private String loginId;
     private String password;
     private String name;
@@ -20,4 +21,5 @@ public class UsersDto {
     private LocalDateTime updatedAt;
     private Users.UserAuth auth;
     private Boolean isActivated;
+    private Long bannedUserId;
 }

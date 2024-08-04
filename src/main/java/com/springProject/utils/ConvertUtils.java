@@ -31,7 +31,6 @@ public class ConvertUtils {
                 .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
-                .isActivated(usersDto.getIsActivated())
                 .createdAt(usersDto.getCreatedAt())
                 .updatedAt(usersDto.getUpdatedAt())
                 .isActivated(usersDto.getIsActivated())
@@ -41,15 +40,16 @@ public class ConvertUtils {
 
     public static UsersDto convertUsersToDto(Users users) {
         return UsersDto.builder()
+                .id(users.getId())
                 .nickname(users.getNickname())
                 .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
                 .isActivated(users.getIsActivated())
-                .isActivated(users.getIsActivated())
                 .createdAt(users.getCreatedAt())
                 .updatedAt(users.getUpdatedAt())
                 .name(users.getName())
+                .bannedUserId(users.getBannedUser() != null ? users.getBannedUser().getId() : null)
                 .build();
     }
 
@@ -70,6 +70,7 @@ public class ConvertUtils {
 
     public static PostsDto convertPostsToWith(Posts posts) {
         return PostsDto.builder()
+                .id(posts.getId())
                 .title(posts.getTitle())
                 .category(posts.getCategory())
                 .body(posts.getBody())
