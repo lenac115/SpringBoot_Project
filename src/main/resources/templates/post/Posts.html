@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 작성</title>
+    <link rel="stylesheet" href="/css/Posts.css">
+</head>
+<body>
+<h1 class="main-title">당신의 게시글을 작성해보세요!</h1>
+<form th:action="@{/posts}" method="post">
+    <div>
+        <label for="title" class="posts-title">제목</label>
+        <input type="text" id="title" name="title" class="posts-title-input">
+    </div>
+    <div class="posts-content">
+        <label for="content"></label>
+        <textarea id="content" name="content" class="posts-content-input"></textarea>
+    </div>
+</form>
+
+<label>사진 등록하기</label>
+<button type="submit" class="image-add">+</button>
+<button type="submit" class="image-delete">삭제</button>
+
+<div>
+    <p class="hashtags-title">해시태그를 하나 이상 입력해주세요</p>
+    <input class="hashtags-box" id="hashTag" type="text"/>
+    <button type="submit" class="hashtags-button">입력</button>
+</div>
+
+<div>
+    <p class="category-title">카테고리를 선택하세요</p>
+    <select class="category-box" id="category">
+        <option value="">CATEGORY</option>
+        <option value="한식">한식</option>
+        <option value="일식">일식</option>
+        <option value="양식">양식</option>
+        <option value="중식">중식</option>
+        <option value="브런치">브런치</option>
+        <option value="디저트">디저트</option>
+        <option value="ETC">ETC</option>
+    </select>
+    <button type="submit">입력</button>
+</div>
+
+<div>
+    <p>음식점 위치를 알려주세요</p>
+    <select class="box" id="domain-list">
+        <option value="">LOCATION</option>
+        <option value="서울">서울</option>
+        <option value="경기">경기</option>
+        <option value="인천">인천</option>
+        <option value="강원">강원</option>
+        <option value="충북">충북</option>
+        <option value="충남">충남</option>
+        <option value="전북">전북</option>
+        <option value="전남">전남</option>
+        <option value="경북">경북</option>
+        <option value="경남">경남</option>
+        <option value="제주">제주</option>
+    </select>
+</div>
+
+<div class="starpoint_wrap">
+    <p>별점으로 만족도를 알려주세요</p>
+    <div class="starpoint_box">
+        <label for="starpoint_2" class="label_star" title="1"></label>
+        <label for="starpoint_4" class="label_star" title="2"></label>
+        <label for="starpoint_6" class="label_star" title="3"></label>
+        <label for="starpoint_8" class="label_star" title="4"></label>
+        <label for="starpoint_10" class="label_star" title="5"></label>
+        <input type="radio" name="starpoint" id="starpoint_2" class="star_radio">
+        <input type="radio" name="starpoint" id="starpoint_4" class="star_radio">
+        <input type="radio" name="starpoint" id="starpoint_6" class="star_radio">
+        <input type="radio" name="starpoint" id="starpoint_8" class="star_radio">
+        <input type="radio" name="starpoint" id="starpoint_10" class="star_radio">
+        <span class="starpoint_bg"></span>
+    </div>
+</div>
+
+<button type="submit" class="posts-button">등록</button>
+</body>
+</html>
