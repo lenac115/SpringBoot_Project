@@ -102,10 +102,14 @@ public class PostsService {
     }
 
     public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
-        Posts post = findPostById(id);
+        Posts post = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        System.out.println(updatePostsDto.getBody());
         post.setTitle(updatePostsDto.getTitle());
         post.setBody(updatePostsDto.getBody());
         post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+        post.setLocation(updatePostsDto.getLocation());
+        post.setCategory(updatePostsDto.getCategory());
+        post.setHashtags(updatePostsDto.getHashtags());
         return ConvertUtils.convertPostsToDto(post);
     }
 

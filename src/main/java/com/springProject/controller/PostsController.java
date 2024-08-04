@@ -68,9 +68,8 @@ public class PostsController {
     }
 
     //수정
-    @PutMapping("/{id}")
-    public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody
-    PostsDto updatePostsDto) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody PostsDto updatePostsDto) {
         PostsDto updatedPostDto = postsService.updatePosts(id, updatePostsDto);
 
         return ResponseEntity.ok(updatedPostDto);

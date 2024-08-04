@@ -41,7 +41,6 @@ public class PostImagesController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-
     public ResponseEntity<String> deleteImages(@RequestParam Long imageId) {
         postImagesService.deleteImage(imageId);
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");

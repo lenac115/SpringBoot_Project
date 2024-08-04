@@ -94,6 +94,7 @@ public class ConvertUtils {
 
     public static PostImagesDto convertImagesToDto(PostImages postImages) {
         return PostImagesDto.builder()
+                .id(postImages.getId())
                 .originFilename(postImages.getOriginFilename())
                 .storeFilename(postImages.getStoreFilename())
                 .filePath(postImages.getFilePath())
