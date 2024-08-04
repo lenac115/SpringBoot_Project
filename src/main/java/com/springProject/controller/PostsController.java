@@ -163,4 +163,28 @@ public class PostsController {
 
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
     }
+
+    //관리자페이지 - 공지사항 게시글만 조회
+    @GetMapping("/admin/notice")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getAllNotice() {
+        List<PostsDto> getNoticeList = postsService.getAllNotice();
+        return ResponseEntity.ok(getNoticeList);
+    }
+
+    //관리자페이지 - 일반 게시글만 조회
+    @GetMapping("/admin/posts")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getAllPostsList() {
+        List<PostsDto> getPostsList = postsService.getPostsList();
+        return ResponseEntity.ok(getPostsList);
+    }
+
+    //관리자페이지 - 일반 게시글 검색
+    @GetMapping("/admin/posts/search/{title}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getSearchPosts(@PathVariable String title) {
+        List<PostsDto> getSearchPosts = postsService.getSearchPosts(title);
+        return ResponseEntity.ok(getSearchPosts);
+    }
 }
