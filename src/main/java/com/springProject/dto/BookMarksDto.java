@@ -12,4 +12,5 @@ import lombok.AllArgsConstructor;
 public class BookMarksDto {
 
     private PostsDto postsDto;
+    private UsersDto usersDto;
 }

@@ -54,6 +54,9 @@ public class Posts {
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookMarks> bookMarks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prefers> prefers = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Users users;
 

@@ -104,6 +104,14 @@ public class ConvertUtils {
     public static BookMarksDto convertBookMarksToDto(BookMarks bookMarks) {
         return BookMarksDto.builder()
                 .postsDto(convertPostsToDto(bookMarks.getPosts()))
+                .usersDto(convertUsersToDto(bookMarks.getUsers()))
+                .build();
+    }
+
+    public static PrefersDto convertPrefersToDto(Prefers prefers) {
+        return PrefersDto.builder()
+                .postsDto(convertPostsToDto(prefers.getPosts()))
+                .usersDto(convertUsersToDto(prefers.getUsers()))
                 .build();
     }
 }

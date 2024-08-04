@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bookmarks")
+@RequestMapping("/api/bookmarks")
 @RequiredArgsConstructor
 public class BookMarksController {
 
@@ -36,8 +36,8 @@ public class BookMarksController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ResponseEntity<String> deleteBookMarks(@RequestParam Long bookMarkId, @AuthenticationPrincipal UserDetails user) {
-        bookMarksService.delete(bookMarkId, user.getUsername());
+    public ResponseEntity<String> deleteBookMarks(@RequestParam Long postId, @AuthenticationPrincipal UserDetails user) {
+        bookMarksService.delete(postId, user.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
     }

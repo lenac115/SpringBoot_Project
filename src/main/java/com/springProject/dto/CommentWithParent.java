@@ -21,4 +21,6 @@ public class CommentWithParent {
     private int depth;
     private LocalDateTime updatedAt;
     private List<CommentWithParent> children;
+
+    private String presentId;
 }

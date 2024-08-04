@@ -24,5 +24,8 @@ public class PostsDto {
     private boolean isNotice;
 
     private UsersDto usersDto;
-    private boolean isEqual;
+    private String presentId;
+
+    private boolean isBookmark = false;
+    private boolean isPrefers = false;
 }

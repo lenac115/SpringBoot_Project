@@ -2,6 +2,7 @@ package com.springProject.service;
 
 import com.springProject.dto.BookMarksDto;
 import com.springProject.entity.BookMarks;
+import com.springProject.entity.Users;
 import com.springProject.repository.BookMarksRepository;
 import com.springProject.repository.PostsRepository;
 import com.springProject.repository.UsersRepository;
@@ -40,9 +41,9 @@ public class BookMarksService {
         return ConvertUtils.convertBookMarksToDto(bookMarksRepository.save(newBookMarks));
     }
 
-    public void delete(Long bookMarkId, String username) {
-
-        BookMarks findMarks = bookMarksRepository.findById(bookMarkId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+    public void delete(Long postId, String username) {
+        Users findUser = usersRepository.findByLoginId(username);
+        BookMarks findMarks = bookMarksRepository.findByPostId(postId, findUser.getId()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         if(!Objects.equals(findMarks.getUsers().getLoginId(), username))
             throw new AccessDeniedException("잘못된 접근입니다.");
 

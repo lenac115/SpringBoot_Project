@@ -44,14 +44,17 @@ public class Users {
 	@ColumnDefault("1")
 	private Boolean isActivated;
 
-	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	private List<Comments> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
 
-	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "users")
 	private List<BookMarks> bookmarks = new ArrayList<>();
+
+	@OneToMany(mappedBy = "users")
+	private List<Prefers> prefers = new ArrayList<>();
 
 	@OneToOne
 	@JoinColumn(name = "banned_id")

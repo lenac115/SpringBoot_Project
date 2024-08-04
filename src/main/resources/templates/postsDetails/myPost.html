@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title id="postTitle"> 상세 보기</title>
@@ -13,33 +13,58 @@
     </h1>
     <div id="titleLine"></div>
     <div class="area-post-detail">
-        <p class="author">작성자 : <span id="userName"></span></p>
+        <p class="author">작성자 : <span id="userName">
+            <!-- 작성자 정보가 렌더링 되는 부분입니다 -->
+        </span></p>
         <p class="dates">작성된 날짜 : <span id="created"></span></p>
     </div>
     <p style="text-align: right">수정된 날짜 : <span id="updated"></span></p>
     <section id="img-section-slide">
         <div class="slider">
-            <!-- 이미지가 동적으로 추가될 예정 -->
+            <!-- 이미지 슬라이더가 동적으로 렌더링되는 부분입니다. -->
             <div class="controls">
                 <div class="control prev">Prev</div>
                 <div class="control next">Next</div>
             </div>
         </div>
     </section>
-    <ul id="starImg"></ul>
-    <p id="postBody"></p>
+    <ul id="starImg">
+        <!-- 별점 이미지가 렌더링 되는 부분입니다. -->
+    </ul>
+    <p id="postBody">
+        <!-- 게시글 본문입니다 -->
+    </p>
     <div id="btn-list">
         <ul class="btn-list-ul">
             <li>
-                <button id="category" class="btn-text"></button>
+                <button id="category" class="btn-text">
+                    <!-- 카테고리 정보가 렌더링 되는 부분입니다 -->
+                </button>
             </li>
             <li>
-                <button id="location" class="btn-text"></button>
+                <button id="location" class="btn-text">
+                    <!-- 위치정보가 렌더링 되는 부분입니다 -->
+                </button>
             </li>
         </ul>
         <ul class="btn-list-ul" id="hashtag">
+            <!-- 해쉬태그가 렌더링 되는 부분입니다 -->
         </ul>
+        <div class="bookmark-area">
+            <img src="/img/bookmark_off.png"
+                 style="width: 41px; height: 41px; cursor:pointer;" alt="북마크 off 상태입니다." id="btn-bookmark-off"/>
+            <img src="/img/bookmark_on.png"
+                 style="width: 41px; height: 41px; cursor:pointer;" alt="북마크 on 상태입니다." id="btn-bookmark-on"/>
+        </div>
+        <div class="prefer-area">
+            <img src="/img/prefer_off.png"
+                 style="width: 35px; height: 35px; cursor:pointer;" alt="좋아요 off 상태입니다." id="btn-prefer-off"/>
+            <img src="/img/prefer_on.png"
+                 style="width: 35px; height: 35px; cursor:pointer;" alt="좋아요 on 상태입니다." id="btn-prefer-on"/>
+            <p>좋아요 수 : <span id="prefer-count"></span></p>
+        </div>
     </div>
+    <!-- 수정과 삭제는 게시글 작성자가 아니라면 렌더링 되지 않습니다 -->
     <div class="btn-update-delete-area">
         <button class="btn-square" id="btn-update">
             수정
@@ -47,10 +72,9 @@
         <button class="btn-square" id="btn-delete">
             삭제
         </button>
-        <button class="btn-square">
+        <button class="btn-square" id="btn-to-list">
             목록으로
         </button>
-
     </div>
 </main>
 <div id="commentLine"></div>
@@ -71,20 +95,15 @@
     const btnUpdate = document.querySelector('#btn-update');
     const btnDelete = document.querySelector('#btn-delete');
     let postUrl = window.location.href;
-    const urlParams = new URL(location.href).searchParams;
-    let isUser;
     let username;
-
-    console.log(postUrl);
-    getInit();
-    notUser();
+    const urlParams = new URL(location.href).searchParams;
 
     $('#btn-comment-submit').on('click', function (event) {
         event.preventDefault();
 
         if (username === null) {
             alert("로그인이 필요합니다.");
-            location.href = postUrl;
+            location.href = "http://localhost:8080/api/users/login";
             return false;
         }
 
@@ -131,7 +150,7 @@
 
 
         $.ajax({
-            url: '/api/images/get?postId=' + urlParams.get('postId'),  // 스프링 서버의 이미지 목록 엔드포인트
+            url: '/api/images/get?postId=' + urlParams.get('postId'),
             method: 'GET',
             success: function (data) {
                 images = data;
@@ -141,7 +160,6 @@
                     console.log(image.filePath);
                     console.log(image.storeFilename);
                 });
-                // 첫 번째 이미지를 보여줍니다.
                 showImage(currentIndex);
             },
             error: function (error) {
@@ -153,14 +171,7 @@
         $('.prev').click(prevImage);
     });
 
-    function notUser() {
-        if (isUser === false) {
-            btnDelete.remove();
-            btnUpdate.remove();
-        }
-    }
-
-    function getInit() {
+    $(document).ready(function () {
         $.ajax({
             type: "GET",
             url: "/api/posts/" + urlParams.get('postId'),
@@ -173,8 +184,8 @@
                 $('#userName').text(data.usersDto.nickname);
                 $('#category').text(data.category);
                 $('#location').text(data.location);
-                isUser = data.usersDto.isEqual;
-                username = data.usersDto.loginId;
+                users = data.usersDto;
+                username = data.presentId;
                 for (let i = 0; i < data.star; i++) {
                     image.insertAdjacentHTML('beforeend', '<img src="/img/star.png" height="41" width="41" alt="별점 이미지입니다."/>');
                 }
@@ -185,28 +196,44 @@
                         '<li><button class="btn-hashtags"><span class="btn-text">' + splitHashtags[i] + '</span></button></li>');
                 }
 
+                if (data.bookmark === false) {
+                    $('#btn-bookmark-on').css("display", "none");
+                    $('#btn-bookmark-off').css("display", "block");
+                } else {
+                    $('#btn-bookmark-off').css("display", "none");
+                    $('#btn-bookmark-on').css("display", "block");
+                }
+
+                if (data.prefers === false) {
+                    $('#btn-prefer-on').css("display", "none");
+                    $('#btn-prefer-off').css("display", "block");
+                } else {
+                    $('#btn-prefer-off').css("display", "none");
+                    $('#btn-prefer-on').css("display", "block");
+                }
+
+                if (data.presentId === null) {
+                    btnDelete.remove();
+                    btnUpdate.remove();
+                }
+
                 hashtags = data.hashtags;
-            },
-            error: function (error) {
-                alert('조회에 실패했습니다.');
-            }
-        });
 
-        $.ajax({
-            type: "GET",
-            url: "/api/comments/get/" + urlParams.get('postId'),
-            success: function (data) {
-                renderComment(data, $('#div-comment'));
-            },
-            error: function (error) {
-                alert("조회에 실패했습니다.");
-            }
-        })
+                $.ajax({
+                    type: "GET",
+                    url: "/api/comments/get/" + urlParams.get('postId'),
+                    success: function (data) {
+                        renderComment(data, $('#div-comment'));
+                    },
+                    error: function (error) {
+                        alert("조회에 실패했습니다.");
+                    }
+                });
 
-        function renderComment(comments, container) {
-            comments.forEach(function (comment) {
-                const marginLeft = (comment.depth + 1) * 27;
-                const commentHTML = `
+                function renderComment(comments, container) {
+                    comments.forEach(function (comment) {
+                        const marginLeft = (comment.depth + 1) * 27;
+                        const commentHTML = `
                     <div class="comment-sec-line"></div>
                     <div class="comment" data-id="${comment.id}" data-user-id="${comment.loginId}">
                         <div class="comment-sec">
@@ -216,33 +243,116 @@
                                 <p class="comment-date">최종 수정 날짜: ${comment.updatedAt}</p>
                             </div>
                             <div class="comment-btn">
-                                <button class="edit-btn btn-square-small" data-comment-id="${comment.id}">수정</button>
-                                <button class="delete-btn btn-square-small" data-comment-id="${comment.id}">삭제</button>
-                                <button class="reply-btn btn-square-small" data-comment-id="${comment.id}" data-comment-depth="${comment.depth}">답글</button>
+                                <button class="edit-btn btn-square-small" data-comment-id="${comment.id}" id="comment-edit-${comment.id}">수정</button>
+                                <button class="delete-btn btn-square-small" data-comment-id="${comment.id}"id="comment-delete-${comment.id}">삭제</button>
+                                <button class="reply-btn btn-square-small"
+                                    data-comment-id="${comment.id}" data-comment-depth="${comment.depth}" id="comment-reply-${comment.id}">답글</button>
                             </div>
                         </div>
                         <div class="replies" style="margin-left: ${marginLeft}px;"></div>
                     </div>`;
-                const commentElement = $(commentHTML);
-                container.append(commentElement);
-                renderComment(comment.children, commentElement.find('.replies'));
-                if (comment.loginId !== username) {
-                    commentElement.find('.edit-btn').hide();
-                    commentElement.find('.delete-btn').hide();
-                }
+                        const commentElement = $(commentHTML);
+                        container.append(commentElement);
+                        renderComment(comment.children, commentElement.find('.replies'));
 
-                if (comment.activated === false) {
-                    commentElement.find('.edit-btn').hide();
-                    commentElement.find('.delete-btn').hide();
-                    commentElement.find('.reply-btn').hide();
-                }
+                        if (comment.presentId !== comment.loginId) {
+                            commentElement.find('#comment-edit-' + comment.id).remove();
+                            commentElement.find('#comment-delete-' + comment.id).remove();
+                        }
 
-                if (comment.loginId === null) {
-                    commentElement.find('.reply-btn').hide();
+                        if (comment.activated === false) {
+                            commentElement.find('#comment-edit-' + comment.id).remove();
+                            commentElement.find('#comment-delete-' + comment.id).remove();
+                            commentElement.find('#comment-reply-' + comment.id).remove();
+                        }
+
+                        if (comment.presentId === null) {
+                            commentElement.find('#comment-reply-' + comment.id).remove();
+                        }
+                        console.log(comment.loginId);
+                    })
                 }
-                console.log(comment);
-            })
-        }
+            },
+            error: function (error) {
+                alert('조회에 실패했습니다.');
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "/api/prefers/counts?postId=" + urlParams.get('postId'),
+            success: function (response) {
+                $('#prefer-count').text(response);
+                console.log(response);
+            },
+            error: function (error) {
+                alert('조회에 실패했습니다.');
+            }
+        });
+
+        $('#btn-bookmark-on').click(function () {
+            $.ajax({
+                type: "DELETE",
+                url: "/api/bookmarks/delete?postId=" + urlParams.get('postId'),
+                success: function (response) {
+                    alert("북마크에서 삭제했습니다.");
+                    location.href = postUrl;
+                    $('#btn-bookmark-on').css("display", "none");
+                    $('#btn-bookmark-off').css("display", "block");
+                },
+                error: function (error) {
+                    alert('삭제에 실패했습니다.');
+                }
+            });
+        });
+
+        $('#btn-bookmark-off').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/api/bookmarks/save?postId=" + urlParams.get('postId'),
+                success: function (response) {
+                    alert("북마크에 등록했습니다.");
+                    location.href = postUrl;
+                    $('#btn-bookmark-off').css("display", "none");
+                    $('#btn-bookmark-on').css("display", "block");
+                },
+                error: function (error) {
+                    alert('등록에 실패했습니다.');
+                }
+            });
+        });
+
+        $('#btn-prefer-on').click(function () {
+            $.ajax({
+                type: "DELETE",
+                url: "/api/prefers/delete?postId=" + urlParams.get('postId'),
+                success: function (response) {
+                    alert("좋아요에서 삭제했습니다.");
+                    location.href = postUrl;
+                    $('#btn-prefer-on').css("display", "none");
+                    $('#btn-prefer-off').css("display", "block");
+                },
+                error: function (error) {
+                    alert('삭제에 실패했습니다.');
+                }
+            });
+        });
+
+        $('#btn-prefer-off').click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/api/prefers/save?postId=" + urlParams.get('postId'),
+                success: function (response) {
+                    alert("좋아요에 등록했습니다.");
+                    location.href = postUrl;
+                    $('#btn-prefer-off').css("display", "none");
+                    $('#btn-prefer-on').css("display", "block");
+                },
+                error: function (error) {
+                    alert('등록에 실패했습니다.');
+                }
+            });
+        });
 
         $('#div-comment').on('click', '.delete-btn', function () {
             const commentId = $(this).closest('.comment').data('id');
@@ -362,7 +472,20 @@
                 }
             });
         }
-    }
+
+        $('#btn-update').click(function () {
+            $.ajax({
+                method: "GET",
+                url: "/api/posts/updateForm?postId=" + urlParams.get('postId'),
+                success: function (response) {
+                  location.href = "http://localhost:8080/api/posts/updateForm?postId=" + urlParams.get('postId');
+                },
+                error: function(error) {
+                    alert('수정 페이지 조회에 실패했습니다.');
+                }
+            })
+        })
+    });
 
 
 </script>
