@@ -17,6 +17,7 @@ import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,9 +44,6 @@ public class PostsService {
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
     private final BannedUserRepository bannedUserRepository;
-
-
-    List<Posts> posts = new ArrayList<>();
 
     public PostsDto createPost(PostsDto postsDto, String username) {
         Posts post = ConvertUtils.convertDtoToPosts(postsDto);
@@ -102,23 +100,19 @@ public class PostsService {
         } else{
             throw new AccessDeniedException("권한이 없습니다.");
         }
-        postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
-
     }
 
 
     public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
-        return postsRepository.findById(id)
-                .map(existingPosts -> {
-                    existingPosts.setTitle(updatePostsDto.getTitle());
-                    existingPosts.setBody(updatePostsDto.getBody());
-                    existingPosts.setLocation(updatePostsDto.getLocation());
-                    existingPosts.setCategory(updatePostsDto.getCategory());
-                    exustubgPosts.setHashtags(updatePostsDto.getHashtags());
-                    existingPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
-                    return ConvertUtils.convertPostsToDto(existingPosts);
-                });
-
+        Posts post = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        post.setTitle(updatePostsDto.getTitle());
+        post.setBody(updatePostsDto.getBody());
+        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+        post.setLocation(updatePostsDto.getLocation());
+        post.setCategory(updatePostsDto.getCategory());
+        post.setStar(updatePostsDto.getStar());
+        post.setHashtags(updatePostsDto.getHashtags());
+        return ConvertUtils.convertPostsToDto(post);
     }
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
