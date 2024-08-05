@@ -15,10 +15,7 @@ import java.time.LocalDateTime;
 public class PostImages {
 	@Id @Column(name = "post_images_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long image_id;
-
-	@Column(nullable = false)
-	private Long post_id;
+	private Long id;
 
 	private String originFilename;
 

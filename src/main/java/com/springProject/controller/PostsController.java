@@ -64,10 +64,8 @@ public class PostsController {
     @GetMapping("/{id}")
     public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
-        PostsDto postsDto = postsService.getPostsDtoById(id);
-        if (userDetails != null) {
-          postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
-        }
+        PostsDto postsDto = postsService.getPostsDtoById(id, userDetails);
+
         return ResponseEntity.ok(postsDto);
     }
 
@@ -94,24 +92,12 @@ public class PostsController {
     }
 
     //수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Optional<PostsDto>> updatePosts(@PathVariable("id") Long id, @RequestBody
-    PostsDto updatePostsDto) {
-        Optional<PostsDto> updatedPostDto = postsService.updatePosts(id, updatePostsDto);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody PostsDto postsDto) {
+        PostsDto updatedDto = postsService.updatePosts(id, postsDto);
 
-        return ResponseEntity.ok(updatedPostDto);
+        return ResponseEntity.ok(updatedDto);
     }
-
-	@GetMapping("/get")
-	public ModelAndView getPostDetails(@RequestParam Long postId, Model model) {
-		model.addAttribute("id", postId);
-		return new ModelAndView("postsDetails/myPost");
-	}
-
-	@GetMapping("/updateForm/*") // 배포 후에 user 검증 넣을 예정
-	public ModelAndView getPostUpdateForm() {
-		return new ModelAndView("postsDetails/postUpdateForm");
-	}
 
     // ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
     @GetMapping("/search")

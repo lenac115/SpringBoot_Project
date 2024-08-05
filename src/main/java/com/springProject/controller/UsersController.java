@@ -3,6 +3,7 @@ package com.springProject.controller;
 import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
+import com.springProject.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
