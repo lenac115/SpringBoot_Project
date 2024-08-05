@@ -99,6 +99,30 @@ public class ConvertUtils {
                 .updated_at(postsDto.getUpdatedAt())
                 .build();
     }
+
+    public static PostImagesDto convertImagesToDto(PostImages postImages) {
+        return PostImagesDto.builder()
+                .id(postImages.getId())
+                .originFilename(postImages.getOriginFilename())
+                .storeFilename(postImages.getStoreFilename())
+                .filePath(postImages.getFilePath())
+                .createdAt(postImages.getCreatedAt())
+                .build();
+    }
+
+    public static BookMarksDto convertBookMarksToDto(BookMarks bookMarks) {
+        return BookMarksDto.builder()
+                .postsDto(convertPostsToDto(bookMarks.getPosts()))
+                .usersDto(convertUsersToDto(bookMarks.getUsers()))
+                .build();
+    }
+
+    public static PrefersDto convertPrefersToDto(Prefers prefers) {
+        return PrefersDto.builder()
+                .postsDto(convertPostsToDto(prefers.getPosts()))
+                .usersDto(convertUsersToDto(prefers.getUsers()))
+                .build();
+    }
 }
 
 

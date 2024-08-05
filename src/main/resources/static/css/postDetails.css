@@ -228,3 +228,57 @@ body {
     margin-bottom:30px;
     min-height: 180px;
 }
+
+#img-section-slide .slider {
+    width: 80%;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+#img-section-slide .slider img {
+    width: 100%;
+    display: none;
+}
+
+#img-section-slide .slider img.active {
+    display: block;
+}
+
+#img-section-slide .controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+#img-section-slide .control {
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    cursor: pointer;
+}
+
+#img-section-slide .control:hover {
+    background-color: rgba(255, 255, 255, 1);
+    padding: 10px;
+    cursor: pointer;
+}
+
+.control .prev {
+    margin-right: 30px;
+}
+
+.control .next {
+    margin-left: 30px;
+}
+
+.bookmark-area {
+    margin-top:20px;
+}
+
+.prefer-area {
+    margin-top:20px;
+    margin-left:50px;
+}

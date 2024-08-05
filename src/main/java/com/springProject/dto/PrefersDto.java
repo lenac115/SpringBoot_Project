@@ -13,8 +13,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PrefersDto {
+  
+    private Long id;
+    private PostsDto postsDto;
+    private UsersDto usersDto;
 
-	private long id;
-	private Users user;
-	private Posts post;
 }

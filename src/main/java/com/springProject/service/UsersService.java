@@ -171,6 +171,7 @@ public class UsersService {
         user.setNickname(userDto.getNickname());
         user.setEmail(userDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         user.setIsActivated(userDto.getIsActivated());
         return user;
     }

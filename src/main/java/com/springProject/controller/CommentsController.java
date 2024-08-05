@@ -24,8 +24,13 @@ public class CommentsController {
 
     // post에 귀속된 comment 출력
     @GetMapping("/get/{postId}")
-    public ResponseEntity<List<CommentWithParent>> getComments(@PathVariable Long postId) {
-        List<CommentWithParent> commentsDtoList = commentsService.findCommentsByPostId(postId);
+    public ResponseEntity<List<CommentWithParent>> getComments(@PathVariable Long postId, @AuthenticationPrincipal UserDetails userDetails) {
+        List<CommentWithParent> commentsDtoList = commentsService.findCommentsByPostId(postId, userDetails);
+       /* if(userDetails == null){
+            commentsDtoList = commentsService.findCommentsByPostId(postId);
+        } else {
+           commentsDtoList = commentsService.findCommentsByPostId(postId, userDetails.getUsername());
+        }*/
 
         return ResponseEntity.status(HttpStatus.OK).body(commentsDtoList);
     }
