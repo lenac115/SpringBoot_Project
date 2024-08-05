@@ -193,6 +193,7 @@ public class CommentsService {
             return;
         }
 
+        System.out.println(authentication.getName());
         Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
         if (findUser.getBannedUser() == null)

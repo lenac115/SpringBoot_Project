@@ -93,6 +93,7 @@
     const image = document.querySelector('#starImg');
     const hashtag = document.querySelector('#hashtag');
     const btnUpdate = document.querySelector('#btn-update');
+    const btnDelete = document.querySelector('#btn-delete');
     let postUrl = window.location.href;
     let username;
     const urlParams = new URL(location.href).searchParams;
@@ -212,6 +213,11 @@
                 }
 
                 if (data.presentId === null) {
+                    btnDelete.remove();
+                    btnUpdate.remove();
+                }
+
+                if(data.presentId !== users.loginId) {
                     btnDelete.remove();
                     btnUpdate.remove();
                 }
