@@ -54,7 +54,7 @@ public class PostsController {
     }
 
     //조회
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<PostsDto>> getAllPosts() {
         List<PostsDto> postsDto = postsService.getAllPosts();
         return ResponseEntity.ok(postsDto);
@@ -119,8 +119,8 @@ public class PostsController {
          @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
          @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
 		 Model model) {
-        log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
-                searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
+        log.info("keyword = {}, category = {}, location = {}, star = {}, hashtag = {}, startDate = {}, endDate = {}, sortBy = {}, page = {}",
+			searchData.getKeyword(), searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
 		model.addAttribute("searchData", searchData);
