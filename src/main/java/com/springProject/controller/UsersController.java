@@ -60,6 +60,14 @@ public class UsersController {
         return ResponseEntity.ok(exists);
     }
 
+    //회원가입 - 이메일 중복 체크(fetch 비동기 처리)
+    @GetMapping("/checkDuplicateEmail")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkDuplicateEmail(@RequestParam String email) {
+        boolean exists = usersService.isEmailDuplicate(email);
+        return ResponseEntity.ok(exists);
+    }
+
     //아이디 - 아이디 찾기 페이지로 이동
     @GetMapping("/findAccountForm")
     public String findAccountForm() {return "account/findAccount";}
