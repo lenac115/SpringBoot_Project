@@ -2,6 +2,7 @@ package com.springProject.service;
 
 import com.springProject.entity.Users;
 import com.springProject.repository.UsersRepository;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

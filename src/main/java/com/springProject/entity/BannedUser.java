@@ -22,6 +22,8 @@ public class BannedUser {
 
     private String bannedReason;
 
+    private String bannedLoginId;
+
     @OneToOne(mappedBy = "bannedUser")
     private Users users;
 }

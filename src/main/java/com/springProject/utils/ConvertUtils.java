@@ -1,8 +1,11 @@
 package com.springProject.utils;
 
-import com.springProject.dto.*;
-import com.springProject.entity.*;
-
+import com.springProject.dto.CommentsDto;
+import com.springProject.dto.PostsDto;
+import com.springProject.dto.UsersDto;
+import com.springProject.entity.Comments;
+import com.springProject.entity.Posts;
+import com.springProject.entity.Users;
 
 public class ConvertUtils {
 
@@ -37,6 +40,7 @@ public class ConvertUtils {
 
     public static UsersDto convertUsersToDto(Users users) {
         return UsersDto.builder()
+                .id(users.getId())
                 .nickname(users.getNickname())
                 .auth(users.getAuth())
                 .loginId(users.getLoginId())
@@ -45,13 +49,15 @@ public class ConvertUtils {
                 .createdAt(users.getCreatedAt())
                 .updatedAt(users.getUpdatedAt())
                 .name(users.getName())
+                .bannedUserId(users.getBannedUser() != null ? users.getBannedUser().getId() : null)
                 .build();
     }
 
+
     public static PostsDto convertPostsToDto(Posts posts) {
         return PostsDto.builder()
+                .id(posts.getId())
                 .title(posts.getTitle())
-                .author(posts.getUsers().getNickname())
                 .category(posts.getCategory())
                 .body(posts.getBody())
                 .star(posts.getStar())
@@ -64,6 +70,7 @@ public class ConvertUtils {
 
     public static PostsDto convertPostsToWith(Posts posts) {
         return PostsDto.builder()
+                .id(posts.getId())
                 .title(posts.getTitle())
                 .category(posts.getCategory())
                 .body(posts.getBody())
@@ -81,6 +88,7 @@ public class ConvertUtils {
 
     public static Posts convertDtoToPosts(PostsDto postsDto) {
         return Posts.builder()
+                .id(postsDto.getId())
                 .title(postsDto.getTitle())
                 .category(postsDto.getCategory())
                 .body(postsDto.getBody())
@@ -116,3 +124,5 @@ public class ConvertUtils {
                 .build();
     }
 }
+
+

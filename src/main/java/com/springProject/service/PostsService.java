@@ -17,6 +17,7 @@ import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -58,15 +59,9 @@ public class PostsService {
         return ConvertUtils.convertPostsToDto(post);
     }
 
-    private static Posts convertToPostEntity(PostsDto postsDto) {
-        Posts post = new Posts();
-        post.setTitle(postsDto.getTitle());
-        post.setBody(postsDto.getBody());
-        return post;
-    }
-
     public List<PostsDto> getAllPosts() {
-        return posts.stream()
+        return postsRepository.findAll()
+                .stream()
                 .map(ConvertUtils::convertPostsToDto)
                 .collect(Collectors.toList());
     }
@@ -93,57 +88,14 @@ public class PostsService {
         return postsDto;
     }
 
-
-    private Posts findPostById(Long id) {
-        return posts.stream()
-                .filter(post -> post.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
-    }
-
-    public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
-        Posts post = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        System.out.println(updatePostsDto.getBody());
-        post.setTitle(updatePostsDto.getTitle());
-        post.setBody(updatePostsDto.getBody());
-        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
-        post.setLocation(updatePostsDto.getLocation());
-        post.setCategory(updatePostsDto.getCategory());
-        post.setHashtags(updatePostsDto.getHashtags());
-        return ConvertUtils.convertPostsToDto(post);
-    }
-
-    // 검색 조건에 맞게 데이터 검색하는 메서드
-    @Transactional(readOnly = true)
-    public List<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
-        isBanned();
-        log.info("category = {}, location = {}, star = {}, hashtags = {}, startdate = {}, enddate = {}, sortBy = {}, page = {}",
-                searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
-                searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
-
-        // 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
-        Pageable pageable = PageRequest.of(nowPage - 1, 12);
-
-        // 검색 및 정렬 기능 수행 후 설정된 pageable에 맞게 페이지 반환
-        Page<Posts> page = postsRepository.searchPosts(searchData, sortBy, pageable);
-        page.isEmpty(); // 페이지가 비어있는지 확인
-        page.getTotalPages(); // 전체 페이지 개수 확인
-        page.hasPrevious(); // 이전 블록 존재 여부 확인
-        page.hasNext(); // 다음 블록 존재 여부 확인
-
-        page.forEach(p -> log.info("title = {}, star = {}", p.getTitle(), p.getStar()));
-        return page.stream()
-                .map(ConvertUtils::convertPostsToDto)
-                .collect(Collectors.toList());
-    }
-
     // delete
     public void deletePost(Long postId, String username) {
+
         isBanned();
+
         // 도메인 불러오기
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts post = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
         if(findUser.getAuth() == Users.UserAuth.admin) {
             postsRepository.delete(post);
         } else if (findUser.getId().equals(post.getUsers().getId())) {
@@ -151,13 +103,56 @@ public class PostsService {
         } else{
             throw new AccessDeniedException("권한이 없습니다.");
         }
-
         postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
+
+    }
+
+
+    public Optional<PostsDto> updatePosts(Long id, PostsDto updatePostsDto) {
+        return postsRepository.findById(id)
+                .map(existingPosts -> {
+                    existingPosts.setTitle(updatePostsDto.getTitle());
+                    existingPosts.setBody(updatePostsDto.getBody());
+                    existingPosts.setLocation(updatePostsDto.getLocation());
+                    existingPosts.setCategory(updatePostsDto.getCategory());
+                    exustubgPosts.setHashtags(updatePostsDto.getHashtags());
+                    existingPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+                    return ConvertUtils.convertPostsToDto(existingPosts);
+                });
+
+    }
+
+    // 검색 조건에 맞게 데이터 검색하는 메서드
+    @Transactional(readOnly = true)
+    public Page<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
+
+		isBanned();
+
+        // 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
+        Pageable pageable = PageRequest.of(nowPage - 1, 12);
+
+		// 검색 및 정렬 기능 수행 후 설정된 pageable에 맞게 페이지 반환
+		Page<PostsDto> page = postsRepository.searchPosts(searchData, sortBy, pageable);
+        log.info("getSize={}, getTotalPages={}, total ={}", page.getSize(), page.getTotalPages(), page.getTotalElements());
+
+        return page;
+    }
+
+
+    // 공지사항 따로 추출
+    @Transactional(readOnly = true)
+    public List<PostsDto> getNoticeFive() {
+        return postsRepository.getNoticeFive()
+            .stream()
+            .map(ConvertUtils::convertPostsToDto)
+            .collect(Collectors.toList());
     }
 
     // 공지사항 포스팅
     public PostsDto createNotice(PostsDto postsDto, String username) {
-        isBanned();
+
+		isBanned();
+
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts savePost = postsRepository.save(ConvertUtils.convertDtoToPosts(postsDto));
 
@@ -173,7 +168,9 @@ public class PostsService {
     }
 
     public PostsDto updateNotice(PostsDto postsDto, String username, Long id) {
-        isBanned();
+
+		isBanned();
+
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -196,11 +193,13 @@ public class PostsService {
     }
 
     public void deleteNotice(String username, Long id) {
-        isBanned();
+
+		isBanned();
+
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
-        if(!findPosts.isNotice()) {
+        if(findPosts.isNotice()) {
             throw new IllegalArgumentException("수정 가능한 게시물이 아닙니다.");
         }
         if(!findUsers.getAuth().equals(Users.UserAuth.admin)) {
@@ -234,5 +233,30 @@ public class PostsService {
         }
 
         throw new AccessDeniedException("정지된 사용자입니다.");
+    }
+
+    public Boolean isEqual(UsersDto usersDto, String username) {
+        return usersDto.getLoginId().equals(username);
+    }
+
+    public List<PostsDto> getAllNotice() {
+        List<Posts> posts = postsRepository.getAllNotice();
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostsDto> getPostsList() {
+        List<Posts> posts = postsRepository.getAllPosts();
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToWith)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostsDto> getSearchPosts(String title) {
+        List<Posts> posts = postsRepository.searchByTitleLike(title);
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToWith)
+                .collect(Collectors.toList());
     }
 }

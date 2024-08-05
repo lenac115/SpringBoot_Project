@@ -13,13 +13,20 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookMarks {
-	@Id @Column(name = "bookmark_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long bookmark_id;
+
+	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "users_id")
 	private Users users;
 
+	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "posts_id")
 	private Posts posts;
+
+
 }
