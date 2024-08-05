@@ -66,6 +66,9 @@ public class UsersService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isEmailDuplicate(String email) { return usersRepository.existsByEmail(email);}
+
+    @Transactional(readOnly = true)
     public boolean isFindAccount(String name, String email) {
         Users user = usersRepository.findByNameAndEmail(name, email);
 
@@ -197,6 +200,7 @@ public class UsersService {
     public UsersDto unActivate(Long userId, BannedDateReasonForm bannedForm) {
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(false);
+        findUsers.setAuth(Users.UserAuth.stop); //user -> stop
 
         BannedUser user = BannedUser.builder()
                 .users(findUsers)
@@ -223,6 +227,7 @@ public class UsersService {
         
         //정지 테이블의 로그는 그대로 남기고, 유저 테이블의 컬럼 값만 업데이트(banned_id)
         findUsers.setIsActivated(true);
+        findUsers.setAuth(Users.UserAuth.user); //stop -> user
         usersRepository.save(findUsers);
         return ConvertUtils.convertUsersToDto(findUsers);
     }
@@ -237,7 +242,6 @@ public class UsersService {
     public UsersDto getUsers(Long id) {
         return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
     }
-
 
     @Transactional(readOnly = true)
     public UsersDto getSearchUser(String userId) {

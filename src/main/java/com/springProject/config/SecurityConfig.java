@@ -3,12 +3,16 @@ package com.springProject.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Collection;
 
 @Configuration
 @EnableWebSecurity
@@ -24,15 +28,35 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/api/users/login", "/api/users/signup", "/api/users/**").permitAll() // 모든 사용자 접속 가능한 url(임시 설정)
-                        .requestMatchers("forgot-password", "process_forgot_password").hasRole("user") // 권한이 'user' 인 경우만 접속 가능한 url(임시 설정)
-                        .requestMatchers("/api/users/admin/**").hasRole("admin") // 권한이 'admin' 인 경우만 접속 가능한 url(임시 설정)
-//                        .anyRequest().authenticated() // 인증 되지 않는 사용자일 경우 모든 요청을 Spring Security 에서 가로챔(설정한 url을 제외한 url은 이 설정을 적용할 예정)
-                        .anyRequest().permitAll() //개발 중에만 모든 url 접속 허용(개발 완료 후 설정 막음(특정 url을 기준으로 설정할 예정))
+                        .requestMatchers(HttpMethod.GET, "/api/users/login").permitAll() //로그인
+                        .requestMatchers(HttpMethod.GET, "/api/users/signupForm").permitAll() //회원가입
+                        .requestMatchers(HttpMethod.GET, "/api/users/checkDuplicateId").permitAll() //아이디중복
+                        .requestMatchers(HttpMethod.GET, "/api/users/checkDuplicateNickname").permitAll() //닉네임중복
+                        .requestMatchers(HttpMethod.GET, "/api/users/checkDuplicateEmail").permitAll() //이메일중복
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll() //회원가입
+                        .requestMatchers(HttpMethod.GET, "/api/users/findAccountForm").permitAll() //아이디찾기
+                        .requestMatchers(HttpMethod.POST, "/api/users/findAccount").permitAll() //아이디찾기
+                        .requestMatchers(HttpMethod.GET, "/api/users/findPasswordForm").permitAll() //비밀번호찾기
+                        .requestMatchers(HttpMethod.POST, "/api/users/findPassword").permitAll() //비밀번호찾기
+                        .requestMatchers(HttpMethod.GET, "/api/users/resetPasswordForm").permitAll() //비밀번호변경
+                        .requestMatchers(HttpMethod.POST, "/api/users/resetPassword").permitAll() //비밀번호변경 추후 비로그인 시 보여도 되는 페이지들(메인페이지,게시판 추가 예정)
+                        .requestMatchers("/css/**", "/js/**").permitAll() //정적파일
+                        .anyRequest().authenticated() // 인증 되지 않는 사용자일 경우 모든 요청을 Spring Security 에서 가로챔(설정한 url을 제외한 url은 이 설정을 적용할 예정)
                 )
                 .formLogin((form) -> form
                         .loginPage("/api/users/login").permitAll() // 로그인 페이지 경로 설정
-                        .defaultSuccessUrl("/api/users/main", true) // 로그인 성공 후 이동할 경로(추후 이동할 경로 변경)
+                        .successHandler((request, response, authentication) -> { // 로그인 성공 시 권한에 따른 리다이렉트 처리
+                            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+                            if(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_admin"))) {
+                                response.sendRedirect("/api/posts/search");
+                            } else if(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_user"))) {
+                                response.sendRedirect("/api/posts/search");
+                            } else if(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_stop"))) {
+                                response.sendRedirect("/api/posts/search"); // 공지사항 페이지로 변경해야됨
+                            } else {
+                                response.sendRedirect("/api/users/login");
+                            }
+                        })
                         .failureUrl("/api/users/login?error=true") // 로그인 실패 시
                 )
                 .logout((logout) -> logout
