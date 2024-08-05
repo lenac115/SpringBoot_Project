@@ -50,7 +50,8 @@ public class UsersService {
     }
 
     @Transactional
-    public void signUp(UsersDto usersDto) {
+    public void
+    signUp(UsersDto usersDto) {
         Users user = convertToEntity(usersDto);
         usersRepository.save(user);
     }

@@ -29,6 +29,7 @@
             <span class="arrow"></span>
         </button>
     </section>
+    <a id="makePost" th:href="@{/api/posts/create}">게시물 만들러 가기</a>
     <div id="post-container">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
@@ -194,22 +195,21 @@
             <button type="submit">검색</button>
         </form>
         <div th:if="${!page.isEmpty()}" id="exist-post">
-            <a th:href="@{/api/posts/create}">게시물 만들러 가기</a>
             <select id="sorting">
-                <option id="newPost">최신 순
+                <option value="newPost" th:selected="*{sort == 'newPost'}">최신 순
                 </option>
-                <option id="oldPost">오래된 순
+                <option value="oldPost" th:selected="*{sort == 'oldPost'}">오래된 순
                 </option>
-                <option id="bigStar">별점 높은 순
+                <option value="bigStar" th:selected="*{sort == 'bigStar'}">별점 높은 순
                 </option>
-                <option id="smallStar">별점 낮은 순
+                <option value="smallStar" th:selected="*{sort == 'smallStar'}">별점 낮은 순
                 </option>
             </select>
             <ul id="post-list">
                 <li th:each="post : ${page}">
                     <img class="post-image" th:id="'post-image'+${post.id}"
                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
-                    <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
+                    <a th:text="${post.title}" th:href="@{/api/posts/get?postId={id}(id=${post.id})}"></a>
                     <div class="post-sub-images">
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
                         <img class="bookmark on" th:src="@{/img/before_bookmark.svg}"/>

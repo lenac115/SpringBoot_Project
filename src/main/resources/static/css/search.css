@@ -30,7 +30,7 @@ a:hover {
 }
 
 form button,
-#exist-post > a{
+#makePost{
     height: 36px;
     padding: 0 12px;
 
@@ -52,7 +52,7 @@ form button,
 }
 
 form button:hover ,
-#exist-post > a:hover {
+#makePost:hover {
     color: #354E0DFF; /* primary-800 */
     background: #98DB2EFF; /* primary-500 */
 }
@@ -199,7 +199,7 @@ form ul li input, #sorting,
 }
 
 #post-container {
-    padding-top: 130px;
+    padding-top: 150px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -406,11 +406,13 @@ select:active {
     align-items: center;
 }
 
-#exist-post > a {
-    align-self: flex-start;
+#makePost {
+    width: fit-content;
     position: absolute;
-    top: -90px;
-    margin: 20px;
+    padding: 10px;
+    margin-top: 30px;
+    font-size: 27px;
+    align-self: flex-end;
 }
 
 #sorting {
@@ -434,13 +436,13 @@ select:active {
 #post-list {
     align-self: flex-end;
 
-    max-width: 1000px;
+    max-width: 890px;
     padding: 0;
 
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 #post-list .post-image {
