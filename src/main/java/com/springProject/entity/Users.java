@@ -18,6 +18,7 @@ import java.util.List;
 public class Users {
 	@Id @Column(name = "users_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "users_id")
 	private Long id;
 
 	@Column(name = "login_id")
@@ -50,10 +51,10 @@ public class Users {
 	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
 
-	@OneToMany(mappedBy = "users")
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<BookMarks> bookmarks = new ArrayList<>();
 
-	@OneToMany(mappedBy = "users")
+	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Prefers> prefers = new ArrayList<>();
 
 	@OneToOne

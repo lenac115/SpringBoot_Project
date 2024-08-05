@@ -1,5 +1,8 @@
 package com.springProject.dto;
 
+import com.springProject.entity.Posts;
+import com.springProject.entity.Users;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +13,9 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PrefersDto {
-
+  
+    private Long id;
     private PostsDto postsDto;
     private UsersDto usersDto;
+
 }

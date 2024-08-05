@@ -1,5 +1,8 @@
 package com.springProject.dto;
 
+import lombok.*;
+
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

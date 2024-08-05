@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>회원탈퇴</title>
+    <link th:rel="stylesheet" th:href="@{/css/account.css}">
 </head>
 <body>
-    <h2>회원탈퇴</h2>
+<div class="common-container">
+    <h1>회원탈퇴</h1>
     <form id="withdrawForm">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-        <div>
-            <label th:for="password">비밀번호 확인:</label>
+        <div class="common-form-input">
+            <label th:for="password">비밀번호</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="button" onclick="withdraw()">회원탈퇴</button>
+        <div class="common-button">
+            <button type="button" class="common-btn" onclick="withdraw()">회원탈퇴</button>
+        </div>
+        <div class="common-button button-gap">
+            <button type="button" class="common-btn" onclick="backToPage()">뒤로가기</button>
+        </div>
     </form>
+</div>
 <script>
     //공통 fetch 함수
     function fetchData(url, method, formData) {
@@ -41,27 +49,38 @@
             let url = '/api/users/withdraw';
             let method = 'POST';
 
-            fetchData(url, method, formData)
-                .then(msg => {
-                    if(msg.messageType === 'idNotFound') {
-                        alert(msg.message);
-                        window.location.reload();
-                    } else if (msg.messageType === 'passwordDiff'){
-                        alert(msg.message);
-                        document.getElementById('password').focus();
-                    } else if (msg.messageType === 'success') {
-                        alert(msg.message);
-                        window.location.href = "/api/users/login";
-                    } else {
-                        alert(msg.message);
-                        window.location.href = "/api/users/login";
-                    }
-                })
-                .catch(error => {
-                    alert('회원 탈퇴 중 오류가 발생했습니다.');
-                    console.error('Error in withdraw:', error);
-                });
+            //폼 제출 시 input 값 검증 추가
+            if(form.checkValidity()) {
+                fetchData(url, method, formData)
+                    .then(msg => {
+                        if(msg.messageType === 'idNotFound') {
+                            alert(msg.message);
+                            window.location.reload();
+                        } else if (msg.messageType === 'passwordDiff'){
+                            alert(msg.message);
+                            document.getElementById('password').focus();
+                        } else if (msg.messageType === 'success') {
+                            alert(msg.message);
+                            window.location.href = "/api/users/login";
+                        } else {
+                            alert(msg.message);
+                            window.location.href = "/api/users/login";
+                        }
+                    })
+                    .catch(error => {
+                        alert('회원 탈퇴 중 오류가 발생했습니다.');
+                        console.error('Error in withdraw:', error);
+                    });
+            } else {
+                alert("비밀번호를 입력하세요.");
+                form.reportValidity();
+            }
         }
+    }
+
+    //페이지 뒤로 가기
+    function backToPage() {
+        window.history.back();
     }
 </script>
 </body>

@@ -13,11 +13,15 @@ import lombok.*;
 public class Prefers {
 	@Id @Column(name = "prefers_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long prefer_id;
 
+	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "users_id")
 	private Users users;
 
+	// 외래키
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "posts_id")
 	private Posts posts;
 }

@@ -6,6 +6,7 @@ import com.springProject.dto.UsersDto;
 import com.springProject.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +17,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/api/users")
+@Slf4j
 public class UsersController {
     private final UsersService usersService;
 
@@ -35,6 +38,7 @@ public class UsersController {
     //회원가입 - 유저 등록
     @PostMapping
     public String createUsers(@ModelAttribute UsersDto usersDto) {
+        usersDto.setIsActivated(true); // 유저 등록 시 정지된 권한 기본 값 부여
         usersService.signUp(usersDto);
         return "redirect:/api/users/login";
     }
@@ -114,11 +118,12 @@ public class UsersController {
 
     //회원탈퇴 - 회원탈퇴 페이지로 이동
     @GetMapping("/withdrawForm")
-    @PreAuthorize("hasAnyRole('user', 'admin')")
+    @PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
     public String withdrawForm(){return "account/withdraw";}
 
     //회원탈퇴 - 회원탈퇴
     @PostMapping("/withdraw")
+    @PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
     @ResponseBody
     public ResponseEntity<MessageDto> withdraw(@RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
         //현재 로그인한 사용자의 정보를 가져온다.
@@ -128,10 +133,6 @@ public class UsersController {
         MessageDto message = usersService.withdrawUser(loginId, password, request, response);
         return ResponseEntity.ok(message);
     }
-
-    //권한 - 권한 테스트
-    @GetMapping("/admin/test")
-    public String adminPageTest() {return "login/admin";}
 
     //권한 - 권한에 따른 접근 불가 페이지로 이동
     @GetMapping("/accessDenied")
@@ -170,5 +171,18 @@ public class UsersController {
     public ResponseEntity<UsersDto> getUsers(@PathVariable Long id) {
         UsersDto usersDto = usersService.getUsers(id);
         return ResponseEntity.status(HttpStatus.OK).body(usersDto);
+    }
+
+    //관리자페이지 - 유저 검색
+    @GetMapping("/admin/users/search/{userId}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<UsersDto> getSearchUser(@PathVariable String userId) {
+        try {
+            UsersDto usersDto = usersService.getSearchUser(userId);
+            return ResponseEntity.ok(usersDto);
+        } catch (NoSuchElementException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
     }
 }

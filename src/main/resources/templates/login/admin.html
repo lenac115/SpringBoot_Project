@@ -2,9 +2,440 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>관리자페이지</title>
+    <link th:rel="stylesheet" th:href="@{/css/admin.css}">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body>
-    <h1>관리자페이지</h1>
+    <div class="container">
+        <h1>관리자페이지</h1>
+        <hr>
+        <h2>유저 권한 정지 및 부여</h2>
+        <div class="search-form">
+            <form>
+                <input type="text" id="searchUser" name="searchUser" placeholder="유저 아이디 검색"/>
+                <button type="button" id="userSearchBtn">검색</button>
+            </form>
+        </div>
+        <div class="table-form">
+            <form>
+                <div class="table-container">
+                    <table id="userTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>유저 아이디</th>
+                                <th>상태</th>
+                                <th>정지 사유</th>
+                                <th>정지 일자</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="button-group">
+                    <button type="button" id="updateBtn">변경</button>
+                    <button type="button" class="resetBtn">선택 초기화</button>
+                </div>
+            </form>
+        </div>
+        <h2>작성한 공지사항</h2>
+        <div class="table-form">
+            <div class="table-container">
+                <table id="noticeTable">
+                    <thead>
+                        <tr>
+                            <th class="th-num">번호</th>
+                            <th>제목</th>
+                            <th>작성일</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <h2>유해 게시물 삭제</h2>
+        <div class="search-form">
+            <form>
+                <input type="text" id="searchPosts" name="searchPosts" placeholder="게시글 제목 검색"/>
+                <button type="button" id="postsSearchBtn">검색</button>
+            </form>
+        </div>
+        <div class="table-form">
+            <form>
+                <div class="table-container">
+                    <table id="postsTable">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>제목</th>
+                                <th>작성자</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="button-group">
+                    <button type="button" id="deleteBtn">삭제</button>
+                    <button type="button" class="resetBtn">선택 초기회</button>
+                </div>
+            </form>
+        </div>
+        <div class="common-button button-gap">
+            <button type="button" class="common-btn" id="mainBtn">메인</button>
+        </div>
+    </div>
+<script>
+    function addButtonEvent() {
+        $("#userSearchBtn").click(function(e){
+            e.preventDefault();
+            getUser();
+        });
+
+        $("#postsSearchBtn").click(function(e){
+           e.preventDefault();
+           getPosts();
+        });
+
+        $("#updateBtn").click(function(e){
+            e.preventDefault();
+            userAuthUpdate();
+        });
+
+        $("#deleteBtn").click(function(e){
+            e.preventDefault();
+            postsDelete();
+        });
+
+        $(".resetBtn").click(function(e){
+           e.preventDefault();
+           resetField();
+        });
+
+        $("#mainBtn").click(function(e){
+           e.preventDefault();
+           backToMain();
+        });
+    }
+
+    //전체 유저 리스트
+    function getAllUserList() {
+        $.ajax({
+            url : "/api/users/admin/getUser/list",
+            method : "GET",
+            success : function(data) {
+                let tbody = $("#userTable tbody");
+                tbody.empty();
+
+                $.each(data, function(i, user) {
+                    //상태 값이 정지일 경우 input disabled
+                    let isActivated = user.isActivated;
+                    let disabledAttr = isActivated ? '' : 'disabled';
+
+                   tbody.append(
+                       '<tr data-user-id="' + user.id + '">' +
+                       '<td><input type="checkbox" name="userSelect"/></td>' +
+                       '<td>' + user.loginId + '</td>' +
+                       '<td>' + (user.isActivated ? '활동' : '정지') + '</td>' +
+                       '<td><input type="text" class="reason" name="reason" placeholder="정지 사유" ' + disabledAttr + '/></td>' +
+                       '<td><input type="datetime-local" class="duration" name="duration" placeholder="정지 일자" ' + disabledAttr + '/></td>' +
+                       '</tr>'
+                   )
+                });
+            },
+            error: function () {
+                alert("사용자 목록을 가져오는데 실패하였습니다.");
+            }
+        });
+    }
+
+    //유저 검색
+    function getUser() {
+        let searchUser = $("#searchUser").val();
+
+        //빈 값으로 검색할 경우 전체 목록 리스트 가져옴
+        if(searchUser === "") {
+            getAllUserList();
+            return;
+        }
+
+        $.ajax({
+            url : "/api/users/admin/users/search/" + searchUser,
+            method : "GET",
+            dataType : "json",
+            success : function(data) { // OK
+                //상태 값이 정지일 경우 input disabled
+                let isActivated = data.isActivated;
+                let disabledAttr = isActivated ? '' : 'disabled';
+
+                let searchHtml =
+                    '<tr data-user-id="' + data.id + '">' +
+                    '<td><input type="checkbox" name="userSelect"/></td>' +
+                    '<td>' + data.loginId + '</td>' +
+                    '<td>' + (data.isActivated ? '활동' : '정지') + '</td>' +
+                    '<td><input type="text" class="reason" name="reason" placeholder="정지 사유" ' + disabledAttr + '/></td>' +
+                    '<td><input type="datetime-local" class="duration" name="duration" placeholder="정지 일자" ' + disabledAttr + '/></td>' +
+                    '</tr>';
+
+                $("#userTable tbody").html(searchHtml);
+            },
+            error: function(xhr) { // NotFound
+                if (xhr.status === 404) {
+                    $("#userTable tbody").html('<tr><td colspan="5">사용자를 찾을 수 없습니다.</td></tr>');
+                } else {
+                    alert("사용자 검색 중 오류가 발생했습니다.");
+                }
+            }
+        });
+    }
+
+    //권한 업데이트
+    function userAuthUpdate() {
+        let unActivateUsers = [];
+        let activateUsers = [];
+        let emptyField = false;
+
+        $("input[name='userSelect']:checked").each(function(){
+            let row = $(this).closest('tr');
+            let userId = row.data('user-id');
+            let loginId = row.find('td:eq(1)').text();
+            let isActivated = row.find('td:eq(2)').text() === '활동';
+            let reason = row.find('.reason').val();
+            let duration = row.find('.duration').val();
+
+            if(isActivated) { //활동 -> 정지 변경 데이터
+                //빈 값 검증(정지일 경우만)
+                if(reason === '' || duration === '') {
+                    emptyField = true;
+                    return false;
+                }
+
+                unActivateUsers.push({
+                    userId : userId,
+                    bannedLoginId : loginId,
+                    bannedReason : reason,
+                    bannedDate : duration
+                });
+
+            } else { //정지 -> 활동 변경 데이터
+                activateUsers.push({
+                    userId : userId
+                });
+            }
+        });
+
+        //필드 빈 값 체크
+        if(emptyField) {
+            alert("정지 처리를 위해서는 모든 필드를 입력해주세요.");
+            return;
+        }
+
+        //체크박스 체크
+        if(unActivateUsers.length === 0 && activateUsers.length === 0) {
+            alert("선택된 사용자가 없습니다.");
+            return;
+        }
+
+        let totalRequests = unActivateUsers.length + activateUsers.length;
+        let type = 'update';
+        let completionHandler = handleCompletion(type, totalRequests, 0, 0);
+
+        //활동 -> 정지 권한 변경
+        unActivateUsers.forEach(function(user){
+            $.ajax({
+                url: "/api/users/admin/unActivate/" + user.userId,
+                method: "PUT",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    bannedLoginId : user.bannedLoginId,
+                    bannedReason: user.bannedReason,
+                    bannedDate: user.bannedDate
+                }),
+                success: function() {completionHandler(true);},
+                error: function() {completionHandler(false);}
+            });
+        });
+
+        //정지 -> 활동 권한 변경
+        activateUsers.forEach(function (user){
+            $.ajax({
+                url : "/api/users/admin/activate/" + user.userId,
+                method : "PUT",
+                success: function() {completionHandler(true);},
+                error: function() {completionHandler(false);}
+            });
+        });
+    }
+
+    //공지사항 게시글 가져오기
+    function getAllNoticeList() {
+        $.ajax({
+            url : "/api/posts/admin/notice",
+            method : "GET",
+            success : function(data) {
+                let tbody = $("#noticeTable tbody");
+
+                if(data.length === 0) {
+                    tbody.append('<tr>' + '<td colspan="3">등록된 공지사항이 없습니다.</td>' + '</tr>')
+                } else {
+                    $.each(data, function(i, notice){
+                        tbody.append(
+                            '<tr>' +
+                            '<td>' + (i+1) + '</td>' +
+                            '<td>' + notice.title + '</td>' +
+                            '<td>' + notice.createdAt.split('T')[0] +'</td>'
+                        )
+                    });
+                }
+            },
+            error: function () {
+                alert("공지사항 게시글 목록을 가져오는데 실패하였습니다.");
+            }
+        });
+    }
+
+    //일반 게시글 가져오기
+    function getAllPostsList() {
+        $.ajax({
+            url : "/api/posts/admin/posts",
+            method : "GET",
+            success : function(data) {
+                let tbody = $("#postsTable tbody");
+                tbody.empty();
+                if(data.length === 0) {
+                    tbody.append('<tr>' + '<td colspan="3">등록된 게시글이 없습니다</td>' + '</tr>')
+                } else {
+                    $.each(data, function(i, posts){
+                        tbody.append(
+                            '<tr data-post-id="' + posts.id + '">' +
+                            '<td><input type="checkbox" name="userSelect"></td>' +
+                            '<td>' + posts.title + '</td>' +
+                            '<td>' + (posts.usersDto ? posts.usersDto.loginId : '') + '</td>' +
+                            '</tr>'
+                        )
+                    });
+                }
+            },
+            error : function() {
+                alert("일반 게시글 목록을 가져오는데 실패하였습니다.");
+            }
+        })
+    }
+
+    //게시글 검색
+    function getPosts() {
+        let searchData = $("#searchPosts").val().trim();
+
+        if(searchData === "") {
+            getAllPostsList();
+            return;
+        }
+
+        $.ajax({
+            url : "/api/posts/admin/posts/search/" + searchData,
+            method : "GET",
+            dataType : "json",
+            success : function(data) {
+                let tbody = $("#postsTable tbody");
+                tbody.empty();
+
+                if(data.length === 0) {
+                    tbody.html('<tr>' + '<td colspan="3">입력하신 검색어에 해당하는 검색 결과가 없습니다.</td>' + '</tr>');
+                    return;
+                }
+
+                $.each(data, function(i, search){
+                    tbody.append(
+                        '<tr data-post-id="' + search.id + '">' +
+                        '<td><input type="checkbox" name="userSelect"></td>' +
+                        '<td>' + search.title + '</td>' +
+                        '<td>' + (search.usersDto ? search.usersDto.loginId : '') + '</td>' +
+                        '</tr>'
+                    );
+                });
+            },
+            error : function() {
+                alert("게시글 검색 중 오류가 발생했습니다.");
+            }
+        });
+    }
+
+    //유해 게시글 삭제
+    function postsDelete() {
+        let deletePosts = [];
+
+        $("input[name='userSelect']:checked").each(function(){
+            let row = $(this).closest('tr');
+            let postId = row.data('post-id');
+
+            deletePosts.push({
+               id : postId
+            });
+        });
+
+        if(deletePosts.length === 0) {
+            alert("선택된 게시글이 없습니다.");
+            return;
+        }
+
+        let totalRequests = deletePosts.length;
+        let type = 'delete';
+        let completionHandler = handleCompletion(type, totalRequests, 0, 0);
+
+        deletePosts.forEach(function (post){
+            $.ajax({
+                url : "/api/posts/notice/delete/" + post.id,
+                method : "DELETE",
+                success: function() {completionHandler(true);},
+                error: function() {completionHandler(false);}
+            });
+        });
+    }
+
+    //공통 ajax 처리
+    function handleCompletion(type, totalRequests, successCount, errorCount) {
+        return function(isSuccess) {
+            if (isSuccess) {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+
+            if (successCount + errorCount === totalRequests) {
+                if (errorCount === 0) {
+                    alert("모든 요청이 성공적으로 처리되었습니다.");
+                } else {
+                    alert(`${successCount}건의 요청이 처리되었고, ${errorCount}건의 요청이 처리에 실패했습니다.`);
+                }
+
+                if(type === 'update') {
+                    getAllUserList();
+                } else {
+                    getAllPostsList();
+                }
+            }
+        }
+    }
+
+    //초기화 버튼 클릭 시
+    function resetField() {
+        $("input[name='userSelect']").prop('checked', false);
+        $(".reason").val('');
+        $(".duration").val('');
+    }
+
+    //메인 페이지 돌아가기
+    function backToMain() {
+        window.history.back(); // 추후 메인페이지랑 연결
+    }
+
+    //init
+    $(function () {
+        getAllUserList();
+        getAllNoticeList();
+        getAllPostsList();
+        addButtonEvent();
+    });
+</script>
 </body>
 </html>

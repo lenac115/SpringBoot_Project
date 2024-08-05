@@ -15,7 +15,10 @@ import java.time.LocalDateTime;
 public class PostImages {
 	@Id @Column(name = "post_images_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long image_id;
+
+	@Column(nullable = false)
+	private Long post_id;
 
 	private String originFilename;
 
@@ -25,6 +28,7 @@ public class PostImages {
 
 	private LocalDateTime createdAt;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
+	@JoinColumn(name = "posts_id")
 	private Posts posts;
 }
