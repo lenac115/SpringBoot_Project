@@ -57,9 +57,7 @@ public class PostImagesController {
         ResponseEntity<byte[]> result;
         try {
             String srcFileName = URLDecoder.decode(filename, StandardCharsets.UTF_8);
-            log.info("fileName: " + srcFileName);
             File file = new File( uploadPath + File.separator + srcFileName);
-            log.info("file: " + file);
             HttpHeaders header = new HttpHeaders();
 
             // MIME 타입 처리

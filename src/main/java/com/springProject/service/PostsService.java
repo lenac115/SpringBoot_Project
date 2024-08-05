@@ -45,9 +45,6 @@ public class PostsService {
     private final UsersRepository usersRepository;
     private final BannedUserRepository bannedUserRepository;
 
-
-    List<Posts> posts = new ArrayList<>();
-
     public PostsDto createPost(PostsDto postsDto, String username) {
         Posts post = ConvertUtils.convertDtoToPosts(postsDto);
         Users findUsers = usersRepository.findByLoginId(username);
@@ -90,9 +87,6 @@ public class PostsService {
 
     // delete
     public void deletePost(Long postId, String username) {
-
-        isBanned();
-
         // 도메인 불러오기
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts post = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
@@ -103,31 +97,23 @@ public class PostsService {
         } else{
             throw new AccessDeniedException("권한이 없습니다.");
         }
-        postsRepository.delete(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
-
     }
 
-
-    public Optional<PostsDto> updatePosts(Long id, PostsDto updatePostsDto) {
-        return postsRepository.findById(id)
-                .map(existingPosts -> {
-                    existingPosts.setTitle(updatePostsDto.getTitle());
-                    existingPosts.setBody(updatePostsDto.getBody());
-                    existingPosts.setLocation(updatePostsDto.getLocation());
-                    existingPosts.setCategory(updatePostsDto.getCategory());
-                    existingPosts.setHashtags(updatePostsDto.getHashtags());
-                    existingPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
-                    return ConvertUtils.convertPostsToDto(existingPosts);
-                });
-
+    public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
+        Posts post = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        post.setTitle(updatePostsDto.getTitle());
+        post.setBody(updatePostsDto.getBody());
+        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+        post.setLocation(updatePostsDto.getLocation());
+        post.setCategory(updatePostsDto.getCategory());
+        post.setStar(updatePostsDto.getStar());
+        post.setHashtags(updatePostsDto.getHashtags());
+        return ConvertUtils.convertPostsToDto(post);
     }
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
     @Transactional(readOnly = true)
     public Page<PostsDto> getPostsBySearchDataAndSortBy(SearchData searchData, String sortBy, int nowPage) {
-
-		isBanned();
-
         // 페이징을 위한 기본 설정 -> (보여줄 페이지, 한 페이지에 보여줄 데이터 수)
         Pageable pageable = PageRequest.of(nowPage - 1, 12);
 
@@ -150,9 +136,6 @@ public class PostsService {
 
     // 공지사항 포스팅
     public PostsDto createNotice(PostsDto postsDto, String username) {
-
-		isBanned();
-
         Users findUser = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts savePost = postsRepository.save(ConvertUtils.convertDtoToPosts(postsDto));
 
@@ -168,9 +151,6 @@ public class PostsService {
     }
 
     public PostsDto updateNotice(PostsDto postsDto, String username, Long id) {
-
-		isBanned();
-
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -193,9 +173,6 @@ public class PostsService {
     }
 
     public void deleteNotice(String username, Long id) {
-
-		isBanned();
-
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
@@ -210,29 +187,8 @@ public class PostsService {
     }
 
     public List<PostsDto> getNotice() {
-        isBanned();
         return Optional.ofNullable(postsRepository.findAllByNotice())
                 .orElseGet(Collections::emptyList).stream().map(ConvertUtils::convertPostsToDto).toList();
-    }
-
-    private void isBanned() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            return;
-        }
-
-        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if (findUser.getBannedUser() == null)
-            return;
-        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
-            findUser.setIsActivated(true);
-            bannedUserRepository.deleteByUsersId(findUser.getId());
-            return;
-        }
-
-        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 
     public Boolean isEqual(UsersDto usersDto, String username) {

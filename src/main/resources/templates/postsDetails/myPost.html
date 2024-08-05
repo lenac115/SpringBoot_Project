@@ -23,8 +23,8 @@
         <div class="slider">
             <!-- 이미지 슬라이더가 동적으로 렌더링되는 부분입니다. -->
             <div class="controls">
-                <div class="control prev">Prev</div>
-                <div class="control next">Next</div>
+                <div class="control prev">이전</div>
+                <div class="control next">다음</div>
             </div>
         </div>
     </section>
@@ -213,6 +213,11 @@
                 }
 
                 if (data.presentId === null) {
+                    btnDelete.remove();
+                    btnUpdate.remove();
+                }
+
+                if(data.presentId !== users.loginId) {
                     btnDelete.remove();
                     btnUpdate.remove();
                 }
@@ -482,6 +487,33 @@
                 },
                 error: function(error) {
                     alert('수정 페이지 조회에 실패했습니다.');
+                }
+            })
+        })
+
+        $('#btn-delete').click(function () {
+            $.ajax({
+                method:"DELETE",
+                url: "/api/posts/" + urlParams.get('postId'),
+                success: function (response) {
+                    alert('페이지 삭제 완료');
+                    location.href = "http://localhost:8080/api/posts/search"
+                },
+                error: function(error) {
+                    alert('삭제에 실패했습니다.');
+                }
+            })
+        })
+
+        $('#btn-to-list').click(function () {
+            $.ajax({
+                method:"GET",
+                url: "/api/posts/search",
+                success: function (response) {
+                    location.href = "http://localhost:8080/api/posts/search"
+                },
+                error: function(error) {
+                    alert('조회에 실패했습니다.');
                 }
             })
         })
