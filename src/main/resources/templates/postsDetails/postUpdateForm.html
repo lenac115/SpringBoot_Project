@@ -9,7 +9,7 @@
 <body>
 <main>
     <h1 style="font-size: 40px; width: 100%; text-align: center;">내 게시물 수정하기</h1>
-    <h1 style="font-size:40px">제목 <textarea class="postTitle" placeholder="제목을 입력해주세요."></textarea></h1>
+    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요."></textarea></h1>
     <textarea id="postBody" placeholder="본문을 입력해주세요."></textarea>
     <h3>사진 등록하기<button id="btn-image">+</button></h3>
     <input type="file" id="file-input" style="display: none;">
@@ -113,32 +113,63 @@
     let splitHashtags
 
     $(document).ready(function () {
-        const $customSelects = $('.custom-select');
+        // 카테고리 선택 처리
+        const $categorySelect = $('#category-select');
+        const $categoryHiddenInput = $('#category');
 
-        $customSelects.each(function () {
-            const $select = $(this);
-            const $selectSelected = $select.find('.select-selected');
-            const $selectItems = $select.find('.select-items');
-            const $hiddenInput = $select.next('input[type="hidden"]');
+        $categorySelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $categorySelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
 
-            $selectSelected.click(function (e) {
-                e.stopPropagation();
-                $selectItems.toggleClass('select-hide');
-                $(this).find('.arrow').toggleClass('arrow-up');
-            });
+        $categorySelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $categoryHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $categorySelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $categorySelect.find('.select-items').addClass('select-hide');
+        });
 
-            $selectItems.on('click', 'div', function (e) {
-                e.stopPropagation();
-                const selectedValue = $(this).data('value');
-                $hiddenInput.val(selectedValue);
-                $selectSelected.html($(this).html() + '<span class="arrow arrow-down"></span>');
-                $selectItems.addClass('select-hide');
-            });
+        // 위치 선택 처리
+        const $locationSelect = $('#location-select');
+        const $locationHiddenInput = $('#location');
 
-            $(document).click(function () {
-                $selectItems.addClass('select-hide');
-                $selectSelected.find('.arrow').removeClass('arrow-up');
-            });
+        $locationSelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $locationSelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
+
+        $locationSelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $locationHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $locationSelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $locationSelect.find('.select-items').addClass('select-hide');
+        });
+
+        // 별점 선택 처리
+        const $starSelect = $('#star-rating');
+        const $starHiddenInput = $('#star');
+
+        $starSelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $starSelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
+
+        $starSelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $starHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $starSelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $starSelect.find('.select-items').addClass('select-hide');
+        });
+
+        $(document).click(function () {
+            $('.select-items').addClass('select-hide');
+            $('.select-selected .arrow').removeClass('arrow-up');
         });
 
         $.ajax({
@@ -156,13 +187,11 @@
                 $('#location').val(locationValue);
                 $('#category').val(categoryValue);
 
-                const $starSelectItems = $('#star-rating .select-items');
-                const $locationSelectItems = $('#location-select .select-items');
-                const $categorySelectItems = $('#category-select .select-items');
 
-                $starSelectItems.find(`div[data-value="${starValue}"]`).click();
-                $locationSelectItems.find(`div[data-value="${locationValue}"]`).click();
-                $categorySelectItems.find(`div[data-value="${categoryValue}"]`).click();
+                // 각각의 드롭다운 값을 설정하고 선택 이벤트 발생시킴
+                selectDropdownValue('#star-rating', starValue);
+                selectDropdownValue('#location-select', locationValue);
+                selectDropdownValue('#category-select', categoryValue);
 
                 splitHashtags = data.hashtags.split('/');
                 for (let i = 0; i < splitHashtags.length; i++) {
@@ -177,6 +206,12 @@
                 alert('조회에 실패했습니다.');
             }
         });
+
+        function selectDropdownValue(selector, value) {
+            const $dropdown = $(selector);
+            const $selectItems = $dropdown.find('.select-items');
+            $selectItems.find(`div[data-value="${value}"]`).click();
+        }
 
         $.ajax({
             method: "GET",
@@ -225,13 +260,14 @@
                 mergedHashtags += hashtags + "/";
             })
             const postDto = {
-                title : $('.postTitle').val(),
+                title : $('#title-text').val(),
                 body : $('#postBody').val(),
-                star : $('#star').val(),
+                star : parseInt($('#star').val()),
                 location : $('#location').val(),
                 category : $('#category').val(),
                 hashtags : mergedHashtags.substring(0, mergedHashtags.length - 1)
             }
+            console.log(postDto);
             $.ajax({
                 method: "PUT",
                 url:"http://localhost:8080/api/posts/update/" + urlParams.get('postId'),
