@@ -36,7 +36,7 @@ public class PostImagesService {
 
         for(MultipartFile multipartFile : imageList) {
             // 저장할 절대 경로(서버 올릴 경우 리눅스 경로로 수정해야함)
-            String realPath = "C:/Users/user/Desktop/Study/teamproject/SpringBoot_Project/src/main/resources/static/tmpImg/";
+            String realPath = "/home/ubuntu/SpringBoot_Project/src/main/resources/static/tmpImg/";
 
             File file = new File(realPath);
 

@@ -66,6 +66,9 @@ public class UsersService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isEmailDuplicate(String email) { return usersRepository.existsByEmail(email);}
+
+    @Transactional(readOnly = true)
     public boolean isFindAccount(String name, String email) {
         Users user = usersRepository.findByNameAndEmail(name, email);
 
@@ -173,6 +176,7 @@ public class UsersService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setIsActivated(userDto.getIsActivated());
+        user.setAuth(userDto.getAuth());
         return user;
     }
 
@@ -194,9 +198,9 @@ public class UsersService {
 
     @Transactional
     public UsersDto unActivate(Long userId, BannedDateReasonForm bannedForm) {
-        isBanned();
         Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         findUsers.setIsActivated(false);
+        findUsers.setAuth(Users.UserAuth.stop); //user -> stop
 
         BannedUser user = BannedUser.builder()
                 .users(findUsers)
@@ -213,7 +217,6 @@ public class UsersService {
 
     @Transactional
     public UsersDto activate(Long userId) {
-        isBanned();
         Users findUsers = usersRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -224,41 +227,20 @@ public class UsersService {
 
         //정지 테이블의 로그는 그대로 남기고, 유저 테이블의 컬럼 값만 업데이트(banned_id)
         findUsers.setIsActivated(true);
+        findUsers.setAuth(Users.UserAuth.user); //stop -> user
         usersRepository.save(findUsers);
         return ConvertUtils.convertUsersToDto(findUsers);
     }
 
     @Transactional(readOnly = true)
     public List<UsersDto> getAllUsers() {
-        isBanned();
         return Optional.ofNullable(usersRepository.findAll()).orElse(Collections.emptyList())
                 .stream().map(ConvertUtils::convertUsersToDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public UsersDto getUsers(Long id) {
-        isBanned();
         return ConvertUtils.convertUsersToDto(usersRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
-    }
-
-    private void isBanned() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            return;
-        }
-
-        Users findUser = usersRepository.findOptionalByLoginId(authentication.getName()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-
-        if (findUser.getBannedUser() == null)
-            return;
-        if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
-            findUser.setIsActivated(true);
-            bannedUserRepository.deleteByUsersId(findUser.getId());
-            return;
-        }
-
-        throw new AccessDeniedException("정지된 사용자입니다.");
     }
 
     @Transactional(readOnly = true)
