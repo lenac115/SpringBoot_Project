@@ -77,7 +77,7 @@
                 </div>
                 <div class="button-group">
                     <button type="button" id="deleteBtn">삭제</button>
-                    <button type="button" class="resetBtn">선택 초기회</button>
+                    <button type="button" class="resetBtn">선택 초기화</button>
                 </div>
             </form>
         </div>
@@ -426,7 +426,7 @@
 
     //메인 페이지 돌아가기
     function backToMain() {
-        window.history.back(); // 추후 메인페이지랑 연결
+        window.location.href = "/api/posts/search";
     }
 
     //init

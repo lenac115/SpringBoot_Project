@@ -220,8 +220,10 @@ public class PostsService {
         if (findUser.getBannedUser() == null)
             return;
         if (LocalDateTime.now().isAfter(findUser.getBannedUser().getBannedDate())) {
+            findUser.setBannedUser(null);
             findUser.setIsActivated(true);
-            bannedUserRepository.deleteByUsersId(findUser.getId());
+            findUser.setAuth(Users.UserAuth.user); //stop -> user
+            usersRepository.save(findUser);
             return;
         }
 
