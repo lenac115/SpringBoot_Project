@@ -38,12 +38,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class PostsController {
 
-	private final PostsService postsService;
+    private final PostsService postsService;
 
-	@Autowired
-	public PostsController(PostsService postsService) {
-		this.postsService = postsService;
-	}
+    @Autowired
+    public PostsController(PostsService postsService) {
+        this.postsService = postsService;
+    }
 
     //생성
     @PostMapping
@@ -64,10 +64,8 @@ public class PostsController {
     @GetMapping("/{id}")
     public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
-        PostsDto postsDto = postsService.getPostsDtoById(id);
-        if (userDetails != null) {
-          postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
-        }
+        PostsDto postsDto = postsService.getPostsDtoById(id, userDetails);
+
         return ResponseEntity.ok(postsDto);
     }
 
@@ -86,70 +84,58 @@ public class PostsController {
 
 
     //삭제
-	@DeleteMapping("/{postId}")
-	@PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
-	public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
-		postsService.deletePost(postId, users.getUsername());
-		return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+    @DeleteMapping("/{postId}")
+    @PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId, @AuthenticationPrincipal UserDetails users) {
+        postsService.deletePost(postId, users.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
     }
 
     //수정
-    @PutMapping("/{id}")
-    public ResponseEntity<Optional<PostsDto>> updatePosts(@PathVariable("id") Long id, @RequestBody
-    PostsDto updatePostsDto) {
-        Optional<PostsDto> updatedPostDto = postsService.updatePosts(id, updatePostsDto);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<PostsDto> updatePosts(@PathVariable("id") Long id, @RequestBody PostsDto postsDto) {
+        PostsDto updatedDto = postsService.updatePosts(id, postsDto);
 
-        return ResponseEntity.ok(updatedPostDto);
+        return ResponseEntity.ok(updatedDto);
     }
-
-	@GetMapping("/get")
-	public ModelAndView getPostDetails(@RequestParam Long postId, Model model) {
-		model.addAttribute("id", postId);
-		return new ModelAndView("postsDetails/myPost");
-	}
-
-	@GetMapping("/updateForm/*") // 배포 후에 user 검증 넣을 예정
-	public ModelAndView getPostUpdateForm() {
-		return new ModelAndView("postsDetails/postUpdateForm");
-	}
 
     // ModelAttribute → 검색 조건을 받아옴 / RequestParam -> 정렬 조건을 받아옴
     @GetMapping("/search")
     public ModelAndView getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
-         @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
-         @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
-		 Model model) {
+                                                      @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
+                                                      @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
+                                                      Model model) {
         log.info("keyword = {}, category = {}, location = {}, star = {}, hashtag = {}, startDate = {}, endDate = {}, sortBy = {}, page = {}",
-			searchData.getKeyword(), searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
+                searchData.getKeyword(), searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
-		model.addAttribute("searchData", searchData);
-		model.addAttribute("sortBy", sortBy);
+        model.addAttribute("searchData", searchData);
+        model.addAttribute("sortBy", sortBy);
 
-		Page<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
-		model.addAttribute("page", posts);
+        Page<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
+        model.addAttribute("page", posts);
 
-		List<PostsDto> notices = postsService.getNoticeFive();
-		model.addAttribute("notices", notices);
+        List<PostsDto> notices = postsService.getNoticeFive();
+        model.addAttribute("notices", notices);
 
-		getPostsBySearchDataAndSortBy(posts);
-		getNoticeFive(notices);
+        getPostsBySearchDataAndSortBy(posts);
+        getNoticeFive(notices);
 
-		return new ModelAndView("post/search");
-	}
+        return new ModelAndView("post/search");
+    }
 
-	// HTTP 전송 용 코드
-	@ResponseBody
-	public ResponseEntity<Page<PostsDto>> getPostsBySearchDataAndSortBy(Page<PostsDto> posts)
-	{
-		return ResponseEntity.ok(posts);
-	}
+    // HTTP 전송 용 코드
+    @ResponseBody
+    public ResponseEntity<Page<PostsDto>> getPostsBySearchDataAndSortBy(Page<PostsDto> posts)
+    {
+        return ResponseEntity.ok(posts);
+    }
 
-	@ResponseBody
-	public ResponseEntity<List<PostsDto>> getNoticeFive(List<PostsDto> notices)
-	{
-		return ResponseEntity.ok(notices);
-	}
+    @ResponseBody
+    public ResponseEntity<List<PostsDto>> getNoticeFive(List<PostsDto> notices)
+    {
+        return ResponseEntity.ok(notices);
+    }
 
 
     @PostMapping("/notice/save")

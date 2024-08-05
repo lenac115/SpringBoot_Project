@@ -1,11 +1,7 @@
 package com.springProject.utils;
 
-import com.springProject.dto.CommentsDto;
-import com.springProject.dto.PostsDto;
-import com.springProject.dto.UsersDto;
-import com.springProject.entity.Comments;
-import com.springProject.entity.Posts;
-import com.springProject.entity.Users;
+import com.springProject.dto.*;
+import com.springProject.entity.*;
 
 public class ConvertUtils {
 
@@ -124,5 +120,3 @@ public class ConvertUtils {
                 .build();
     }
 }
-
-

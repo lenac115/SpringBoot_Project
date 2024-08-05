@@ -17,7 +17,6 @@ import com.springProject.repository.UsersRepository;
 import com.springProject.utils.ConvertUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -108,7 +107,7 @@ public class PostsService {
     }
 
 
-    public Optional<PostsDto> updatePosts(Long id, PostsDto updatePostsDto) {
+    public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
         return postsRepository.findById(id)
                 .map(existingPosts -> {
                     existingPosts.setTitle(updatePostsDto.getTitle());

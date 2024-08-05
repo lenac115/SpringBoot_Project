@@ -3,13 +3,13 @@ package com.springProject.controller;
 import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
+import com.springProject.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -62,7 +62,7 @@ public class UsersController {
     //아이디 - 아이디 찾기 페이지로 이동
     @GetMapping("/findAccountForm")
     public String findAccountForm() {return "account/findAccount";}
-    
+
     //아이디 - 사용자 유무 체크(fetch 비동기 처리)
     @PostMapping("/findAccount")
     @ResponseBody
@@ -70,7 +70,7 @@ public class UsersController {
         boolean found = usersService.isFindAccount(name, email);
         return ResponseEntity.ok(found);
     }
-    
+
     //비밀번호 - 임시 비밀번호 발급 페이지로 이동
     @GetMapping("/findPasswordForm")
     public String findPasswordForm() {return "account/tempPassword";}

@@ -16,9 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class PostImagesDto {
 
-    private Long image_id;
-  
-    private Long post_id;
+    private Long id;
 
     private String originFilename;
 
