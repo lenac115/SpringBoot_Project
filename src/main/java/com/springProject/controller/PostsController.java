@@ -2,6 +2,7 @@ package com.springProject.controller;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +22,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 @RequestMapping("/api/posts")
+@RequiredArgsConstructor
 @Slf4j
 public class PostsController {
 
     private final PostsService postsService;
 
-    @Autowired
-    public PostsController(PostsService postsService) {
-        this.postsService = postsService;
-    }
 
     //생성
-    @PostMapping
+    @PostMapping("/save")
     public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
                                                @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
