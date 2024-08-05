@@ -29,5 +29,4 @@ public class BookMarks {
 	private Posts posts;
 
 
-
 }

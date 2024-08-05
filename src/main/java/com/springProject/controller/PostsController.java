@@ -47,7 +47,8 @@ public class PostsController {
 
     //생성
     @PostMapping
-    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
+                                               @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
         return ResponseEntity.ok(createdPostDto);
     }
@@ -62,12 +63,27 @@ public class PostsController {
     //상세조회
     @GetMapping("/{id}")
     public ResponseEntity<PostsDto> getPostById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {
+
         PostsDto postsDto = postsService.getPostsDtoById(id);
-		if (userDetails != null) {
-			postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
-		}
-		return ResponseEntity.ok(postsDto);
+        if (userDetails != null) {
+          postsDto.setEqual(postsService.isEqual(postsDto.getUsersDto(), "1234@naver.com"));
+        }
+        return ResponseEntity.ok(postsDto);
     }
+
+
+    @GetMapping("/get")
+    public ModelAndView getPostDetails(@RequestParam Long postId, Model model) {
+        model.addAttribute("id", postId);
+        return new ModelAndView("postsDetails/myPost");
+    }
+
+    @GetMapping("/updateForm") // 배포 후에 user 검증 넣을 예정
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
+    public ModelAndView getPostUpdateForm(@RequestParam Long postId) {
+        return new ModelAndView("postsDetails/postUpdateForm");
+    }
+
 
     //삭제
 	@DeleteMapping("/{postId}")
@@ -162,5 +178,29 @@ public class PostsController {
         postsService.deleteNotice(users.getUsername(), id);
 
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");
+    }
+
+    //관리자페이지 - 공지사항 게시글만 조회
+    @GetMapping("/admin/notice")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getAllNotice() {
+        List<PostsDto> getNoticeList = postsService.getAllNotice();
+        return ResponseEntity.ok(getNoticeList);
+    }
+
+    //관리자페이지 - 일반 게시글만 조회
+    @GetMapping("/admin/posts")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getAllPostsList() {
+        List<PostsDto> getPostsList = postsService.getPostsList();
+        return ResponseEntity.ok(getPostsList);
+    }
+
+    //관리자페이지 - 일반 게시글 검색
+    @GetMapping("/admin/posts/search/{title}")
+    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    public ResponseEntity<List<PostsDto>> getSearchPosts(@PathVariable String title) {
+        List<PostsDto> getSearchPosts = postsService.getSearchPosts(title);
+        return ResponseEntity.ok(getSearchPosts);
     }
 }

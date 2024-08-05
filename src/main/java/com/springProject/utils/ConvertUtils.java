@@ -31,7 +31,6 @@ public class ConvertUtils {
                 .auth(usersDto.getAuth())
                 .loginId(usersDto.getLoginId())
                 .email(usersDto.getEmail())
-                .isActivated(usersDto.getIsActivated())
                 .createdAt(usersDto.getCreatedAt())
                 .updatedAt(usersDto.getUpdatedAt())
                 .isActivated(usersDto.getIsActivated())
@@ -41,15 +40,16 @@ public class ConvertUtils {
 
     public static UsersDto convertUsersToDto(Users users) {
         return UsersDto.builder()
+                .id(users.getId())
                 .nickname(users.getNickname())
                 .auth(users.getAuth())
                 .loginId(users.getLoginId())
                 .email(users.getEmail())
                 .isActivated(users.getIsActivated())
-                .isActivated(users.getIsActivated())
                 .createdAt(users.getCreatedAt())
                 .updatedAt(users.getUpdatedAt())
                 .name(users.getName())
+                .bannedUserId(users.getBannedUser() != null ? users.getBannedUser().getId() : null)
                 .build();
     }
 
@@ -70,6 +70,7 @@ public class ConvertUtils {
 
     public static PostsDto convertPostsToWith(Posts posts) {
         return PostsDto.builder()
+                .id(posts.getId())
                 .title(posts.getTitle())
                 .category(posts.getCategory())
                 .body(posts.getBody())
@@ -96,6 +97,30 @@ public class ConvertUtils {
                 .hashtags(postsDto.getHashtags())
                 .created_at(postsDto.getCreatedAt())
                 .updated_at(postsDto.getUpdatedAt())
+                .build();
+    }
+
+    public static PostImagesDto convertImagesToDto(PostImages postImages) {
+        return PostImagesDto.builder()
+                .id(postImages.getId())
+                .originFilename(postImages.getOriginFilename())
+                .storeFilename(postImages.getStoreFilename())
+                .filePath(postImages.getFilePath())
+                .createdAt(postImages.getCreatedAt())
+                .build();
+    }
+
+    public static BookMarksDto convertBookMarksToDto(BookMarks bookMarks) {
+        return BookMarksDto.builder()
+                .postsDto(convertPostsToDto(bookMarks.getPosts()))
+                .usersDto(convertUsersToDto(bookMarks.getUsers()))
+                .build();
+    }
+
+    public static PrefersDto convertPrefersToDto(Prefers prefers) {
+        return PrefersDto.builder()
+                .postsDto(convertPostsToDto(prefers.getPosts()))
+                .usersDto(convertUsersToDto(prefers.getUsers()))
                 .build();
     }
 }

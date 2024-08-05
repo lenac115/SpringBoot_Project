@@ -26,6 +26,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -170,6 +171,7 @@ public class UsersService {
         user.setNickname(userDto.getNickname());
         user.setEmail(userDto.getEmail());
         user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         user.setIsActivated(userDto.getIsActivated());
         return user;
     }
@@ -200,6 +202,7 @@ public class UsersService {
                 .users(findUsers)
                 .bannedDate(bannedForm.getBannedDate())
                 .bannedReason(bannedForm.getBannedReason())
+                .bannedLoginId(bannedForm.getBannedLoginId())
                 .build();
 
         findUsers.setBannedUser(user);
@@ -211,10 +214,17 @@ public class UsersService {
     @Transactional
     public UsersDto activate(Long userId) {
         isBanned();
-        Users findUsers = usersRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        findUsers.setIsActivated(true);
-        bannedUserRepository.deleteByUsersId(findUsers.getId());
+        Users findUsers = usersRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        //유저가 정지 이력이 있는지 확인(그래야 정지 -> 활동으로 변경)
+        if (findUsers.getBannedUser() != null) {
+            findUsers.setBannedUser(null);
+        }
+        
+        //정지 테이블의 로그는 그대로 남기고, 유저 테이블의 컬럼 값만 업데이트(banned_id)
+        findUsers.setIsActivated(true);
+        usersRepository.save(findUsers);
         return ConvertUtils.convertUsersToDto(findUsers);
     }
 
@@ -249,5 +259,10 @@ public class UsersService {
         }
 
         throw new AccessDeniedException("정지된 사용자입니다.");
+    }
+
+    @Transactional(readOnly = true)
+    public UsersDto getSearchUser(String userId) {
+        return ConvertUtils.convertUsersToDto(usersRepository.findOptionalByLoginId(userId).orElseThrow(() -> new NoSuchElementException("User not found with userId: " + userId)));
     }
 }

@@ -14,7 +14,8 @@ import lombok.AllArgsConstructor;
 @Builder
 public class BookMarksDto {
 
-	private long id;
-	private Users user;
-	private Posts post;
+    private Long id;
+    private PostsDto postsDto;
+    private UsersDto usersDto;
+
 }

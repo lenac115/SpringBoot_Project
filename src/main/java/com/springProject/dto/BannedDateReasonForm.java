@@ -16,4 +16,6 @@ public class BannedDateReasonForm {
     private LocalDateTime bannedDate;
 
     private String bannedReason;
+
+    private String bannedLoginId;
 }

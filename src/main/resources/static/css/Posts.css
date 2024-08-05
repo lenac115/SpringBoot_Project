@@ -1,0 +1,116 @@
+.main-title {
+    width: 612px;
+    height: 68px;
+    font-size: 48px;
+    margin: 334px 439px 105px 389px ;
+}
+
+.posts-title{
+    font-size: 40px;
+    margin-left: 182px;
+}
+
+.posts-title-input {
+    margin-left: 27px;
+    margin-bottom: 75px;
+    width: 973px;
+    height: 51px;
+}
+
+.posts-content{
+    margin-left: 182px;
+    margin-bottom: 49px;
+    width: 1074px;
+    height: 236px;
+}
+
+.posts-content-input {
+    scroll-behavior: auto;
+}
+
+.image-add-button{
+    width: 20px;
+    height: 20px;
+    background-color: #9095A0;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    left: 68px;
+    top: 55px;
+}
+
+.image-delete-button {
+    width: 52px;
+    height: 36px;
+    background-color: #9095A0;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    left: 352px;
+    top: 30px;
+}
+
+.hashtags-title {
+    width: 349px;
+    height: 36px;
+    font-size: 24px;
+    margin: 65px 0 182px 0 ;
+}
+
+#name {
+    width: 192px;
+    height: 36px;
+    margin-left: 82px;
+    margin-bottom: 32px;
+}
+
+/*.hashtags-button {*/
+/*    width: 52px;*/
+/*    height: 36px;*/
+/*    background-color: #9095A0;*/
+/*    border: none;*/
+/*    border-radius: 6px;*/
+/*    color: white;*/
+/*    left: 352px;*/
+/*    top: 30px;*/
+/*    margin-left: 31px;*/
+/*    margin-bottom: 67px;*/
+
+.button:hover {
+    background-color: #98DB2E;
+    color: black;
+    cursor: pointer;
+}
+
+.information {
+    display: flex;
+}
+
+.category-box {
+    margin-left: 182px;
+}
+
+.location-box {
+    margin-left: 125px;
+}
+
+.starpoint-box {
+    margin-left: 125px;
+    margin-bottom: 82px;
+}
+
+.posts-button {
+    margin-left: 880px;
+    width: 184px;
+    height: 54px;
+    background-color: #9095A0;
+    border: none;
+    border-radius: 6px;
+    color: white;
+}
+
+
+
+
+
+

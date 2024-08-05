@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,7 +48,16 @@ public class Posts {
     private Timestamp updated_at;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
-    private List<Comments> comments;
+    private List<Comments> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImages> postImages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookMarks> bookMarks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prefers> prefers = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "users_id")

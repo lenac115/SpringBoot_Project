@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.springProject.dto.UsersDto;
+import com.springProject.entity.BookMarks;
+import com.springProject.entity.Prefers;
 import com.springProject.entity.Users;
 import com.springProject.repository.BannedUserRepository;
 import com.springProject.repository.UsersRepository;
@@ -22,6 +24,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.springProject.SearchData;
@@ -63,10 +66,26 @@ public class PostsService {
                 .collect(Collectors.toList());
     }
 
-    public PostsDto getPostsDtoById(Long id) {
-        return ConvertUtils.convertPostsToWith(
-                postsRepository.findById(id).orElseThrow(
-                        () -> new IllegalArgumentException("잘못된 ID 입니다.")));
+    public PostsDto getPostsDtoById(Long id, UserDetails users) {
+        Posts findPost = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        PostsDto postsDto = ConvertUtils.convertPostsToWith(findPost);
+        if(users != null) {
+            Users findUser = usersRepository.findByLoginId(users.getUsername());
+            postsDto.setPresentId(users.getUsername());
+
+            List<BookMarks> bookMarksList = findPost.getBookMarks();
+            List<Prefers> prefersList = findPost.getPrefers();
+            for(BookMarks bookMarks : bookMarksList) {
+                if(bookMarks.getUsers().getId().equals(findUser.getId()))
+                    postsDto.setBookmark(true);
+            }
+            for(Prefers prefers : prefersList) {
+                if(prefers.getUsers().getId().equals(findUser.getId()))
+                    postsDto.setPrefers(true);
+            }
+        }
+
+        return postsDto;
     }
 
     // delete
@@ -88,22 +107,19 @@ public class PostsService {
 
     }
 
-    private Posts findPostById(Long id) {
-        return postsRepository.findById(id)
-                .stream()
-                .filter(post -> post.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("id에 해당하는 글을 찾을 수 없습니다."));
-    }
 
     public Optional<PostsDto> updatePosts(Long id, PostsDto updatePostsDto) {
         return postsRepository.findById(id)
-                .map(existingposts -> {
-                    existingposts.setTitle(updatePostsDto.getTitle());
-                    existingposts.setBody(updatePostsDto.getBody());
-                    existingposts.setUpdated_at(updatePostsDto.getUpdatedAt());
-                    return ConvertUtils.convertPostsToDto(existingposts);
+                .map(existingPosts -> {
+                    existingPosts.setTitle(updatePostsDto.getTitle());
+                    existingPosts.setBody(updatePostsDto.getBody());
+                    existingPosts.setLocation(updatePostsDto.getLocation());
+                    existingPosts.setCategory(updatePostsDto.getCategory());
+                    exustubgPosts.setHashtags(updatePostsDto.getHashtags());
+                    existingPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
+                    return ConvertUtils.convertPostsToDto(existingPosts);
                 });
+
     }
 
     // 검색 조건에 맞게 데이터 검색하는 메서드
@@ -183,7 +199,7 @@ public class PostsService {
         Posts findPosts = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 
-        if(!findPosts.isNotice()) {
+        if(findPosts.isNotice()) {
             throw new IllegalArgumentException("수정 가능한 게시물이 아닙니다.");
         }
         if(!findUsers.getAuth().equals(Users.UserAuth.admin)) {
@@ -221,5 +237,26 @@ public class PostsService {
 
     public Boolean isEqual(UsersDto usersDto, String username) {
         return usersDto.getLoginId().equals(username);
+    }
+
+    public List<PostsDto> getAllNotice() {
+        List<Posts> posts = postsRepository.getAllNotice();
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostsDto> getPostsList() {
+        List<Posts> posts = postsRepository.getAllPosts();
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToWith)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostsDto> getSearchPosts(String title) {
+        List<Posts> posts = postsRepository.searchByTitleLike(title);
+        return posts.stream()
+                .map(ConvertUtils::convertPostsToWith)
+                .collect(Collectors.toList());
     }
 }

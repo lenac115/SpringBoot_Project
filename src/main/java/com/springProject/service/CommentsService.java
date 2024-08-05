@@ -15,8 +15,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ public class CommentsService {
 
     // 계층형 댓글 출력
     @Transactional(readOnly = true)
-    public List<CommentWithParent> findCommentsByPostId(Long id) {
+    public List<CommentWithParent> findCommentsByPostId(Long id, UserDetails userDetails) {
         isBanned();
         // 쿼리 결과값
         List<CommentWithParent> result = new ArrayList<>();
@@ -74,6 +74,9 @@ public class CommentsService {
                                 .isActivated(c.isActivated())
                                 .build();
                     }
+                    if(userDetails != null) {
+                        commentWithParent.setPresentId(userDetails.getUsername());
+                    }
 
                     // 부모가 존재하는 경우 부모의 id값 저장
                     if(c.getParent() != null){
@@ -93,6 +96,7 @@ public class CommentsService {
         // 정렬된 comments list 반환
         return result;
     }
+
 
     // 업데이트, 내용을 업데이트하고 updateAt 갱신
     public CommentsDto update(Long id, CommentsDto commentsDto, String username) {

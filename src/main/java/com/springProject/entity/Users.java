@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Users {
-	@Id
+	@Id @Column(name = "users_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "users_id")
 	private Long id;
@@ -42,13 +42,13 @@ public class Users {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	@Column(columnDefinition = "boolean default true")
-	private Boolean isActivated = true;
+	@ColumnDefault("1")
+	private Boolean isActivated;
 
-	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	private List<Comments> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
 	private List<Posts> posts = new ArrayList<>();
 
 	@OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
