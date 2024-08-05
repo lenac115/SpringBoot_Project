@@ -1,10 +1,16 @@
 package com.springProject.utils;
 
+import com.springProject.dto.BookMarksDto;
 import com.springProject.dto.CommentsDto;
+import com.springProject.dto.PostImagesDto;
 import com.springProject.dto.PostsDto;
+import com.springProject.dto.PrefersDto;
 import com.springProject.dto.UsersDto;
+import com.springProject.entity.BookMarks;
 import com.springProject.entity.Comments;
+import com.springProject.entity.PostImages;
 import com.springProject.entity.Posts;
+import com.springProject.entity.Prefers;
 import com.springProject.entity.Users;
 
 public class ConvertUtils {
@@ -102,7 +108,7 @@ public class ConvertUtils {
 
     public static PostImagesDto convertImagesToDto(PostImages postImages) {
         return PostImagesDto.builder()
-                .id(postImages.getId())
+                .image_id(postImages.getImage_id())
                 .originFilename(postImages.getOriginFilename())
                 .storeFilename(postImages.getStoreFilename())
                 .filePath(postImages.getFilePath())

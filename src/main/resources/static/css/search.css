@@ -29,7 +29,8 @@ a:hover {
     color: #98DB2EFF; /* primary-500 */
 }
 
-form button {
+form button,
+#exist-post > a{
     height: 36px;
     padding: 0 12px;
 
@@ -50,8 +51,8 @@ form button {
     align-self: flex-end;
 }
 
-form button:hover {
-    height: 40px;
+form button:hover ,
+#exist-post > a:hover {
     color: #354E0DFF; /* primary-800 */
     background: #98DB2EFF; /* primary-500 */
 }
@@ -71,8 +72,10 @@ form select {
     height: 36px;
 }
 
-form input, form select,
-form ul li input {
+#post-container > form > #rating > li:not(:first-child) > label,
+form input, form select, button,
+form ul li input, #sorting,
+.bookmark, .prefer{
     cursor: pointer;
 }
 
@@ -196,7 +199,7 @@ form ul li input {
 }
 
 #post-container {
-    padding-top: 95px;
+    padding-top: 130px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -208,7 +211,8 @@ form ul li input {
     align-items: flex-start;
 }
 
-#post-container > form * {
+#post-container > form *,
+#sorting {
     font-family: Manrope;
     font-size: 14px;
     line-height: 22px;
@@ -393,12 +397,32 @@ select:active {
 }
 
 #exist-post {
+    position: relative;
     width: 100%;
     padding-left: 70px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#exist-post > a {
+    align-self: flex-start;
+    position: absolute;
+    top: -90px;
+    margin: 20px;
+}
+
+#sorting {
+    color: #171A1FFF;
+    border: 2px solid #98DB2EFF;
+    border-radius: 6px;
+    padding: 6px;
+
+    position: absolute;
+    top: -70px;
+    align-self: flex-end;
+    height: 36px;
 }
 
 #no-post {
@@ -417,6 +441,22 @@ select:active {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+}
+
+#post-list .post-image {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+#post-list li a {
+    display: block;
+    padding: 0 24px;
+    height: 56px;
+    font-family: DM Sans;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 500;
+    color: #171A1FFF;
 }
 
 #post-list > li {
@@ -444,6 +484,10 @@ select:active {
 
 .bookmark {
     padding-right: 4px;
+}
+
+.off {
+    display:none;
 }
 
 #page-container {

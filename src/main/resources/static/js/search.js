@@ -1,21 +1,25 @@
+
 // 현재 URI 파싱
 var parsingURI = location.search.split("page")[0];
+var parsingURL = window.location.href.split("?")[0];
 
 // 정렬에 연결할 URI 작업
 const sorting = document.querySelectorAll("#sorting option");
 
-sorting.forEach(sort => {
-    var optionId = sort.getAttribute("id");
-    sort.addEventListener("click", function (e) {
-        window.location.href = parsingURI + "sort="+optionId+"&page=1";
-    })
+function sortingURL(tag) {
+    console.log(tag);
+    var optionId = tag.getAttribute("id");
 
-})
+    if(parsingURI.charAt(0) !== "?") parsingURI = "?";
+    window.location.href = window.location.href.split("?")[0]
+        + parsingURI + "sort="+optionId+"&page=1";
+}
 
 // 페이지 이동에 연결할 URI 작업
 const pageContainer = document.querySelectorAll('.move-page');
 
 for (let i = 0; i < pageContainer.length; i++) {
+    if(parsingURI.charAt(0) !== "?") parsingURI = "?";
     var moveURI = parsingURI+"page"+pageContainer[i].href.split("page")[1];
     pageContainer[i].href = moveURI;
 }
@@ -61,3 +65,23 @@ function checkDuplicate(chk) {
         if(starTag !== chk) {starTag.checked = false;}
     })
 }
+
+
+const imageTags = document.querySelectorAll(".post-image")
+let images = [];
+
+imageTags.forEach(imageTag => {
+    var postId = imageTag.getAttribute("id").split("post-image")[1];
+    fetch("api/images/get?postId=" + postId, {
+        method: "GET"
+    })
+        .then((response) => {
+            if(response.ok) {
+                return response.body;
+            }
+        })
+        .then(images => {
+            imageTag.src = "/api/images/display/" + images[0].storeFilename;
+        })
+
+});

@@ -194,7 +194,7 @@
             <button type="submit">검색</button>
         </form>
         <div th:if="${!page.isEmpty()}" id="exist-post">
-            <a th:src="@{/api/posts/create}"></a>
+            <a th:href="@{/api/posts/create}">게시물 만들러 가기</a>
             <select id="sorting">
                 <option id="newPost">최신 순
                 </option>
@@ -207,16 +207,16 @@
             </select>
             <ul id="post-list">
                 <li th:each="post : ${page}">
-                    <!--<img th:src="${post.url}"/>-->
+                    <img class="post-image" th:id="'post-image'+${post.id}"
+                        th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
                     <div class="post-sub-images">
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
-                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
-                        <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
-                        <!--<img th:if="${}"/>
-                        <img th:unless=""/>
-                        <img th:if=""/>
-                        <img th:unless=""/>-->
+                        <img class="bookmark on" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}"/>
+                        <img class="prefer on" th:src="@{/img/before_prefer.svg}"/>
+                        <img class="prefer off" th:src="@{/img/after_prefer.svg}"/>
+
                     </div>
                 </li>
             </ul>

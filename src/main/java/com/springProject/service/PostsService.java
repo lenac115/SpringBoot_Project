@@ -115,7 +115,7 @@ public class PostsService {
                     existingPosts.setBody(updatePostsDto.getBody());
                     existingPosts.setLocation(updatePostsDto.getLocation());
                     existingPosts.setCategory(updatePostsDto.getCategory());
-                    exustubgPosts.setHashtags(updatePostsDto.getHashtags());
+                    existingPosts.setHashtags(updatePostsDto.getHashtags());
                     existingPosts.setUpdated_at(new Timestamp(System.currentTimeMillis()));
                     return ConvertUtils.convertPostsToDto(existingPosts);
                 });

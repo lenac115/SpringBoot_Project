@@ -29,7 +29,7 @@ public class PostImagesController {
 
     private final PostImagesService postImagesService;
 
-    @Value("${com.ex.uploadPath}")
+   /* @Value("${com.ex.uploadPath}")*/
     private String uploadPath;
 
     @PostMapping("/upload")
