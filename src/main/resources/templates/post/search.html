@@ -12,12 +12,12 @@
 <main>
     <h1 id="search-title">마음에 드는 게시물을 찾아보세요!</h1>
     <section id="notice-container">
-        <div>
+        <div id="notice-container-title">
             <img th:src="@{/img/notice_pin.svg}" alt="pin">
             <p>공지사항</p>
         </div>
-        <ul th:each="notice : ${notices}">
-            <li>
+        <ul id="notice-list">
+            <li th:each="notice : ${notices}">
                 <a class="notice-title" th:text="${notice.title}"
                    th:href="@{/api/posts/{id}(id=${notice.id})}"></a>
             </li>
@@ -32,11 +32,11 @@
     <div id="post-container">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
-            <input th:value="${searchData.keyword != null} ? *{keyword} : null" type="text" id="keyword"
+            <input th:value="${searchData.keyword != null} ? *{keyword}" type="text" id="keyword"
                    name="keyword" placeholder="내용 입력"/>
             <label for="category">카테고리</label>
             <select id="category" name="category">
-                <option value=null selected>선택</option>
+                <option value="">선택</option>
                 <option value="한식"
                         th:selected="${searchData.category == '한식'}">
                     한식
@@ -64,7 +64,7 @@
             </select>
             <label for="location">위치</label>
             <select id="location" name="location">
-                <option value=null>선택</option>
+                <option value>선택</option>
                 <option value="서울"
                         th:selected="${searchData.location == '서울'}">
                     서울
@@ -143,52 +143,68 @@
                     <label>별점</label>
                 </li>
                 <li>
-                    <input type="radio" value="5" name="star" id="rating5"
-                           th:checked="${searchData.star == 5}" />
+                    <input type="checkbox" value="5" name="star" id="rating5"
+                           th:checked="${searchData.star == 5}"
+                    onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star5.png}"/>
                     <label for="rating5">5점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="4" name="star" id="rating4"
-                           th:checked="${searchData.star == 4}" />
+                    <input type="checkbox" value="4" name="star" id="rating4"
+                           th:checked="${searchData.star == 4}"
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star4.png}"/>
                     <label for="rating4">4점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="3" name="star" id="rating3"
-                           th:checked="${searchData.star == 3}" />
+                    <input type="checkbox" value="3" name="star" id="rating3"
+                           th:checked="${searchData.star == 3}"
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star3.png}"/>
                     <label for="rating3">3점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="2" name="star" id="rating2"
-                           th:checked="${searchData.star == 2}" />
+                    <input type="checkbox" value="2" name="star" id="rating2"
+                           th:checked="${searchData.star == 2}"
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star2.png}"/>
                     <label for="rating2">2점 이상</label>
                 </li>
                 <li>
-                    <input type="radio" value="1" name="star" id="rating1"
-                           th:checked="${searchData.star == 1}" />
+                    <input type="checkbox" value="1" name="star" id="rating1"
+                           th:checked="${searchData.star == 1}"
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star1.png}"/>
                     <label for="rating1">1점 이상</label>
                 </li>
             </ul>
             <label for="hashtags">해시태그</label>
             <input type="text" id="hashtags" name="hashtags"
-                   placeholder="태그를 입력하세요"
-                   th:value="${searchData.hashtag != null} ? *{hashtag} : null" />
+                   placeholder="태그 입력"
+                   th:value="${searchData.hashtag != null} ? *{hashtag}" />
             <div id="date">
                 <label for="date">등록된 날짜</label>
                 <input type="date" name="startDate" placeholder="시작 범위"
-                       th:value="${searchData.startDate != null} ? *{{startDate}} : null" />
+                       th:value="${searchData.startDate != null} ? *{{startDate}}" />
                 <p>~</p>
                 <input type="date" name="endDate" placeholder="끝 범위"
-                       th:value="${searchData.endDate != null} ? *{{endDate}} : null" />
+                       th:value="${searchData.endDate != null} ? *{{endDate}}" />
             </div>
             <input type="text" name="page" value="1" hidden>
             <button type="submit">검색</button>
         </form>
-        <div th:if="${!page.isEmpty()}">
+        <div th:if="${!page.isEmpty()}" id="exist-post">
+            <a th:src="@{/api/posts/create}"></a>
+            <select id="sorting">
+                <option id="newPost">최신 순
+                </option>
+                <option id="oldPost">오래된 순
+                </option>
+                <option id="bigStar">별점 높은 순
+                </option>
+                <option id="smallStar">별점 낮은 순
+                </option>
+            </select>
             <ul id="post-list">
                 <li th:each="post : ${page}">
                     <!--<img th:src="${post.url}"/>-->
@@ -228,6 +244,7 @@
             </div>
 
         </div>
+        <p th:if="${page.isEmpty()}" id="no-post">검색 조건과 일치하는 게시글이 없습니다.</p>
     </div>
 </main>
 <footer></footer>
