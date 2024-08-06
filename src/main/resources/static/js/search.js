@@ -93,10 +93,39 @@ var bookmarkUrl = "/api/bookmarks/";
 var preferUrl = "/api/prefers/";
 
 
-/*if(user !== null) {
+document.addEventListener("DOMContentLoaded", function() {
+    if (user !== null) {
+        var postElements = document.querySelectorAll('#post-list > li');
 
-}*/
+        postElements.forEach(function(postElement) {
+            var postId = postElement.getAttribute('data-post-id');
 
+            fetch("/api/prefers/get/" + postId, {
+                method: "GET"
+            }).then(response => {
+                if (response.ok) {
+                    var preferImages = postElement.querySelectorAll('.prefer');
+
+                    preferImages.forEach(function(image) {
+                        image.classList.toggle("off");
+                    });
+                }
+            });
+
+            fetch("/api/bookmarks/get/" + postId, {
+                method: "GET"
+            }).then(response => {
+                if (response.ok) {
+                    var bookmarkImages = postElement.querySelectorAll('.bookmark');
+
+                    bookmarkImages.forEach(function(image) {
+                        image.classList.toggle("off");
+                    });
+                }
+            });
+        });
+    }
+});
 
 // 북마크 추가 및 취소
 bookmarks.forEach(bookmark =>
