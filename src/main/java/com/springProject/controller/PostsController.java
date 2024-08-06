@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.springProject.SearchData;
 import com.springProject.dto.PostsDto;
 import com.springProject.service.PostsService;
+import com.springProject.service.UsersService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,10 +40,17 @@ import org.springframework.web.servlet.ModelAndView;
 public class PostsController {
 
 	private final PostsService postsService;
+	private final UsersService usersService;
 
 	@Autowired
-	public PostsController(PostsService postsService) {
+	public PostsController(PostsService postsService, UsersService usersService) {
 		this.postsService = postsService;
+		this.usersService = usersService;
+	}
+
+	@GetMapping("/create")
+	public ModelAndView createPostForm() {
+		return new ModelAndView("post/createForm");
 	}
 
     //생성
@@ -104,13 +112,19 @@ public class PostsController {
     public ModelAndView getPostsBySearchDataAndSortBy(@ModelAttribute SearchData searchData,
          @RequestParam(value = "sort", defaultValue = "newPost", required = false) String sortBy,
          @RequestParam(value = "page", defaultValue = "1", required = false) int nowPage,
+		 @AuthenticationPrincipal UserDetails users,
 		 Model model) {
         log.info("keyword = {}, category = {}, location = {}, star = {}, hashtag = {}, startDate = {}, endDate = {}, sortBy = {}, page = {}",
 			searchData.getKeyword(), searchData.getCategory(), searchData.getLocation(), searchData.getStar(), searchData.getHashtag(),
                 searchData.getStartDate(), searchData.getEndDate(), sortBy, nowPage);
 
+		if(users != null)
+		{
+			model.addAttribute("user", postsService.getUserByLoginId(users.getUsername()));
+		}
+		else model.addAttribute("user", null);
 		model.addAttribute("searchData", searchData);
-		model.addAttribute("sortBy", sortBy);
+		model.addAttribute("sort", sortBy);
 
 		Page<PostsDto> posts = postsService.getPostsBySearchDataAndSortBy(searchData, sortBy, nowPage);
 		model.addAttribute("page", posts);

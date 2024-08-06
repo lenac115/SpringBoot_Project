@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Prefers {
-	@Id @Column(name = "prefers_id")
+	@Id @Column(name = "prefer_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long prefer_id;
 

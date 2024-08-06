@@ -1,7 +1,17 @@
 package com.springProject.utils;
 
-import com.springProject.dto.*;
-import com.springProject.entity.*;
+import com.springProject.dto.BookMarksDto;
+import com.springProject.dto.CommentsDto;
+import com.springProject.dto.PostImagesDto;
+import com.springProject.dto.PostsDto;
+import com.springProject.dto.PrefersDto;
+import com.springProject.dto.UsersDto;
+import com.springProject.entity.BookMarks;
+import com.springProject.entity.Comments;
+import com.springProject.entity.PostImages;
+import com.springProject.entity.Posts;
+import com.springProject.entity.Prefers;
+import com.springProject.entity.Users;
 
 public class ConvertUtils {
 
@@ -64,6 +74,16 @@ public class ConvertUtils {
                 .build();
     }
 
+    public static PostsDto convertPostsToNoticeDto(Posts posts) {
+        return PostsDto.builder()
+            .id(posts.getId())
+            .title(posts.getTitle())
+            .body(posts.getBody())
+            .createdAt(posts.getCreated_at())
+            .updatedAt(posts.getUpdated_at())
+            .build();
+    }
+
     public static PostsDto convertPostsToWith(Posts posts) {
         return PostsDto.builder()
                 .id(posts.getId())
@@ -120,5 +140,3 @@ public class ConvertUtils {
                 .build();
     }
 }
-
-
