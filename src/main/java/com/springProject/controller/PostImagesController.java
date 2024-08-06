@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/images")
@@ -23,10 +24,15 @@ public class PostImagesController {
 
     private final PostImagesService postImagesService;
 
-    @PostMapping("/upload")
-    //@PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ResponseEntity<List<PostImagesDto>> uploadImages(@RequestPart List<MultipartFile> imageList, @RequestParam Long postId) throws IOException {
-        List<PostImagesDto> postImagesDto = postImagesService.uploadImage(imageList, postId);
+    @PostMapping("/upload/temp")
+    public ResponseEntity<Map<Long, String>> uploadTemporaryImages(@RequestPart List<MultipartFile> imageList) throws IOException {
+        Map<Long, String> imageIds = postImagesService.uploadTemporaryImages(imageList);
+        return ResponseEntity.status(HttpStatus.OK).body(imageIds);
+    }
+
+    @PostMapping("/attachImages")
+    public ResponseEntity<List<PostImagesDto>> attachImagesToPost(@RequestBody List<Long> imageIds, @RequestParam Long postId) {
+        List<PostImagesDto> postImagesDto = postImagesService.attachImagesToPost(imageIds, postId);
         return ResponseEntity.status(HttpStatus.OK).body(postImagesDto);
     }
 
