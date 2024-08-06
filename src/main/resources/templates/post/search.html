@@ -213,8 +213,8 @@
                 </option>
             </select>
             <ul id="post-list">
-                <li th:each="post : ${page}" data-post-id="${post.id}">
-                    <img class="post-image" th:id="'post-image'+${post.id}"
+                <li th:each="post : ${page}" >
+                    <img class="post-image" th:id="${post.id}" th:data-post-id="${post.id}"
                          th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">

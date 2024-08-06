@@ -35,7 +35,6 @@ for (let i = 0; i < selectBoxElements.length; i++) {
     })
 }
 
-
 // 공지사항 열고 닫기
 const arrowUp = document.querySelector("#up");
 const arrowDown = document.querySelector("#down");
@@ -69,23 +68,6 @@ function checkDuplicate(chk) {
 const imageTags = document.querySelectorAll(".post-image")
 let images = [];
 
-
-imageTags.forEach(imageTag => {
-    var postId = imageTag.getAttribute("id").split("post-image")[1];
-    fetch("api/images/get?postId=" + postId, {
-        method: "GET"
-    })
-        .then((response) => {
-            if(response.ok) {
-                return response.body;
-            }
-        })
-        .then(images => {
-            imageTag.src = "/api/images/display/" + images[0].storeFilename;
-        })
-
-});
-
 var bookmarks = document.querySelectorAll(".bookmark");
 var prefers = document.querySelectorAll(".prefer");
 
@@ -94,14 +76,32 @@ var preferUrl = "/api/prefers/";
 
 
 document.addEventListener("DOMContentLoaded", function() {
+
+    imageTags.forEach(imageTag => {
+        var postId = imageTag.id;
+        fetch("/api/images/get?postId=" + postId, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                imageTag.src = '/api/images/display/' + data[0].storeFilename;
+            })
+
+    });
+
     if (user !== null) {
         var postElements = document.querySelectorAll('#post-list > li');
 
         postElements.forEach(function(postElement) {
-            var postId = postElement.getAttribute('data-post-id');
+            var postId = postElement.querySelector(".post-image").getAttribute('data-post-id');
 
             fetch("/api/prefers/get/" + postId, {
-                method: "GET"
+                method: 'GET'
             }).then(response => {
                 if (response.ok) {
                     var preferImages = postElement.querySelectorAll('.prefer');
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             fetch("/api/bookmarks/get/" + postId, {
-                method: "GET"
+                method: 'GET'
             }).then(response => {
                 if (response.ok) {
                     var bookmarkImages = postElement.querySelectorAll('.bookmark');
