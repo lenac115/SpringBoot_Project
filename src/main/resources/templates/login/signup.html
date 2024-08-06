@@ -4,47 +4,16 @@
     <meta charset="UTF-8">
     <title>회원가입</title>
     <link th:rel="stylesheet" th:href="@{/css/signup.css}">
-    <style>
-        body {
-            margin: 0;
-        }
-        a {
-            text-decoration: none;
-        }
-        #backToHome {
-            position: absolute;
-            top: 30px;
-            left: 55px;
-            font-family: Manrope; /* Body */
-            font-size: 32px;
-            line-height: 22px;
-            font-weight: 400;
-            color: #005551FF;
-            z-index: 10;
-        } /* secondary-750 */
-        #header {
-            position: relative;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 130px;
-            width: 100%;
-        }
-        #characterImg {
-            position: absolute;
-            top: 5px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
-        }
-    </style>
+    <link th:rel="stylesheet" th:href="@{/css/header.css}">
 
 </head>
 <body>
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
 </header>
 <div class="sign-container">
     <h1>회원가입</h1>
