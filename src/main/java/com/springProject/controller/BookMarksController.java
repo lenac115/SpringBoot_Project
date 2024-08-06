@@ -19,15 +19,23 @@ public class BookMarksController {
 
     private final BookMarksService bookMarksService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<BookMarksDto>> getBookMarks(@RequestParam Long userId) {
+    @GetMapping
+    public ResponseEntity<List<BookMarksDto>> getBookMarks(@RequestParam(value="userId") Long userId) {
         List<BookMarksDto> bookMarksDtoList = bookMarksService.findAllById(userId);
         return ResponseEntity.status(HttpStatus.OK).body(bookMarksDtoList);
     }
 
+    @GetMapping("/get")
+    public ResponseEntity<Boolean> getBookMarksById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
+
+        Boolean isBookMark = bookMarksService.isBookMark(postId, user.getUsername());
+
+        return ResponseEntity.status(HttpStatus.OK).body(isBookMark);
+    }
+
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ResponseEntity<BookMarksDto> saveBookMarks(@RequestParam Long postId, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<BookMarksDto> saveBookMarks(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
 
         BookMarksDto bookMarksDto = bookMarksService.save(postId, user.getUsername());
 
@@ -36,7 +44,7 @@ public class BookMarksController {
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ResponseEntity<String> deleteBookMarks(@RequestParam Long postId, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<String> deleteBookMarks(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
         bookMarksService.delete(postId, user.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body("삭제 완료");

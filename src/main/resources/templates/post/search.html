@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
@@ -29,7 +29,8 @@
             <span class="arrow"></span>
         </button>
     </section>
-    <div id="post-container">
+    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user == null || user.isActivated}">게시물 만들러 가기</a>
+    <div id="post-container" th:if="${user == null || user.isActivated}">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
             <input th:value="${searchData.keyword != null} ? *{keyword}" type="text" id="keyword"
@@ -194,29 +195,27 @@
             <button type="submit">검색</button>
         </form>
         <div th:if="${!page.isEmpty()}" id="exist-post">
-            <a th:src="@{/api/posts/create}"></a>
             <select id="sorting">
-                <option id="newPost">최신 순
+                <option value="newPost" th:selected="*{sort == 'newPost'}">최신 순
                 </option>
-                <option id="oldPost">오래된 순
+                <option value="oldPost" th:selected="*{sort == 'oldPost'}">오래된 순
                 </option>
-                <option id="bigStar">별점 높은 순
+                <option value="bigStar" th:selected="*{sort == 'bigStar'}">별점 높은 순
                 </option>
-                <option id="smallStar">별점 낮은 순
+                <option value="smallStar" th:selected="*{sort == 'smallStar'}">별점 낮은 순
                 </option>
             </select>
             <ul id="post-list">
                 <li th:each="post : ${page}">
-                    <!--<img th:src="${post.url}"/>-->
-                    <a th:text="${post.title}" th:href="@{/api/posts/{id}(id=${post.id})}"></a>
+                    <img class="post-image" th:id="'post-image'+${post.id}"
+                        th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
+                    <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
-                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
+                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}" />
                         <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}">
                         <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
-                        <!--<img th:if="${}"/>
-                        <img th:unless=""/>
-                        <img th:if=""/>
-                        <img th:unless=""/>-->
+                        <img class="prefer off" th:src="@{/img/after_prefer.svg}"/>
                     </div>
                 </li>
             </ul>

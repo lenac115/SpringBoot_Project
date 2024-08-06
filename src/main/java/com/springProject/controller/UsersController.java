@@ -4,13 +4,13 @@ import com.springProject.dto.BannedDateReasonForm;
 import com.springProject.dto.MessageDto;
 import com.springProject.dto.UsersDto;
 import com.springProject.service.UsersService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.authentication.UserServiceBeanDefinitionParser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -47,7 +47,7 @@ public class UsersController {
     //회원가입 - 아이디 중복 체크(fetch 비동기 처리)
     @GetMapping("/checkDuplicateId")
     @ResponseBody
-    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam String loginId) {
+    public ResponseEntity<Boolean> checkDuplicateId(@RequestParam(value="loginId") String loginId) {
         boolean exists = usersService.isLoginIdDuplicate(loginId);
         return ResponseEntity.ok(exists);
     }
@@ -55,7 +55,7 @@ public class UsersController {
     //회원가입 - 닉네임 중복 체크(fetch 비동기 처리)
     @GetMapping("/checkDuplicateNickname")
     @ResponseBody
-    public ResponseEntity<Boolean> checkDuplicateNickname(@RequestParam String nickname) {
+    public ResponseEntity<Boolean> checkDuplicateNickname(@RequestParam(value="nickname") String nickname) {
         boolean exists = usersService.isNicknameDuplicate(nickname);
         return ResponseEntity.ok(exists);
     }
@@ -63,7 +63,7 @@ public class UsersController {
     //회원가입 - 이메일 중복 체크(fetch 비동기 처리)
     @GetMapping("/checkDuplicateEmail")
     @ResponseBody
-    public ResponseEntity<Boolean> checkDuplicateEmail(@RequestParam String email) {
+    public ResponseEntity<Boolean> checkDuplicateEmail(@RequestParam(value="email") String email) {
         boolean exists = usersService.isEmailDuplicate(email);
         return ResponseEntity.ok(exists);
     }
@@ -71,7 +71,7 @@ public class UsersController {
     //아이디 - 아이디 찾기 페이지로 이동
     @GetMapping("/findAccountForm")
     public String findAccountForm() {return "account/findAccount";}
-    
+
     //아이디 - 사용자 유무 체크(fetch 비동기 처리)
     @PostMapping("/findAccount")
     @ResponseBody
@@ -79,7 +79,7 @@ public class UsersController {
         boolean found = usersService.isFindAccount(name, email);
         return ResponseEntity.ok(found);
     }
-    
+
     //비밀번호 - 임시 비밀번호 발급 페이지로 이동
     @GetMapping("/findPasswordForm")
     public String findPasswordForm() {return "account/tempPassword";}
@@ -151,7 +151,7 @@ public class UsersController {
     @GetMapping("/admin")
     @PreAuthorize("hasAnyRole('ROLE_admin')")
     public String getAdminPage() {
-        return "login/admin";
+        return "personalPage/admin";
     }
 
     @PutMapping("/admin/unActivate/{userId}")

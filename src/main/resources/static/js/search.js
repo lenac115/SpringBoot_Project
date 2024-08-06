@@ -1,21 +1,24 @@
+
 // 현재 URI 파싱
 var parsingURI = location.search.split("page")[0];
+var parsingURL = window.location.href.split("?")[0];
 
 // 정렬에 연결할 URI 작업
-const sorting = document.querySelectorAll("#sorting option");
+const sorting = document.querySelector("#sorting");
 
-sorting.forEach(sort => {
-    var optionId = sort.getAttribute("id");
-    sort.addEventListener("click", function (e) {
-        window.location.href = parsingURI + "sort="+optionId+"&page=1";
-    })
+sorting.addEventListener('change', function () {
+    var optionId = this.value;
 
-})
+    if(parsingURI.charAt(0) !== "?") { parsingURI = "?"; }
+    window.location.href = window.location.href.split("?")[0]
+        + parsingURI.split("sort")[0] + "sort="+optionId+"&page=1";
+});
 
 // 페이지 이동에 연결할 URI 작업
 const pageContainer = document.querySelectorAll('.move-page');
 
 for (let i = 0; i < pageContainer.length; i++) {
+    if(parsingURI.charAt(0) !== "?") parsingURI = "?";
     var moveURI = parsingURI+"page"+pageContainer[i].href.split("page")[1];
     pageContainer[i].href = moveURI;
 }
@@ -61,3 +64,113 @@ function checkDuplicate(chk) {
         if(starTag !== chk) {starTag.checked = false;}
     })
 }
+
+
+const imageTags = document.querySelectorAll(".post-image")
+let images = [];
+
+
+imageTags.forEach(imageTag => {
+    var postId = imageTag.getAttribute("id").split("post-image")[1];
+    fetch("api/images/get?postId=" + postId, {
+        method: "GET"
+    })
+        .then((response) => {
+            if(response.ok) {
+                return response.body;
+            }
+        })
+        .then(images => {
+            imageTag.src = "/api/images/display/" + images[0].storeFilename;
+        })
+
+});
+
+/*
+var bookmarks = document.querySelectorAll(".bookmark");
+var prefers = document.querySelectorAll(".prefer");
+// var user = [[${user}]];
+var bookmarkUrl = "/api/bookmarks/";
+var preferUrl = "/api/prefers/";
+
+/!*
+if(user !== null) {
+
+}
+*!/
+
+// 북마크 추가 및 취소
+var bookmarkIndex = 0;
+/!*
+    bookmarks[i].addEventListener("click", function () {
+        // var postId = [[${post.id}]];
+        if(i % 2 === 0) {
+            fetch(bookmarkUrl+"delete?postId="+postId, {
+                method: "DELETE"
+            }).then(res => {
+                if(res.ok) {
+                    bookmarks[i].classList.toggle("off");
+                    bookmarks[i-1].classList.toggle("off");
+                } else {
+                    console.log(res);
+                }
+            })
+        }
+        else {
+            fetch(bookmarkUrl+"save?postId="+postId, {
+                method: "POST"
+            }).then(res => {
+                if(res.ok) {
+                    bookmarks[i].classList.toggle("off");
+                    bookmarks[i+1].classList.toggle("off");
+                } else {
+                    console.log(res);
+                }
+            })
+        }
+    })*!/
+//}
+
+// 좋아요 추가 및 취소
+var preferIndex = 0;
+
+prefers.forEach( prefer => prefer.addEventListener("click", function (e) {
+        var offBookmark = this.parentNode.querySelector('.bookmark .off');
+        if (this.classList.contains('off')) {
+            this.classList.toggle('off');
+            offBookmark.classList.toggle('off');
+        } else {
+            this.classList.toggle('off');
+            offBookmark.classList.toggle('off');
+        }
+    /!*!// var postId = [[${post.id}]];
+        console.log(e.target.classList);
+    if(preferIndex % 2 === 0) {
+        console.log(e.target);
+        /!*fetch(preferUrl+"delete?postId="+postId, {
+            method: "DELETE"
+        }).then(res => {
+            if(res.ok) {*!/
+                e.target.classList.toggle("off");
+                e.target.classList.toggle("off");
+            /!*} else {
+                console.log(res);
+            }
+        })*!/
+    }
+    else {
+    /!*    fetch(preferUrl+"save?postId="+postId, {
+            method: "POST"
+        }).then(res => {
+            if(res.ok) {*!/
+                e.target.classList.toggle("off");
+                e.target.previousSibling.classList.toggle("off");
+            /!*} else {
+                console.log(res);
+           }
+        }) *!/
+    }
+        preferIndex++;*!/
+}
+))
+*/
