@@ -43,7 +43,6 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final UsersRepository usersRepository;
-    private final BannedUserRepository bannedUserRepository;
 
     public PostsDto createPost(PostsDto postsDto, String username) {
         Posts post = ConvertUtils.convertDtoToPosts(postsDto);
@@ -100,6 +99,7 @@ public class PostsService {
     }
 
     public PostsDto updatePosts(Long id, PostsDto updatePostsDto) {
+        System.out.println(id);
         Posts post = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         post.setTitle(updatePostsDto.getTitle());
         post.setBody(updatePostsDto.getBody());

@@ -89,10 +89,26 @@ public class PostsController {
         return new ModelAndView("postsDetails/myPost");
     }
 
+    @GetMapping("/noticeForm")
+    public ModelAndView getCreateNotice() {
+        return new ModelAndView("notice/createNotice");
+    }
+
+    @GetMapping("/noticeUpdateForm")
+    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
+        return new ModelAndView("notice/noticeUpdate");
+    }
+
     @GetMapping("/updateForm") // 배포 후에 user 검증 넣을 예정
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
     public ModelAndView getPostUpdateForm(@RequestParam Long postId) {
         return new ModelAndView("postsDetails/postUpdateForm");
+    }
+
+    @GetMapping("/create") // 배포 후에 user 검증 넣을 예정
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
+    public ModelAndView getCreateForm() {
+        return new ModelAndView("post/Posts");
     }
 
 
