@@ -176,7 +176,7 @@ public class UsersService {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setIsActivated(userDto.getIsActivated());
-        user.setAuth(userDto.getAuth());
+        /*user.setAuth(userDto.getAuth());*/
         return user;
     }
 

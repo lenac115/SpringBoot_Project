@@ -60,9 +60,9 @@ public class SecurityConfig {
                 .permitAll()
             )
             .exceptionHandling((exceptionHandling) -> exceptionHandling
-                .authenticationEntryPoint((request, response, authException) ->
+                /*.authenticationEntryPoint((request, response, authException) ->
                     response.sendRedirect("/api/users/login?expired=true") // 모든 인증 되지 않는 요청(세션 포함)을 로그인 페이지로 리다이렉트
-                )
+                )*/
                 .accessDeniedPage("/api/users/accessDenied")) // 권한에 따른 접근 불가 페이지 설정
             .rememberMe((rememberMe) -> rememberMe
                 .key(rememberKey) // remember-me key 설정

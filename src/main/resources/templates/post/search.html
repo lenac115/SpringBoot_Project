@@ -4,46 +4,16 @@
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
     <link rel="stylesheet" th:href="@{/css/search.css}"/>
-    <style>
-        body {
-            margin: 0;
-        }
-        a {
-            text-decoration: none;
-         }
-        #backToHome {
-            position: absolute;
-            top: 30px;
-            left: 55px;
-            font-family: Manrope; /* Body */
-            font-size: 32px;
-            line-height: 22px;
-            font-weight: 400;
-            color: #005551FF;
-            z-index: 10;
-        } /* secondary-750 */
-        #header {
-            position: relative;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 130px;
-        }
-        #characterImg {
-            position: absolute;
-            top: 5px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
-        }
-    </style>
+    <link th:rel="stylesheet" th:href="@{/css/header.css}">
 
 </head>
 <body>
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
 </header>
 <main>
     <h1 id="search-title">마음에 드는 게시물을 찾아보세요!</h1>
@@ -51,6 +21,7 @@
         <div id="notice-container-title">
             <img th:src="@{/img/notice_pin.svg}" alt="pin">
             <p>공지사항</p>
+            <a id="makeNotice" th:href="@{/api/posts/noticeForm}" th:if="${user != null && user.auth.name() == 'admin'}" >공지사항 작성하러 가기</a>
         </div>
         <ul id="notice-list">
             <li th:each="notice : ${notices}">
@@ -65,7 +36,7 @@
             <span class="arrow"></span>
         </button>
     </section>
-    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user == null || user.isActivated}">게시물 만들러 가기</a>
+    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user != null && user.isActivated}">게시물 만들러 가기</a>
     <div id="post-container" th:if="${user == null || user.isActivated}">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
@@ -182,7 +153,7 @@
                 <li>
                     <input type="checkbox" value="5" name="star" id="rating5"
                            th:checked="${searchData.star == 5}"
-                    onclick="checkDuplicate(this)"/>
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star5.png}"/>
                     <label for="rating5">5점 이상</label>
                 </li>
@@ -244,7 +215,7 @@
             <ul id="post-list">
                 <li th:each="post : ${page}" data-post-id="${post.id}">
                     <img class="post-image" th:id="'post-image'+${post.id}"
-                        th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
+                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
                         <script th:inline="javascript">
@@ -289,6 +260,6 @@
     </div>
 </main>
 <footer></footer>
-    <script th:src="@{/js/search.js}"></script>
+<script th:src="@{/js/search.js}"></script>
 </body>
 </html>

@@ -3,49 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title id="postTitle"> 상세 보기</title>
-    <link rel="stylesheet" href="/css/postDetails.css"><style>
-    body {
-        margin: 0;
-    }
-    a {
-        text-decoration: none;
-    }
-    #backToHome {
-        position: absolute;
-        top: 30px;
-        left: 55px;
-        font-family: Manrope; /* Body */
-        font-size: 32px;
-        line-height: 22px;
-        font-weight: 400;
-        color: #005551FF;
-        z-index: 10;
-    } /* secondary-750 */
-    #header {
-        position: relative;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 130px;
-    }
-    #characterImg {
-        position: absolute;
-        top: 5px;
-        right: 30px;
-        width: 80px;
-        height: 80px;
-    }
-</style>
+    <link rel="stylesheet" href="/css/postDetails.css">
+    <link th:rel="stylesheet" th:href="@{/css/header.css}">
 
 </head>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-<body>
-
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
 </header>
+<body>
 <main>
     <h1 id="detailTitle" style="text-align: center">
         <!-- 타이틀 위치 -->
@@ -142,7 +112,7 @@
 
         if (username === null) {
             alert("로그인이 필요합니다.");
-            location.href = "http://localhost:8080/api/users/login";
+            location.href = "http://3.34.251.147:8080/api/users/login";
             return false;
         }
 
@@ -154,7 +124,7 @@
 
         $.ajax({
             method: "POST",
-            url: 'http://localhost:8080/api/comments/nonreply?postId=' + urlParams.get('postId'),
+            url: '/api/comments/nonreply?postId=' + urlParams.get('postId'),
             data: JSON.stringify(commentDto),
             contentType: 'application/json',
             dataType: 'json',
@@ -293,7 +263,7 @@
                                     data-comment-id="${comment.id}" data-comment-depth="${comment.depth}" id="comment-reply-${comment.id}">답글</button>
                             </div>
                         </div>
-                        <div class="replies" style="margin-left: ${marginLeft}px;"></div>
+                        <div class="replies" style="margin-left: ${marginLeft};"></div>
                     </div>`;
                         const commentElement = $(commentHTML);
                         container.append(commentElement);
@@ -522,7 +492,7 @@
                 method: "GET",
                 url: "/api/posts/updateForm?postId=" + urlParams.get('postId'),
                 success: function (response) {
-                  location.href = "http://localhost:8080/api/posts/updateForm?postId=" + urlParams.get('postId');
+                    location.href = 'http://3.34.251.147:8080/api/posts/updateForm?postId=' + urlParams.get('postId');
                 },
                 error: function(error) {
                     alert('수정 페이지 조회에 실패했습니다.');
@@ -536,7 +506,7 @@
                 url: "/api/posts/" + urlParams.get('postId'),
                 success: function (response) {
                     alert('페이지 삭제 완료');
-                    location.href = "http://localhost:8080/api/posts/search"
+                    location.href = "http://3.34.251.147:8080/api/posts/search"
                 },
                 error: function(error) {
                     alert('삭제에 실패했습니다.');
@@ -549,7 +519,7 @@
                 method:"GET",
                 url: "/api/posts/search",
                 success: function (response) {
-                    location.href = "http://localhost:8080/api/posts/search"
+                    location.href = "http://3.34.251.147:8080/api/posts/search"
                 },
                 error: function(error) {
                     alert('조회에 실패했습니다.');

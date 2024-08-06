@@ -70,8 +70,10 @@ public class PostImagesService {
                     .originFilename(multipartFile.getOriginalFilename())
                     .createdAt(LocalDateTime.now())
                     .posts(findPost).build();
-            findPost.getPostImages().add(newImage);
-            postImages.add(newImage);
+
+            PostImages savedImage = postImagesRepository.save(newImage);
+            findPost.getPostImages().add(savedImage);
+            postImages.add(savedImage);
 
             // 절대 경로 + 파일명으로 파일 저장
             file = new File(realPath + "/" + storedFileName);
