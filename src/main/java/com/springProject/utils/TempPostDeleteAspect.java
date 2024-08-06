@@ -1,17 +1,21 @@
 package com.springProject.utils;
 
 import com.springProject.entity.Posts;
+
 import com.springProject.entity.Users;
 import com.springProject.repository.PostsRepository;
 import com.springProject.repository.UsersRepository;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -20,6 +24,7 @@ import java.util.List;
 public class TempPostDeleteAspect {
 
     private final PostsRepository postsRepository;
+
     private final UsersRepository usersRepository;
 
     public TempPostDeleteAspect(PostsRepository postsRepository, UsersRepository usersRepository) {
