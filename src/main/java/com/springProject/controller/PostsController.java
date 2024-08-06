@@ -211,11 +211,11 @@ public class PostsController {
 
     @GetMapping("/noticeForm")
     public ModelAndView getCreateNotice() {
-        return new ModelAndView("notice/createNotice");
+        return new ModelAndView("post/createNotice");
     }
 
     @GetMapping("/noticeUpdateForm")
     public ModelAndView getUpdateNotice(@RequestParam Long postId) {
-        return new ModelAndView("notice/noticeUpdate");
+        return new ModelAndView("post/noticeUpdate");
     }
 }
