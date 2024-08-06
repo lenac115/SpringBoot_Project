@@ -86,91 +86,122 @@ imageTags.forEach(imageTag => {
 
 });
 
-/*
 var bookmarks = document.querySelectorAll(".bookmark");
 var prefers = document.querySelectorAll(".prefer");
-// var user = [[${user}]];
+
 var bookmarkUrl = "/api/bookmarks/";
 var preferUrl = "/api/prefers/";
 
-/!*
-if(user !== null) {
 
-}
-*!/
+document.addEventListener("DOMContentLoaded", function() {
+    if (user !== null) {
+        var postElements = document.querySelectorAll('#post-list > li');
+
+        postElements.forEach(function(postElement) {
+            var postId = postElement.getAttribute('data-post-id');
+
+            fetch("/api/prefers/get/" + postId, {
+                method: "GET"
+            }).then(response => {
+                if (response.ok) {
+                    var preferImages = postElement.querySelectorAll('.prefer');
+
+                    preferImages.forEach(function(image) {
+                        image.classList.toggle("off");
+                    });
+                }
+            });
+
+            fetch("/api/bookmarks/get/" + postId, {
+                method: "GET"
+            }).then(response => {
+                if (response.ok) {
+                    var bookmarkImages = postElement.querySelectorAll('.bookmark');
+
+                    bookmarkImages.forEach(function(image) {
+                        image.classList.toggle("off");
+                    });
+                }
+            });
+        });
+    }
+});
 
 // 북마크 추가 및 취소
-var bookmarkIndex = 0;
-/!*
-    bookmarks[i].addEventListener("click", function () {
-        // var postId = [[${post.id}]];
-        if(i % 2 === 0) {
-            fetch(bookmarkUrl+"delete?postId="+postId, {
-                method: "DELETE"
-            }).then(res => {
-                if(res.ok) {
-                    bookmarks[i].classList.toggle("off");
-                    bookmarks[i-1].classList.toggle("off");
-                } else {
-                    console.log(res);
-                }
-            })
+bookmarks.forEach(bookmark =>
+    bookmark.addEventListener("click", function () {
+        if(user !== null){
+            var offBookmark = this.parentNode.querySelector('.bookmark.off');
+            var deleteBookmark = this.parentNode.querySelector('.bookmark.delete');
+
+            if(this === deleteBookmark) {
+                fetch(bookmarkUrl+"delete?postId="+postId, {
+                    method: "DELETE"
+                }).then(res => {
+                    if(res.ok) {
+                        this.classList.toggle('off');
+                        offBookmark.classList.toggle('off');
+                    } else {
+                        console.log(res);
+                    }
+                })
+            }
+            else {
+                fetch(bookmarkUrl+"save?postId="+postId, {
+                    method: "POST"
+                }).then(res => {
+                    if(res.ok) {
+                        this.classList.toggle('off');
+                        offBookmark.classList.toggle('off');
+                    } else {
+                        console.log(res);
+                    }
+                    })
+            }
         }
         else {
-            fetch(bookmarkUrl+"save?postId="+postId, {
-                method: "POST"
-            }).then(res => {
-                if(res.ok) {
-                    bookmarks[i].classList.toggle("off");
-                    bookmarks[i+1].classList.toggle("off");
-                } else {
-                    console.log(res);
-                }
-            })
+                window.location.href = "/api/users/login";
         }
-    })*!/
-//}
+    }
+))
 
 // 좋아요 추가 및 취소
-var preferIndex = 0;
+prefers.forEach( prefer =>
+    prefer.addEventListener("click", function (e) {
+        if (user !== null) {
+            var offPrefer = this.parentNode.querySelector('.prefer.off');
+            var deletePrefer = this.parentNode.querySelector('.prefer.delete');
 
-prefers.forEach( prefer => prefer.addEventListener("click", function (e) {
-        var offBookmark = this.parentNode.querySelector('.bookmark .off');
-        if (this.classList.contains('off')) {
-            this.classList.toggle('off');
-            offBookmark.classList.toggle('off');
-        } else {
-            this.classList.toggle('off');
-            offBookmark.classList.toggle('off');
-        }
-    /!*!// var postId = [[${post.id}]];
-        console.log(e.target.classList);
-    if(preferIndex % 2 === 0) {
-        console.log(e.target);
-        /!*fetch(preferUrl+"delete?postId="+postId, {
-            method: "DELETE"
-        }).then(res => {
-            if(res.ok) {*!/
-                e.target.classList.toggle("off");
-                e.target.classList.toggle("off");
-            /!*} else {
-                console.log(res);
+            if (this === deletePrefer) {
+                fetch(preferUrl + "delete?postId=" + postId, {
+                    method: "DELETE"
+                }).then(res => {
+                    if (res.ok) {
+                        this.classList.toggle('off');
+                        offPrefer.classList.toggle('off');
+                    } else {
+                        console.log(res);
+                    }
+                })
+            } else {
+                fetch(preferUrl + "save?postId=" + postId, {
+                    method: "POST"
+                }).then(res => {
+                    if (res.ok) {
+                        this.classList.toggle('off');
+                        offPrefer.classList.toggle('off');
+                    } else {
+                        console.log(res);
+                    }
+                })
             }
-        })*!/
+
+        }
+        else {
+            window.location.href = "/api/users/login";
+        }
     }
-    else {
-    /!*    fetch(preferUrl+"save?postId="+postId, {
-            method: "POST"
-        }).then(res => {
-            if(res.ok) {*!/
-                e.target.classList.toggle("off");
-                e.target.previousSibling.classList.toggle("off");
-            /!*} else {
-                console.log(res);
-           }
-        }) *!/
-    }
-        preferIndex++;*!/
-}
 ))
-*/
+
+
+

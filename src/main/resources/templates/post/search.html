@@ -4,11 +4,47 @@
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
     <link rel="stylesheet" th:href="@{/css/search.css}"/>
+    <style>
+        body {
+            margin: 0;
+        }
+        a {
+            text-decoration: none;
+         }
+        #backToHome {
+            position: absolute;
+            top: 30px;
+            left: 55px;
+            font-family: Manrope; /* Body */
+            font-size: 32px;
+            line-height: 22px;
+            font-weight: 400;
+            color: #005551FF;
+            z-index: 10;
+        } /* secondary-750 */
+        #header {
+            position: relative;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 130px;
+        }
+        #characterImg {
+            position: absolute;
+            top: 5px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+
 </head>
 <body>
-<header></header>
-<body></body>
-<header></header>
+<header>
+    <a id="backToHome" href="/api/posts/search">Home</a>
+    <img id="header" th:src="@{/img/header.png}">
+    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+</header>
 <main>
     <h1 id="search-title">마음에 드는 게시물을 찾아보세요!</h1>
     <section id="notice-container">
@@ -206,16 +242,22 @@
                 </option>
             </select>
             <ul id="post-list">
-                <li th:each="post : ${page}">
+                <li th:each="post : ${page}" data-post-id="${post.id}">
                     <img class="post-image" th:id="'post-image'+${post.id}"
                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            var user = [[${user}]];
+                            var postId = [[${post.id}]];
+                            /*]]>*/
+                        </script>
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}" />
-                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
-                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}">
-                        <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
-                        <img class="prefer off" th:src="@{/img/after_prefer.svg}"/>
+                        <img class="bookmark save" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="bookmark off delete" th:src="@{/img/after_bookmark.svg}">
+                        <img class="prefer save" th:src="@{/img/before_prefer.svg}"/>
+                        <img class="prefer off delete" th:src="@{/img/after_prefer.svg}"/>
                     </div>
                 </li>
             </ul>

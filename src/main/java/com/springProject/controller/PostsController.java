@@ -55,11 +55,16 @@ public class PostsController {
 
     //생성
     @PostMapping
-    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
+    public ModelAndView createPost(@RequestBody PostsDto postsDto,
                                                @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
-        return ResponseEntity.ok(createdPostDto);
+        createPostResponse(createdPostDto);
+		return new ModelAndView("redirect:/api/posts/" + createdPostDto.getId());
     }
+
+	public ResponseEntity<PostsDto> createPostResponse(PostsDto createdPostDto) {
+		return ResponseEntity.ok(createdPostDto);
+	}
 
     //조회
     @GetMapping("/all")
