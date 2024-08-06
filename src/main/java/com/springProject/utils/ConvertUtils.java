@@ -74,6 +74,16 @@ public class ConvertUtils {
                 .build();
     }
 
+    public static PostsDto convertPostsToNoticeDto(Posts posts) {
+        return PostsDto.builder()
+            .id(posts.getId())
+            .title(posts.getTitle())
+            .body(posts.getBody())
+            .createdAt(posts.getCreated_at())
+            .updatedAt(posts.getUpdated_at())
+            .build();
+    }
+
     public static PostsDto convertPostsToWith(Posts posts) {
         return PostsDto.builder()
                 .id(posts.getId())
@@ -108,7 +118,7 @@ public class ConvertUtils {
 
     public static PostImagesDto convertImagesToDto(PostImages postImages) {
         return PostImagesDto.builder()
-                .image_id(postImages.getImage_id())
+                .id(postImages.getId())
                 .originFilename(postImages.getOriginFilename())
                 .storeFilename(postImages.getStoreFilename())
                 .filePath(postImages.getFilePath())

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>게시물 전체 보기</title>
@@ -29,8 +29,8 @@
             <span class="arrow"></span>
         </button>
     </section>
-    <a id="makePost" th:href="@{/api/posts/create}">게시물 만들러 가기</a>
-    <div id="post-container">
+    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user == null || user.isActivated}">게시물 만들러 가기</a>
+    <div id="post-container" th:if="${user == null || user.isActivated}">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
             <input th:value="${searchData.keyword != null} ? *{keyword}" type="text" id="keyword"
@@ -209,14 +209,13 @@
                 <li th:each="post : ${page}">
                     <img class="post-image" th:id="'post-image'+${post.id}"
                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
-                    <a th:text="${post.title}" th:href="@{/api/posts/get?postId={id}(id=${post.id})}"></a>
+                    <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
-                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}">
-                        <img class="bookmark on" th:src="@{/img/before_bookmark.svg}"/>
-                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}"/>
-                        <img class="prefer on" th:src="@{/img/before_prefer.svg}"/>
+                        <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}" />
+                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}">
+                        <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
                         <img class="prefer off" th:src="@{/img/after_prefer.svg}"/>
-
                     </div>
                 </li>
             </ul>

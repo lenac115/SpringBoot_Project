@@ -450,7 +450,7 @@ select:active {
     margin-bottom: 15px;
 }
 
-#post-list li a {
+.post-title {
     display: block;
     padding: 0 24px;
     height: 56px;
@@ -459,6 +459,11 @@ select:active {
     line-height: 28px;
     font-weight: 500;
     color: #171A1FFF;
+}
+
+.post-title:hover {
+    color: #171A1FFF;
+    font-weight: 700;
 }
 
 #post-list > li {
@@ -486,6 +491,11 @@ select:active {
 
 .bookmark {
     padding-right: 4px;
+}
+
+.bookmark:hover,
+.prefer:hover {
+    transform: scale(1.2);
 }
 
 .off {

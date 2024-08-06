@@ -124,13 +124,18 @@ public class PostsService {
         return page;
     }
 
+    public UsersDto getUserByLoginId(String loginId) {
+        return usersRepository.findOptionalByLoginId(loginId)
+            .map(ConvertUtils::convertUsersToDto)
+            .orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+    }
 
     // 공지사항 따로 추출
     @Transactional(readOnly = true)
     public List<PostsDto> getNoticeFive() {
         return postsRepository.getNoticeFive()
             .stream()
-            .map(ConvertUtils::convertPostsToDto)
+            .map(ConvertUtils::convertPostsToNoticeDto)
             .collect(Collectors.toList());
     }
 
