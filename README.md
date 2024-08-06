@@ -38,7 +38,7 @@
 
 
 ### 🔗 데이터베이스 모델링(ERD)
-![로그인](src/main/resources/static/docs/erd.png)
+![ERD](https://github.com/user-attachments/assets/93599649-5d9a-4966-8d51-78e233957b98)
 
 ### ✅ 요구 사항 명세서
 
@@ -192,19 +192,19 @@
 
 | 게시물 전체 보기 | 게시물 생성 |
 |--------|----------|
-| ![게시물 전체 보기](src/main/resources/static/img/bookmark_off.png) | ![게시물 생성](src/main/resources/static/img/bookmark_off.png) |
+| ![게시물 전체 보기](https://github.com/user-attachments/assets/a3d9aed7-0b69-4a3d-9324-c2fb94080d63) | ![게시물 생성](https://github.com/user-attachments/assets/824cfc3c-4a5b-4fa7-9d13-66fd4bf85cd2) |
 
 | 게시물 수정 | 게시물 상세보기(다른 사용자 게시물) |
 |--------|----------|
-| ![게시물 수정](src/main/resources/static/img/bookmark_off.png) | ![게시물 상세보기(다른 사용자 게시물)](src/main/resources/static/img/bookmark_off.png) |
+| ![게시물 수정](https://github.com/user-attachments/assets/2e1e3180-0f22-4404-8f30-77884881e19e) | ![게시물 상세보기(다른 사용자 게시물)](https://github.com/user-attachments/assets/0045d863-c68d-493a-99a6-a376d223f6e1) |
 
 | 게시물 상세보기(내 게시물) | 공지사항 생성 |
 |--------|----------|
-| ![게시물 상세보기(내 게시물)](src/main/resources/static/img/bookmark_off.png) | ![공지사항 생성](src/main/resources/static/img/bookmark_off.png) |
+| ![게시물 상세보기(내 게시물)](https://github.com/user-attachments/assets/43bf89aa-5879-4d87-beb9-6d7ee925b861) | ![공지사항 생성](https://github.com/user-attachments/assets/caedeac6-5200-43cb-881f-f7d82600e418) |
 
 | 공지사항 수정 | 공지사항 상세보기(일반 유저)                                                           |
 |--------|----------------------------------------------------------------------------|
-| ![공지사항 수정](src/main/resources/static/img/bookmark_off.png) | ![공지사항 상세보기(일반 유저)](src/main/resources/static/docs/notice_detail_user.png) |
+| ![공지사항 수정](https://github.com/user-attachments/assets/6dccaebe-fe60-4ef7-98ba-851a66e7141d) | ![공지사항 상세보기(일반 유저)](https://github.com/user-attachments/assets/8e757018-eb5a-4e14-9230-a454009a2c62) |
 
 | 공지사항 상세보기(관리자)                                                            | 관리자 페이지                                              |
 |---------------------------------------------------------------------------|------------------------------------------------------|
