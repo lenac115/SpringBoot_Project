@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>게시글 작성</title>
-    <link rel="stylesheet" type="text/css" th:href="@{/src/main/resources/static/css/Posts.css}">
+    <link rel="stylesheet" href="/css/postUpdate.css">
     <style>
         body {
             margin: 0;
@@ -28,6 +28,7 @@
             left: 0;
             right: 0;
             height: 130px;
+            width: 100%;
         }
         #characterImg {
             position: absolute;
@@ -37,175 +38,322 @@
             height: 80px;
         }
     </style>
-
 </head>
-<body>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
     <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
 </header>
-<h1 class="main-title">당신의 게시글을 작성해보세요!</h1>
-<form th:action="@{/api/posts}" method="post">
-    <div class="title-box">
-        <label for="title" class="posts-title">제목</label>
-        <input type="text" id="title" name="title" class="posts-title-input" value="제목을 입력하세요.">
-    </div>
-
-    <div class="posts-content">
-        <label for="content"></label>
-        <textarea id="content" name="content" class="posts-content-input">내용을 입력하세요.</textarea>
-    </div>
-</form>
-
-<div class="image-box">
-    <p class="image-title">사진 등록하기</p>
-    <button type="submit" class="image-add-button">+</button>
-
-    <form class="inputImg" method="post" enctype="multipart/form-data"> <!-- 이미지 파일 데이터에 알맞는 enctype 설정 -->
-        <div class="addImage" id="image-show"> <!-- 이미지 띄울 공간 -->
+<body>
+<main>
+    <h1 style="font-size: 40px; width: 100%; text-align: center;">당신의 게시글을 작성해보세요!</h1>
+    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
+    <textarea id="postBody" placeholder="본문을 입력해주세요." required></textarea>
+    <h3>사진 등록하기<button id="btn-image">+</button></h3>
+    <input type="file" id="file-input" style="display: none;">
+    <div id="container-img"></div>
+    <div id="sec-hashtag">
+        <h3>해시태그를 하나 이상 입력해주세요</h3>
+        <div id="container-hashtag-input">
+            <input type="text" id="input-hashtag" placeholder="Input Text" style="margin-right:10px">
+            <button id="save-btn" class="btn-square-small">입력</button>
         </div>
-        <input type="file" accept="imageList" onchange="loadFile(this)">
-    </form>
-    <button type="submit" class="image-delete-button">삭제</button>
-
-</div>
-
-<script>
-    function loadFile(input) {
-        let file = input.files[0]; // 선택파일 가져오기
-
-        let newImage = document.createElement("img"); //새 이미지 태그 생성
-
-        //이미지 source 가져오기
-        newImage.src = URL.createObjectURL(file);
-        newImage.style.width = "100%"; //div에 꽉차게 넣으려고
-        newImage.style.height = "100%";
-        newImage.style.objectFit = "cover"; // div에 넘치지 않고 들어가게
-
-        //이미지를 image-show div에 추가
-        let container = document.getElementById('image-show');
-        container.appendChild(newImage);
-    }
-</script>
-
-<section class="hashtags-box">
-    <p class="hashtags-title">해시태그를 입력해주세요</p>
-    <input value="input text" class="hashtags-input" type="text" id="name" onchange="printName()"/>
-
-    <div id="result" class="result-text"></div>
-
-    <button class="hashtags-button" type="submit">입력</button>
-
-    <button onclick='btnClick()' type="submit" class="result-text-delete-button" id="result-text-delete">x</button>
-</section>
-
-<script>
-    function printName() {
-        const name = document.getElementById('name').value;
-        document.getElementById("result").innerText = name;
-    }
-
-    if(result.style.display === 'block') {
-
-        resultasdf.style.display = 'none';
-    }
-
-</script>
-
-<section class="information">
-    <div class="category-box">
-        <p class="category-title">카테고리를 선택하세요</p>
-        <select class="category" onchange="">
-            <option value="">CATEGORY</option>
-            <option value="한식">한식</option>
-            <option value="일식">일식</option>
-            <option value="양식">양식</option>
-            <option value="중식">중식</option>
-            <option value="브런치">브런치</option>
-            <option value="디저트">디저트</option>
-            <option value="ETC">ETC</option>
-        </select>
     </div>
-
-    <div class="location-box">
-        <p>음식점 위치를 알려주세요</p>
-        <select class="location">
-            <option value="">LOCATION</option>
-            <option value="서울">서울</option>
-            <option value="경기">경기</option>
-            <option value="인천">인천</option>
-            <option value="강원">강원</option>
-            <option value="충북">충북</option>
-            <option value="충남">충남</option>
-            <option value="전북">전북</option>
-            <option value="전남">전남</option>
-            <option value="경북">경북</option>
-            <option value="경남">경남</option>
-            <option value="제주">제주</option>
-        </select>
-    </div>
-
-    <div class="starPoint-box">
-        <p>별점으로 만족도를 알려주세요</p>
-        <div class="starPoint">
-            <div class="starPoint">
-                <ul id="rating">
-                    <li>
-                        <label>별점</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" value="5" name="star" id="rating5"
-                               th:checked="${searchData.star == 5}"
-                               onclick="checkDuplicate(this)"/>
-                        <img th:src="@{/img/star5.png}"/>
-                        <label for="rating5">5점 이상</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" value="4" name="star" id="rating4"
-                               th:checked="${searchData.star == 4}"
-                               onclick="checkDuplicate(this)"/>
-                        <img th:src="@{/img/star4.png}"/>
-                        <label for="rating4">4점 이상</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" value="3" name="star" id="rating3"
-                               th:checked="${searchData.star == 3}"
-                               onclick="checkDuplicate(this)"/>
-                        <img th:src="@{/img/star3.png}"/>
-                        <label for="rating3">3점 이상</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" value="2" name="star" id="rating2"
-                               th:checked="${searchData.star == 2}"
-                               onclick="checkDuplicate(this)"/>
-                        <img th:src="@{/img/star2.png}"/>
-                        <label for="rating2">2점 이상</label>
-                    </li>
-                    <li>
-                        <input type="checkbox" value="1" name="star" id="rating1"
-                               th:checked="${searchData.star == 1}"
-                               onclick="checkDuplicate(this)"/>
-                        <img th:src="@{/img/star1.png}"/>
-                        <label for="rating1">1점 이상</label>
-                    </li>
-                </ul>
-                <script>
-                    // checkbox 하나만 선택되게 하기 = radio 버튼 + 선택 취소
-                    const starTags = document.querySelectorAll("#rating li input");
-
-                    function checkDuplicate(chk) {
-                        starTags.forEach(starTag => {
-                            if(starTag !== chk) {starTag.checked = false;}
-                        })
-                    }
-
-                </script>
+    <div id="container-hashtag"></div>
+    <section id="sec-selector">
+        <div>
+            <h3>카테고리를 선택해주세요</h3>
+            <div id="category-select" class="custom-select">
+                <div class="select-selected">
+                    <span>카테고리를 선택해주세요</span>
+                    <span class="arrow arrow-down"></span>
+                </div>
+                <div class="select-items select-hide">
+                    <div data-value="한식">한식</div>
+                    <div data-value="일식">일식</div>
+                    <div data-value="양식">양식</div>
+                    <div data-value="중식">중식</div>
+                    <div data-value="브런치">브런치</div>
+                    <div data-value="디저트">디저트</div>
+                    <div data-value="ETC">ETC</div>
+                </div>
+            </div>
+            <input type="hidden" id="category" name="category"/>
+        </div>
+        <div>
+            <h3>음식점의 위치를 알려주세요</h3>
+            <div id="location-select" class="custom-select">
+                <div class="select-selected">
+                    <span>위치를 선택해주세요</span>
+                    <span class="arrow arrow-down"></span>
+                </div>
+                <div class="select-items select-hide">
+                    <div data-value="서울">서울</div>
+                    <div data-value="경기">경기</div>
+                    <div data-value="인천">인천</div>
+                    <div data-value="강원">강원</div>
+                    <div data-value="충북">충북</div>
+                    <div data-value="충남">충남</div>
+                    <div data-value="전북">전북</div>
+                    <div data-value="전남">전남</div>
+                    <div data-value="경북">경북</div>
+                    <div data-value="경남">경남</div>
+                    <div data-value="제주">제주</div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+        <input type="hidden" id="location" name="location"/>
+        <div>
+            <h3>별점으로 만족도를 알려주세요</h3>
+            <div id="star-rating" class="custom-select">
+                <div class="select-selected">
+                    <span>별점을 선택해주세요</span>
+                    <span class="arrow arrow-down"></span>
+                </div>
+                <div class="select-items select-hide">
+                    <div data-value="5">
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                    </div>
+                    <div data-value="4">
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                    </div>
+                    <div data-value="3">
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                    </div>
+                    <div data-value="2">
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                    </div>
+                    <div data-value="1">
+                        <img src="/img/star.png" width="20" height="20" alt="별점 이미지"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="star" name="star"/>
+    </section>
 
-<button type="submit" class="posts-button">등록</button>
+    <button class="btn-square" id="btn-edit" style="margin-bottom: 100px">등록</button>
+</main>
 </body>
+<script>
+
+    let urlParams;
+    let splitHashtags = [];
+
+    $(document).ready(function () {
+        // 카테고리 선택 처리
+        const $categorySelect = $('#category-select');
+        const $categoryHiddenInput = $('#category');
+
+        $categorySelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $categorySelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
+
+        $categorySelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $categoryHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $categorySelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $categorySelect.find('.select-items').addClass('select-hide');
+        });
+
+        // 위치 선택 처리
+        const $locationSelect = $('#location-select');
+        const $locationHiddenInput = $('#location');
+
+        $locationSelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $locationSelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
+
+        $locationSelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $locationHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $locationSelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $locationSelect.find('.select-items').addClass('select-hide');
+        });
+
+        // 별점 선택 처리
+        const $starSelect = $('#star-rating');
+        const $starHiddenInput = $('#star');
+
+        $starSelect.find('.select-selected').click(function (e) {
+            e.stopPropagation();
+            $starSelect.find('.select-items').toggleClass('select-hide');
+            $(this).find('.arrow').toggleClass('arrow-up');
+        });
+
+        $starSelect.find('.select-items').on('click', 'div', function (e) {
+            e.stopPropagation();
+            const selectedValue = $(this).data('value');
+            $starHiddenInput.val(selectedValue);  // 선택된 값을 숨겨진 input에 저장
+            $starSelect.find('.select-selected').html($(this).html() + '<span class="arrow arrow-down"></span>');
+            $starSelect.find('.select-items').addClass('select-hide');
+        });
+
+        $(document).click(function () {
+            $('.select-items').addClass('select-hide');
+            $('.select-selected .arrow').removeClass('arrow-up');
+        });
+
+        $.ajax({
+            method: "POST",
+            url:'http://3.34.251.147:8080/api/posts',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                title : '임시',
+                body : '임시'
+            }),
+            success: function (response) {
+                console.log(response);
+                urlParams = response.id;
+            },
+            error: function (error) {
+                alert('등록에 실패했습니다.');
+            }
+        })
+
+        $('#btn-image').click(function() {
+            $('#file-input').click();
+        });
+
+        $('#file-input').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const imageList = new FormData();
+                imageList.append('imageList', file);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/images/upload?postId=' + urlParams,
+                    data: imageList,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        let conImage = $('#container-img')
+                        data.forEach(function (data) {
+                            conImage.append(`
+                        <div class="image" data-id="${data.id}" style="margin-left:10px;">
+                            <img src="/api/images/display/${data.storeFilename}" alt="Image" width="240" height="160">
+                            <button class="delete-btn btn-square-small" data-id="${data.id}">삭제</button>
+                        </div>`);
+                        })
+                    },
+                    error: function(error) {
+                        console.error('파일 업로드 실패:', error);
+                    }
+                });
+            }
+        });
+
+        $('#btn-edit').click(function () {
+
+            const title = $('#title-text').val().trim();
+            const body = $('#postBody').val().trim();
+
+            if (title === "") {
+                alert('제목을 입력해주세요.');
+                return;  // 제목이 비어있으면 요청 중단
+            }
+
+            if (body === "") {
+                alert('본문을 입력해주세요.');
+                return;  // 본문이 비어있으면 요청 중단
+            }
+
+            let mergedHashtags = '';
+            splitHashtags.forEach(function (hashtags) {
+                mergedHashtags += hashtags + "/";
+            })
+
+            if(mergedHashtags === "") {
+                alert('해시태그는 하나 이상 있어야 합니다.');
+                return;
+            }
+
+            const postDto = {
+                title : $('#title-text').val(),
+                body : $('#postBody').val(),
+                star : parseInt($('#star').val()),
+                location : $('#location').val(),
+                category : $('#category').val(),
+                hashtags : mergedHashtags.substring(0, mergedHashtags.length - 1)
+            }
+            $.ajax({
+                method: "PUT",
+                url: "http://3.34.251.147:8080/api/posts/update/" + urlParams,
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(postDto),
+                success: function (response) {
+                    alert('등록에 성공했습니다.');
+                    location.href = "'http://3.34.251.147:8080/api/posts/get?postId=" +response.id;
+                },
+                error: function (error) {
+                    alert('등록에 실패했습니다.');
+                }
+            })
+        })
+
+        $('#container-img').on('click', '.delete-btn', function () {
+            const imageId = $(this).data('id');
+            deleteImage(imageId);
+        });
+
+        function deleteImage (imageId) {
+            $.ajax({
+                url: '/api/images/delete?imageId=' + imageId,
+                method: 'DELETE',
+                contentType: 'application/json',
+                data: {},
+                success: function (response) {
+                    alert("이미지 삭제에 성공했습니다.");
+                    $(`div[data-id="${imageId}"]`).remove();
+                },
+                error: function (error) {
+                    alert('이미지 삭제에 실패했습니다.');
+                }
+            });
+        }
+
+        $('#container-hashtag').on('click', '.delete-btn', function () {
+            const tagIdx = $(this).data('id');
+            deleteTag(tagIdx);
+        });
+
+        function deleteTag (tagIdx) {
+            splitHashtags.splice(tagIdx, 1);
+            $(`div[data-id="${tagIdx}"]`).remove();
+        }
+
+        $('#save-btn').click(function () {
+            let value = $('#input-hashtag').val();
+            splitHashtags.push(value);
+            let idx = splitHashtags.length - 1;
+
+            $('#container-hashtag').append(`
+                        <div class="hashtag" data-id="${idx}" style="margin-left:10px;">
+                            <button class="btn-hashtags"><span class="btn-text">${splitHashtags[idx]}</span></button>
+                            <button class="delete-btn hashtags-delete" data-id="${idx}">X</button></h3>
+                        </div>`);
+            $('#input-hashtag').val('');
+        })
+    });
+</script>
 </html>

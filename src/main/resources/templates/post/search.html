@@ -10,7 +10,7 @@
         }
         a {
             text-decoration: none;
-         }
+        }
         #backToHome {
             position: absolute;
             top: 30px;
@@ -27,6 +27,7 @@
             top: 0;
             left: 0;
             right: 0;
+            width: 100%;
             height: 130px;
         }
         #characterImg {
@@ -51,6 +52,7 @@
         <div id="notice-container-title">
             <img th:src="@{/img/notice_pin.svg}" alt="pin">
             <p>공지사항</p>
+            <a id="makeNotice" th:href="@{/api/posts/noticeForm}" th:if="${user != null && user.getAuth() == 'admin'}" >공지사항 작성하러 가기</a>
         </div>
         <ul id="notice-list">
             <li th:each="notice : ${notices}">
@@ -65,7 +67,7 @@
             <span class="arrow"></span>
         </button>
     </section>
-    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user == null || user.isActivated}">게시물 만들러 가기</a>
+    <a id="makePost" th:href="@{/api/posts/create}" th:if="${user != null && user.isActivated}">게시물 만들러 가기</a>
     <div id="post-container" th:if="${user == null || user.isActivated}">
         <form th:action="@{/api/posts/search}" method="get" th:object="${searchData}">
             <label for="keyword">제목 및 내용</label>
@@ -182,7 +184,7 @@
                 <li>
                     <input type="checkbox" value="5" name="star" id="rating5"
                            th:checked="${searchData.star == 5}"
-                    onclick="checkDuplicate(this)"/>
+                           onclick="checkDuplicate(this)"/>
                     <img th:src="@{/img/star5.png}"/>
                     <label for="rating5">5점 이상</label>
                 </li>
@@ -244,7 +246,7 @@
             <ul id="post-list">
                 <li th:each="post : ${page}" data-post-id="${post.id}">
                     <img class="post-image" th:id="'post-image'+${post.id}"
-                        th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
+                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
                         <script th:inline="javascript">
@@ -289,6 +291,6 @@
     </div>
 </main>
 <footer></footer>
-    <script th:src="@{/js/search.js}"></script>
+<script th:src="@{/js/search.js}"></script>
 </body>
 </html>

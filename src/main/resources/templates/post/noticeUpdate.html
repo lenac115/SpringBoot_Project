@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title class="postTitle">Title</title>
+    <link rel="stylesheet" href="/css/postUpdate.css">
+    <style>
+        body {
+            margin: 0;
+        }
+        a {
+            text-decoration: none;
+        }
+        #backToHome {
+            position: absolute;
+            top: 30px;
+            left: 55px;
+            font-family: Manrope; /* Body */
+            font-size: 32px;
+            line-height: 22px;
+            font-weight: 400;
+            color: #005551FF;
+            z-index: 10;
+        } /* secondary-750 */
+        #header {
+            position: relative;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 130px;
+            width: 100%;
+        }
+        #characterImg {
+            position: absolute;
+            top: 5px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<body>
+<header>
+    <a id="backToHome" href="/api/posts/search">Home</a>
+    <img id="header" th:src="@{/img/header.png}">
+    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+</header>
+<main>
+    <h1 style="font-size: 40px; width: 100%; text-align: center;">공지사항을 수정해주세요</h1>
+    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
+    <textarea id="postBody" placeholder="본문을 입력해주세요." required></textarea>
+    <h3>사진 등록하기<button id="btn-image">+</button></h3>
+    <input type="file" id="file-input" style="display: none;">
+    <div id="container-img"></div>
+    <button class="btn-square" id="btn-edit" style="margin-bottom: 100px">수정</button>
+</main>
+</body>
+<script>
+
+    const urlParams = new URL(location.href).searchParams;
+    let splitHashtags
+
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "GET",
+            url: "/api/posts/" + urlParams.get('postId'),
+            success: function (data) {
+                $('#postBody').text(data.body);
+                $('.postTitle').text(data.title);
+            },
+            error: function (error) {
+                alert('조회에 실패했습니다.');
+            }
+        });
+
+        $.ajax({
+            method: "GET",
+            url: "http://3.34.251.147:8080/api/images/get?postId=" + urlParams.get('postId'),
+            success: function (data) {
+                let conImage = $('#container-img')
+                data.forEach(function (data) {
+                    conImage.append(`
+                        <div class="image" data-id="${data.id}" style="margin-left:10px;">
+                            <img src="/api/images/display/${data.storeFilename}" alt="Image" width="240" height="160">
+                            <button class="delete-btn btn-square-small" data-id="${data.id}">삭제</button>
+                        </div>`);
+                })
+            }
+        })
+
+        $('#btn-image').click(function() {
+            $('#file-input').click();
+        });
+
+        $('#file-input').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const imageList = new FormData();
+                imageList.append('imageList', file);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/images/upload?postId=' + urlParams.get('postId'),
+                    data: imageList,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        window.location.href = "http://3.34.251.147:8080/api/posts/noticeUpdateForm?postId=" + urlParams.get('postId');
+                    },
+                    error: function(error) {
+                        console.error('파일 업로드 실패:', error);
+                    }
+                });
+            }
+        });
+
+        $('#btn-edit').click(function () {
+
+            const title = $('#title-text').val().trim();
+            const body = $('#postBody').val().trim();
+
+            if (title === "") {
+                alert('제목을 입력해주세요.');
+                return;  // 제목이 비어있으면 요청 중단
+            }
+
+            if (body === "") {
+                alert('본문을 입력해주세요.');
+                return;  // 본문이 비어있으면 요청 중단
+            }
+
+            const postDto = {
+                title : $('#title-text').val(),
+                body : $('#postBody').val(),
+            }
+            console.log(postDto);
+            $.ajax({
+                method: "PUT",
+                url: "http://3.34.251.147:8080/api/posts/notice/update/" + urlParams.get('postId'),
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(postDto),
+                success: function (response) {
+                    alert('수정에 성공했습니다.');
+                    location.href = "http://3.34.251.147:8080/api/posts/get?postId=" + urlParams.get('postId');
+                },
+                error: function (error) {
+                    alert('수정에 실패했습니다.');
+                    location.href = "http://3.34.251.147:8080/api/posts/noticeUpdateForm?postId=" + urlParams.get('postId');
+                }
+            })
+        })
+
+        $('#container-img').on('click', '.delete-btn', function () {
+            const imageId = $(this).data('id');
+            deleteImage(imageId);
+        });
+
+        function deleteImage (imageId) {
+            $.ajax({
+                url: '/api/images/delete?imageId=' + imageId,
+                method: 'DELETE',
+                contentType: 'application/json',
+                data: {},
+                success: function (response) {
+                    alert("이미지 삭제에 성공했습니다.");
+                    $(`div[data-id="${imageId}"]`).remove();
+                },
+                error: function (error) {
+                    alert('이미지 삭제에 실패했습니다.');
+                }
+            });
+        }
+
+    });
+</script>
+</html>

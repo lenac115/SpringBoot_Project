@@ -28,6 +28,7 @@
             left: 0;
             right: 0;
             height: 130px;
+            width: 100%;
         }
         #characterImg {
             position: absolute;
@@ -37,11 +38,14 @@
             height: 80px;
         }
     </style>
-
 </head>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
-
 <body>
+<header>
+    <a id="backToHome" href="/api/posts/search">Home</a>
+    <img id="header" th:src="@{/img/header.png}">
+    <a href="/api/users/login"><img id= "characterImg" th:src="@{/img/character.png}"></a>
+</header>
 <main>
     <h1 style="font-size: 40px; width: 100%; text-align: center;">내 게시물 수정하기</h1>
     <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
@@ -250,7 +254,7 @@
 
         $.ajax({
             method: "GET",
-            url: "http://localhost:8080/api/images/get?postId=" + urlParams.get('postId'),
+            url: "http://3.34.251.147:8080/api/images/get?postId=" + urlParams.get('postId'),
             success: function (data) {
                 let conImage = $('#container-img')
                 data.forEach(function (data) {
@@ -280,7 +284,7 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        window.location.href = 'http://localhost:8080/api/posts/updateForm?postId=' + urlParams.get('postId');
+                        window.location.href = 'http://3.34.251.147:8080/api/posts/updateForm?postId=' + urlParams.get('postId');
                     },
                     error: function(error) {
                         console.error('파일 업로드 실패:', error);
@@ -325,17 +329,17 @@
             console.log(postDto);
             $.ajax({
                 method: "PUT",
-                url:"http://localhost:8080/api/posts/update/" + urlParams.get('postId'),
+                url:"http://3.34.251.147:8080/api/posts/update/" + urlParams.get('postId'),
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postDto),
                 success: function (response) {
                     alert('수정에 성공했습니다.');
-                    location.href = "http://localhost:8080/api/posts/get?postId=" + urlParams.get('postId');
+                    location.href = "http://3.34.251.147:8080/api/posts/get?postId=" + urlParams.get('postId');
                 },
                 error: function (error) {
                     alert('수정에 실패했습니다.');
-                    location.href = "http://localhost:8080/api/posts/updateForm?postId=" + urlParams.get('postId');
+                    location.href = "http://3.34.251.147:8080/api/posts/updateForm?postId=" + urlParams.get('postId');
                 }
             })
         })
