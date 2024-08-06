@@ -82,6 +82,12 @@ public class PostsController {
         return new ModelAndView("postsDetails/postUpdateForm");
     }
 
+    @GetMapping("/create") // 배포 후에 user 검증 넣을 예정
+    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
+    public ModelAndView getCreateForm() {
+        return new ModelAndView("post/Posts");
+    }
+
 
     //삭제
 	@DeleteMapping("/{postId}")

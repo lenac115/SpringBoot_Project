@@ -1,6 +1,7 @@
 package com.springProject.controller;
 
 import com.springProject.dto.PostImagesDto;
+import com.springProject.entity.PostImages;
 import com.springProject.service.PostImagesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,9 @@ public class PostImagesController {
 
     @PostMapping("/upload")
     //@PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ResponseEntity<String> uploadImages(@RequestPart List<MultipartFile> imageList, @RequestParam Long postId) throws IOException {
-        postImagesService.uploadImage(imageList, postId);
-        return ResponseEntity.status(HttpStatus.OK).body("업로드 완료");
+    public ResponseEntity<List<PostImagesDto>> uploadImages(@RequestPart List<MultipartFile> imageList, @RequestParam Long postId) throws IOException {
+        List<PostImagesDto> postImagesDto = postImagesService.uploadImage(imageList, postId);
+        return ResponseEntity.status(HttpStatus.OK).body(postImagesDto);
     }
 
     @DeleteMapping("/delete")

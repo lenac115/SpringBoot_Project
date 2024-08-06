@@ -1,5 +1,6 @@
 package com.springProject.repository;
 
+import com.springProject.dto.PostImagesDto;
 import com.springProject.entity.PostImages;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,5 +32,4 @@ public interface PostsRepository extends JpaRepository<Posts, Long>, PostsReposi
 
     @Query("SELECT p FROM Posts p WHERE p.title LIKE %:title% AND p.isNotice = false")
     List<Posts> searchByTitleLike(String title);
-
 }
