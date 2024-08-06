@@ -224,7 +224,7 @@
 
         $.ajax({
             method: "GET",
-            url: "http://3.34.251.147:8080/api/images/get?postId=" + urlParams.get('postId'),
+            url: "/api/images/get?postId=" + urlParams.get('postId'),
             success: function (data) {
                 let conImage = $('#container-img')
                 data.forEach(function (data) {
@@ -254,7 +254,7 @@
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        window.location.href = 'http://3.34.251.147:8080/api/posts/updateForm?postId=' + urlParams.get('postId');
+                        window.location.href = '/api/posts/updateForm?postId=' + urlParams.get('postId');
                     },
                     error: function(error) {
                         console.error('파일 업로드 실패:', error);
@@ -299,17 +299,17 @@
             console.log(postDto);
             $.ajax({
                 method: "PUT",
-                url:"http://3.34.251.147:8080/api/posts/update/" + urlParams.get('postId'),
+                url:"/api/posts/update/" + urlParams.get('postId'),
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postDto),
                 success: function (response) {
                     alert('수정에 성공했습니다.');
-                    location.href = "http://3.34.251.147:8080/api/posts/get?postId=" + urlParams.get('postId');
+                    location.href = "/api/posts/get?postId=" + urlParams.get('postId');
                 },
                 error: function (error) {
                     alert('수정에 실패했습니다.');
-                    location.href = "http://3.34.251.147:8080/api/posts/updateForm?postId=" + urlParams.get('postId');
+                    location.href = "/api/posts/updateForm?postId=" + urlParams.get('postId');
                 }
             })
         })
