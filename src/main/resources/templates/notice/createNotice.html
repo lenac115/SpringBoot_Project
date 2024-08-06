@@ -30,7 +30,7 @@
 
         $.ajax({
             method: "POST",
-            url:"http://localhost:8080/api/notice/save",
+            url: "/api/notice/save",
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify({
@@ -95,21 +95,17 @@
 
             const postDto = {
                 title : $('#title-text').val(),
-                body : $('#postBody').val(),
-                star : parseInt($('#star').val()),
-                location : $('#location').val(),
-                category : $('#category').val(),
-                hashtags : mergedHashtags.substring(0, mergedHashtags.length - 1)
+                body : $('#postBody').val()
             }
             $.ajax({
                 method: "PUT",
-                url:"http://localhost:8080/api/notice/update/" + urlParams,
+                url:"/api/notice/update/" + urlParams,
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postDto),
                 success: function (response) {
                     alert('등록에 성공했습니다.');
-                    location.href = "http://localhost:8080/api/posts/get?postId=" +response.id;
+                    location.href = "/api/posts/get?postId=" + response.id;
                 },
                 error: function (error) {
                     alert('등록에 실패했습니다.');
