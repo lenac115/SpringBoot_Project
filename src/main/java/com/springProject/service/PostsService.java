@@ -49,6 +49,7 @@ public class PostsService {
         Users findUsers = usersRepository.findByLoginId(username);
 
         post.setCreated_at(new Timestamp(System.currentTimeMillis()));
+        post.setUpdated_at(new Timestamp(System.currentTimeMillis()));
         post.setUsers(findUsers);
         findUsers.getPosts().add(post);
         postsRepository.save(post);

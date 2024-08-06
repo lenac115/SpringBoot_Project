@@ -224,14 +224,4 @@ public class PostsController {
         List<PostsDto> getSearchPosts = postsService.getSearchPosts(title);
         return ResponseEntity.ok(getSearchPosts);
     }
-
-    @GetMapping("/noticeForm")
-    public ModelAndView getCreateNotice() {
-        return new ModelAndView("post/createNotice");
-    }
-
-    @GetMapping("/noticeUpdateForm")
-    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
-        return new ModelAndView("post/noticeUpdate");
-    }
 }

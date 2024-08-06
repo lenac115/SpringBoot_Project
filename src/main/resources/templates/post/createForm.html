@@ -11,16 +11,28 @@
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login">
+        로그인
+        <img class="characterImg" th:src="@{/img/character.png}">
+    </a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">
+        로그아웃
+        <img class="characterImg" th:src="@{/img/character.png}">
+    </a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">
+        관리자 페이지
+        <img class="characterImg" th:src="@{/img/character.png}">
+    </a>
 </header>
 <body>
 <main>
     <h1 style="font-size: 40px; width: 100%; text-align: center;">당신의 게시글을 작성해보세요!</h1>
-    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
+    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요."
+                                            required></textarea></h1>
     <textarea id="postBody" placeholder="본문을 입력해주세요." required></textarea>
-    <h3>사진 등록하기<button id="btn-image">+</button></h3>
+    <h3>사진 등록하기
+        <button id="btn-image">+</button>
+    </h3>
     <input type="file" id="file-input" style="display: none;">
     <div id="container-img"></div>
     <div id="sec-hashtag">
@@ -120,6 +132,8 @@
 
     let urlParams;
     let splitHashtags = [];
+    let tempIds = {};
+    let imageIds = [];
 
     $(document).ready(function () {
         // 카테고리 선택 처리
@@ -181,29 +195,11 @@
             $('.select-selected .arrow').removeClass('arrow-up');
         });
 
-        $.ajax({
-            method: "POST",
-            url:'/api/posts',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({
-                title : '임시',
-                body : '임시'
-            }),
-            success: function (response) {
-                console.log(response);
-                urlParams = response.id;
-            },
-            error: function (error) {
-                alert('등록에 실패했습니다.');
-            }
-        })
-
-        $('#btn-image').click(function() {
+        $('#btn-image').click(function () {
             $('#file-input').click();
         });
 
-        $('#file-input').change(function() {
+        $('#file-input').change(function () {
             const file = this.files[0];
             if (file) {
                 const imageList = new FormData();
@@ -211,21 +207,22 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/api/images/upload?postId=' + urlParams,
+                    url: '/api/images/upload/temp?postId=' + urlParams,
                     data: imageList,
                     processData: false,
                     contentType: false,
                     success: function (data) {
                         let conImage = $('#container-img')
-                        data.forEach(function (data) {
+                        Object.assign(tempIds, data);  // Correctly merge new data into tempIds
+                        for (const [key, value] of Object.entries(data)) {
                             conImage.append(`
-                        <div class="image" data-id="${data.id}" style="margin-left:10px;">
-                            <img src="/api/images/display/${data.storeFilename}" alt="Image" width="240" height="160">
-                            <button class="delete-btn btn-square-small" data-id="${data.id}">삭제</button>
+                        <div class="image" data-id="${key}" style="margin-left:10px;">
+                            <img src="/api/images/display/${value}" alt="Image" width="240" height="160">
+                            <button class="delete-btn btn-square-small" data-id="${key}">삭제</button>
                         </div>`);
-                        })
+                        }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.error('파일 업로드 실패:', error);
                     }
                 });
@@ -233,60 +230,95 @@
         });
 
         $('#btn-edit').click(function () {
-
             const title = $('#title-text').val().trim();
             const body = $('#postBody').val().trim();
+            const category = $('#category').val().trim();
+            const star = $('#star').val().trim();
+            const locationVal = $('#location').val().trim();
 
             if (title === "") {
                 alert('제목을 입력해주세요.');
                 return;  // 제목이 비어있으면 요청 중단
             }
-
             if (body === "") {
                 alert('본문을 입력해주세요.');
                 return;  // 본문이 비어있으면 요청 중단
+            }
+            if (category === "") {
+                alert('카테고리를 입력해주세요');
+                return;
+            }
+            if(locationVal === "") {
+                alert('위치를 입력해주세요');
+                return;
+            }
+            if(star === "") {
+                alert('별점을 입력해주세요');
+                return;
             }
 
             let mergedHashtags = '';
             splitHashtags.forEach(function (hashtags) {
                 mergedHashtags += hashtags + "/";
-            })
+            });
 
-            if(mergedHashtags === "") {
+            if (mergedHashtags === "") {
                 alert('해시태그는 하나 이상 있어야 합니다.');
                 return;
             }
 
-            const postDto = {
-                title : $('#title-text').val(),
-                body : $('#postBody').val(),
-                star : parseInt($('#star').val()),
-                location : $('#location').val(),
-                category : $('#category').val(),
-                hashtags : mergedHashtags.substring(0, mergedHashtags.length - 1)
-            }
+            const postsDto = {
+                title: $('#title-text').val(),
+                body: $('#postBody').val(),
+                star: parseInt($('#star').val()),
+                location: $('#location').val(),
+                category: $('#category').val(),
+                hashtags: mergedHashtags.substring(0, mergedHashtags.length - 1)
+            };
+
             $.ajax({
-                method: "PUT",
-                url: "/api/posts/update/" + urlParams,
+                method: "POST",
+                url: "/api/posts",
                 contentType: 'application/json',
                 dataType: 'json',
-                data: JSON.stringify(postDto),
+                data: JSON.stringify(postsDto),
                 success: function (response) {
-                    alert('등록에 성공했습니다.');
-                    location.href = "/api/posts/get?postId=" +response.id;
+
+                    imageIds = [];  // Clear imageIds before populating
+
+                    for (const key in tempIds) {
+                        if (tempIds.hasOwnProperty(key)) {
+                            imageIds.push(key);
+                        }
+                    }
+                    $.ajax({
+                        method: "POST",
+                        url: "http://localhost:8080/api/images/attachImages?postId=" + response.id,
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify(imageIds),
+                        success: function (data) {
+                            alert('등록에 성공했습니다.');
+                            location.href = "/api/posts/get?postId=" + response.id;
+                        },
+                        error: function (error) {
+                            console.error('Image attachment error:', error);  // Log detailed error
+                            alert('등록에 실패했습니다.');
+                        }
+                    });
                 },
                 error: function (error) {
                     alert('등록에 실패했습니다.');
                 }
-            })
-        })
+            });
+        });
 
         $('#container-img').on('click', '.delete-btn', function () {
             const imageId = $(this).data('id');
             deleteImage(imageId);
         });
 
-        function deleteImage (imageId) {
+        function deleteImage(imageId) {
             $.ajax({
                 url: '/api/images/delete?imageId=' + imageId,
                 method: 'DELETE',
@@ -307,7 +339,7 @@
             deleteTag(tagIdx);
         });
 
-        function deleteTag (tagIdx) {
+        function deleteTag(tagIdx) {
             splitHashtags.splice(tagIdx, 1);
             $(`div[data-id="${tagIdx}"]`).remove();
         }
