@@ -29,7 +29,8 @@ a:hover {
     color: #98DB2EFF; /* primary-500 */
 }
 
-form button {
+form button,
+#makePost{
     height: 36px;
     padding: 0 12px;
 
@@ -50,8 +51,8 @@ form button {
     align-self: flex-end;
 }
 
-form button:hover {
-    height: 40px;
+form button:hover ,
+#makePost:hover {
     color: #354E0DFF; /* primary-800 */
     background: #98DB2EFF; /* primary-500 */
 }
@@ -71,8 +72,10 @@ form select {
     height: 36px;
 }
 
-form input, form select,
-form ul li input {
+#post-container > form > #rating > li:not(:first-child) > label,
+form input, form select, button,
+form ul li input, #sorting,
+.bookmark, .prefer{
     cursor: pointer;
 }
 
@@ -196,7 +199,7 @@ form ul li input {
 }
 
 #post-container {
-    padding-top: 95px;
+    padding-top: 150px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -208,7 +211,8 @@ form ul li input {
     align-items: flex-start;
 }
 
-#post-container > form * {
+#post-container > form *,
+#sorting {
     font-family: Manrope;
     font-size: 14px;
     line-height: 22px;
@@ -393,12 +397,34 @@ select:active {
 }
 
 #exist-post {
+    position: relative;
     width: 100%;
     padding-left: 70px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#makePost {
+    width: fit-content;
+    position: absolute;
+    padding: 10px;
+    margin-top: 30px;
+    font-size: 27px;
+    align-self: flex-end;
+}
+
+#sorting {
+    color: #171A1FFF;
+    border: 2px solid #98DB2EFF;
+    border-radius: 6px;
+    padding: 6px;
+
+    position: absolute;
+    top: -70px;
+    align-self: flex-end;
+    height: 36px;
 }
 
 #no-post {
@@ -410,13 +436,34 @@ select:active {
 #post-list {
     align-self: flex-end;
 
-    max-width: 1000px;
+    max-width: 890px;
     padding: 0;
 
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: flex-start;
+}
+
+#post-list .post-image {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.post-title {
+    display: block;
+    padding: 0 24px;
+    height: 56px;
+    font-family: DM Sans;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 500;
+    color: #171A1FFF;
+}
+
+.post-title:hover {
+    color: #171A1FFF;
+    font-weight: 700;
 }
 
 #post-list > li {
@@ -444,6 +491,15 @@ select:active {
 
 .bookmark {
     padding-right: 4px;
+}
+
+.bookmark:hover,
+.prefer:hover {
+    transform: scale(1.2);
+}
+
+.off {
+    display:none;
 }
 
 #page-container {

@@ -31,9 +31,19 @@ public class PrefersService {
         return prefersRepository.countById(postId);
     }
 
+    @Transactional(readOnly = true)
     public List<PrefersDto> getAllPrefers(Long userId) {
         return prefersRepository.findAllByUserId(userId).stream()
                 .map(ConvertUtils::convertPrefersToDto).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPrefer(Long postId, String username) {
+        Users findUser = usersRepository.findByLoginId(username);
+        Prefers findPrefers = prefersRepository.findByPostId(postId, findUser.getId()).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        if(!Objects.equals(findPrefers.getUsers().getLoginId(), username))
+            throw new AccessDeniedException("잘못된 접근입니다.");
+        return true;
     }
 
     public PrefersDto save(Long postId, String username) {
@@ -58,4 +68,6 @@ public class PrefersService {
 
         prefersRepository.delete(findPrefers);
     }
+
+
 }
