@@ -54,10 +54,11 @@ public class PostsController {
 
     //생성
     @PostMapping
-    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
+    public ModelAndView createPost(@RequestBody PostsDto postsDto,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPostDto);
+        createPostResponse(createdPostDto);
+        return new ModelAndView("redirect:/api/posts/" + createdPostDto.getId());
     }
 
     public ResponseEntity<PostsDto> createPostResponse(PostsDto createdPostDto) {
