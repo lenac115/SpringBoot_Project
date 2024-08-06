@@ -12,8 +12,10 @@
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
     <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg"
+                                                                                               th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg"
+                                                                                                  th:src="@{/img/character.png}"></a>
 </header>
 <body>
 <main>
@@ -195,6 +197,7 @@
                 $('#location').text(data.location);
                 users = data.usersDto;
                 username = data.presentId;
+
                 for (let i = 0; i < data.star; i++) {
                     image.insertAdjacentHTML('beforeend', '<img src="/img/star.png" height="41" width="41" alt="별점 이미지입니다."/>');
                 }
@@ -226,7 +229,7 @@
                     btnUpdate.remove();
                 }
 
-                if(data.presentId !== users.loginId) {
+                if (data.presentId !== users.loginId) {
                     btnDelete.remove();
                     btnUpdate.remove();
                 }
@@ -488,13 +491,14 @@
         }
 
         $('#btn-update').click(function () {
+
             $.ajax({
                 method: "GET",
                 url: "/api/posts/updateForm?postId=" + urlParams.get('postId'),
                 success: function (response) {
                     location.href = '/api/posts/updateForm?postId=' + urlParams.get('postId');
                 },
-                error: function(error) {
+                error: function (error) {
                     alert('수정 페이지 조회에 실패했습니다.');
                 }
             })
@@ -502,13 +506,13 @@
 
         $('#btn-delete').click(function () {
             $.ajax({
-                method:"DELETE",
+                method: "DELETE",
                 url: "/api/posts/" + urlParams.get('postId'),
                 success: function (response) {
                     alert('페이지 삭제 완료');
                     location.href = "/api/posts/search"
                 },
-                error: function(error) {
+                error: function (error) {
                     alert('삭제에 실패했습니다.');
                 }
             })
@@ -516,12 +520,12 @@
 
         $('#btn-to-list').click(function () {
             $.ajax({
-                method:"GET",
+                method: "GET",
                 url: "/api/posts/search",
                 success: function (response) {
                     location.href = "/api/posts/search"
                 },
-                error: function(error) {
+                error: function (error) {
                     alert('조회에 실패했습니다.');
                 }
             })

@@ -1,7 +1,6 @@
 package com.springProject.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -89,26 +88,24 @@ public class PostsController {
         return new ModelAndView("postsDetails/myPost");
     }
 
-    @GetMapping("/noticeForm")
-    public ModelAndView getCreateNotice() {
-        return new ModelAndView("notice/createNotice");
+    @GetMapping("/notice/get")
+    public ModelAndView getNoticePost(@RequestParam Long postId) {
+        return new ModelAndView("post/noticeView");
     }
 
-    @GetMapping("/noticeUpdateForm")
-    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
-        return new ModelAndView("notice/noticeUpdate");
-    }
-
-    @GetMapping("/updateForm") // 배포 후에 user 검증 넣을 예정
-    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ModelAndView getPostUpdateForm(@RequestParam Long postId) {
+    @GetMapping("/updateForm")
+    public ModelAndView getPostDetails(@RequestParam Long postId) {
         return new ModelAndView("postsDetails/postUpdateForm");
     }
 
-    @GetMapping("/create") // 배포 후에 user 검증 넣을 예정
-    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ModelAndView getCreateForm() {
-        return new ModelAndView("post/Posts");
+    @GetMapping("/notice/updateForm")
+    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
+        return new ModelAndView("post/noticeUpdate");
+    }
+
+    @GetMapping("/noticeForm")
+    public ModelAndView createPostNotice() {
+        return new ModelAndView("post/createNotice");
     }
 
 
@@ -174,7 +171,7 @@ public class PostsController {
 
 
     @PostMapping("/notice/save")
-    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    //@PreAuthorize("hasAnyRole('ROLE_admin')")
     public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
 
         PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());
