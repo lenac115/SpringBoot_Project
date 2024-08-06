@@ -211,11 +211,17 @@
                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            var user = [[${user}]];
+                            var postId = [[${post.id}]];
+                            /*]]>*/
+                        </script>
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}" />
-                        <img class="bookmark" th:src="@{/img/before_bookmark.svg}"/>
-                        <img class="bookmark off" th:src="@{/img/after_bookmark.svg}">
-                        <img class="prefer" th:src="@{/img/before_prefer.svg}"/>
-                        <img class="prefer off" th:src="@{/img/after_prefer.svg}"/>
+                        <img class="bookmark save" th:src="@{/img/before_bookmark.svg}"/>
+                        <img class="bookmark off delete" th:src="@{/img/after_bookmark.svg}">
+                        <img class="prefer save" th:src="@{/img/before_prefer.svg}"/>
+                        <img class="prefer off delete" th:src="@{/img/after_prefer.svg}"/>
                     </div>
                 </li>
             </ul>
