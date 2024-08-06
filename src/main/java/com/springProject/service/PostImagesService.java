@@ -35,30 +35,26 @@ public class PostImagesService {
     @Value("${com.ex.uploadPath}")
     private String uploadPath;
 
-    public List<PostImagesDto> uploadImage(List<MultipartFile> imageList, Long postId) throws IOException {
+    public Map<Long, String> uploadTemporaryImages(List<MultipartFile> imageList) throws IOException {
+        Map<Long, String> imageInfoMap = new HashMap<>();
 
-        Posts findPost = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
-        List<PostImages> postImages = new ArrayList<>();
-
-        for(MultipartFile multipartFile : imageList) {
-            // 저장할 절대 경로(서버 올릴 경우 리눅스 경로로 수정해야함)
+        for (MultipartFile multipartFile : imageList) {
+            // 저장할 절대 경로
             String realPath = uploadPath;
 
             File file = new File(realPath);
-
-            // 폴더 없으면 폴더 생성
             if (!file.exists()) {
                 file.mkdirs();
             }
 
-            // 확장자 조회 부분
+            // 확장자 조회
             String extension = "";
             String contentType = multipartFile.getContentType();
-            if(contentType.contains("image/jpeg")) {
-                extension =  ".jpg";
-            } else if(contentType.contains("image/png")){
+            if (contentType.contains("image/jpeg")) {
+                extension = ".jpg";
+            } else if (contentType.contains("image/png")) {
                 extension = ".png";
-            } else if(contentType.contains("image/gif")) {
+            } else if (contentType.contains("image/gif")) {
                 extension = ".gif";
             }
 
@@ -69,16 +65,36 @@ public class PostImagesService {
                     .filePath(realPath)
                     .originFilename(multipartFile.getOriginalFilename())
                     .createdAt(LocalDateTime.now())
-                    .posts(findPost).build();
+                    .posts(null)  // 아직 게시글과 연결되지 않음
+                    .build();
 
             PostImages savedImage = postImagesRepository.save(newImage);
-            findPost.getPostImages().add(savedImage);
-            postImages.add(savedImage);
+
+            // ID와 저장된 파일명으로 맵에 저장
+            imageInfoMap.put(savedImage.getId(), storedFileName);
 
             // 절대 경로 + 파일명으로 파일 저장
             file = new File(realPath + "/" + storedFileName);
             multipartFile.transferTo(file);
         }
+
+        return imageInfoMap;  // 임시로 저장된 이미지 ID와 파일명을 반환
+    }
+
+    public List<PostImagesDto> attachImagesToPost(List<Long> imageIds, Long postId) {
+        Posts findPost = postsRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
+        List<PostImages> postImages = new ArrayList<>();
+
+        for (Long imageId : imageIds) {
+            PostImages image = postImagesRepository.findById(imageId)
+                    .orElseThrow(() -> new IllegalArgumentException("잘못된 이미지 ID 입니다."));
+            image.setPosts(findPost);  // 게시글과 연결
+            postImages.add(image);
+        }
+
+        postImagesRepository.saveAll(postImages);
+        findPost.getPostImages().addAll(postImages);
 
         return postImages.stream().map(ConvertUtils::convertImagesToDto).toList();
     }

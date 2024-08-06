@@ -55,11 +55,10 @@ public class PostsController {
 
     //생성
     @PostMapping
-    public ModelAndView createPost(@RequestBody PostsDto postsDto,
+    public ResponseEntity<PostsDto> createPost(@RequestBody PostsDto postsDto,
                                    @AuthenticationPrincipal UserDetails userDetails) {
         PostsDto createdPostDto = postsService.createPost(postsDto, userDetails.getUsername());
-        createPostResponse(createdPostDto);
-        return new ModelAndView("redirect:/api/posts/" + createdPostDto.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPostDto);
     }
 
     public ResponseEntity<PostsDto> createPostResponse(PostsDto createdPostDto) {
@@ -88,29 +87,6 @@ public class PostsController {
         model.addAttribute("id", postId);
         return new ModelAndView("postsDetails/myPost");
     }
-
-    @GetMapping("/noticeForm")
-    public ModelAndView getCreateNotice() {
-        return new ModelAndView("notice/createNotice");
-    }
-
-    @GetMapping("/noticeUpdateForm")
-    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
-        return new ModelAndView("notice/noticeUpdate");
-    }
-
-    @GetMapping("/updateForm") // 배포 후에 user 검증 넣을 예정
-    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ModelAndView getPostUpdateForm(@RequestParam Long postId) {
-        return new ModelAndView("postsDetails/postUpdateForm");
-    }
-
-    @GetMapping("/create") // 배포 후에 user 검증 넣을 예정
-    @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
-    public ModelAndView getCreateForm() {
-        return new ModelAndView("post/Posts");
-    }
-
 
     //삭제
     @DeleteMapping("/{postId}")
@@ -223,15 +199,5 @@ public class PostsController {
     public ResponseEntity<List<PostsDto>> getSearchPosts(@PathVariable String title) {
         List<PostsDto> getSearchPosts = postsService.getSearchPosts(title);
         return ResponseEntity.ok(getSearchPosts);
-    }
-
-    @GetMapping("/noticeForm")
-    public ModelAndView getCreateNotice() {
-        return new ModelAndView("notice/createNotice");
-    }
-
-    @GetMapping("/noticeUpdateForm")
-    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
-        return new ModelAndView("notice/noticeUpdate");
     }
 }
