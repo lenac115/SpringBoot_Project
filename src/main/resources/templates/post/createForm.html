@@ -12,15 +12,20 @@
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
     <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg"
+                                                                                               th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg"
+                                                                                                  th:src="@{/img/character.png}"></a>
 </header>
 <body>
 <main>
     <h1 style="font-size: 40px; width: 100%; text-align: center;">당신의 게시글을 작성해보세요!</h1>
-    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
+    <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요."
+                                            required></textarea></h1>
     <textarea id="postBody" placeholder="본문을 입력해주세요." required></textarea>
-    <h3>사진 등록하기<button id="btn-image">+</button></h3>
+    <h3>사진 등록하기
+        <button id="btn-image">+</button>
+    </h3>
     <input type="file" id="file-input" style="display: none;">
     <div id="container-img"></div>
     <div id="sec-hashtag">
@@ -183,11 +188,11 @@
             $('.select-selected .arrow').removeClass('arrow-up');
         });
 
-        $('#btn-image').click(function() {
+        $('#btn-image').click(function () {
             $('#file-input').click();
         });
 
-        $('#file-input').change(function() {
+        $('#file-input').change(function () {
             const file = this.files[0];
             if (file) {
                 const imageList = new FormData();
@@ -210,7 +215,7 @@
                         </div>`);
                         }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.error('파일 업로드 실패:', error);
                     }
                 });
@@ -220,15 +225,29 @@
         $('#btn-edit').click(function () {
             const title = $('#title-text').val().trim();
             const body = $('#postBody').val().trim();
+            const category = $('#category').val().trim();
+            const star = $('#star').val().trim();
+            const locationVal = $('#location').val().trim();
 
             if (title === "") {
                 alert('제목을 입력해주세요.');
                 return;  // 제목이 비어있으면 요청 중단
             }
-
             if (body === "") {
                 alert('본문을 입력해주세요.');
                 return;  // 본문이 비어있으면 요청 중단
+            }
+            if (category === "") {
+                alert('카테고리를 입력해주세요');
+                return;
+            }
+            if(locationVal === "") {
+                alert('위치를 입력해주세요');
+                return;
+            }
+            if(star === "") {
+                alert('별점을 입력해주세요');
+                return;
             }
 
             let mergedHashtags = '';
@@ -292,7 +311,7 @@
             deleteImage(imageId);
         });
 
-        function deleteImage (imageId) {
+        function deleteImage(imageId) {
             $.ajax({
                 url: '/api/images/delete?imageId=' + imageId,
                 method: 'DELETE',
@@ -313,7 +332,7 @@
             deleteTag(tagIdx);
         });
 
-        function deleteTag (tagIdx) {
+        function deleteTag(tagIdx) {
             splitHashtags.splice(tagIdx, 1);
             $(`div[data-id="${tagIdx}"]`).remove();
         }

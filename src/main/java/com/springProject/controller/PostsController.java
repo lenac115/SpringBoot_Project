@@ -88,6 +88,11 @@ public class PostsController {
         return new ModelAndView("postsDetails/myPost");
     }
 
+    @GetMapping("/updateForm")
+    public ModelAndView getPostDetails(@RequestParam Long postId) {
+        return new ModelAndView("postsDetails/postUpdateForm");
+    }
+
     //삭제
     @DeleteMapping("/{postId}")
     @PreAuthorize("hasAnyRole('ROLE_user', 'ROLE_admin')")

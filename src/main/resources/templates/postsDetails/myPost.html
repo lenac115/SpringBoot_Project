@@ -112,7 +112,7 @@
 
         if (username === null) {
             alert("로그인이 필요합니다.");
-            location.href = "http://3.34.251.147:8080/api/users/login";
+            location.href = "/api/users/login";
             return false;
         }
 
@@ -492,7 +492,7 @@
                 method: "GET",
                 url: "/api/posts/updateForm?postId=" + urlParams.get('postId'),
                 success: function (response) {
-                    location.href = 'http://3.34.251.147:8080/api/posts/updateForm?postId=' + urlParams.get('postId');
+                    location.href = '/api/posts/updateForm?postId=' + urlParams.get('postId');
                 },
                 error: function(error) {
                     alert('수정 페이지 조회에 실패했습니다.');
@@ -506,7 +506,7 @@
                 url: "/api/posts/" + urlParams.get('postId'),
                 success: function (response) {
                     alert('페이지 삭제 완료');
-                    location.href = "http://3.34.251.147:8080/api/posts/search"
+                    location.href = "/api/posts/search"
                 },
                 error: function(error) {
                     alert('삭제에 실패했습니다.');
@@ -519,7 +519,7 @@
                 method:"GET",
                 url: "/api/posts/search",
                 success: function (response) {
-                    location.href = "http://3.34.251.147:8080/api/posts/search"
+                    location.href = "/api/posts/search"
                 },
                 error: function(error) {
                     alert('조회에 실패했습니다.');
