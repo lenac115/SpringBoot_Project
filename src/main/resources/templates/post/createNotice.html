@@ -29,6 +29,8 @@
 <script>
 
     let urlParams;
+    let tempIds = {};
+    let imageIds = [];
 
     $(document).ready(function () {
 
@@ -37,28 +39,11 @@
             $('.select-selected .arrow').removeClass('arrow-up');
         });
 
-        $.ajax({
-            method: "POST",
-            url:"http://3.34.251.147:8080/api/notice/save",
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({
-                title : '임시',
-                body : '임시'
-            }),
-            success: function (response) {
-                urlParams = response.id;
-            },
-            error: function (error) {
-                alert('등록에 실패했습니다.');
-            }
-        })
-
         $('#btn-image').click(function() {
             $('#file-input').click();
         });
 
-        $('#file-input').change(function() {
+        $('#file-input').change(function () {
             const file = this.files[0];
             if (file) {
                 const imageList = new FormData();
@@ -66,21 +51,22 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '/api/images/upload?postId=' + urlParams,
+                    url: '/api/images/upload/temp?postId=' + urlParams,
                     data: imageList,
                     processData: false,
                     contentType: false,
                     success: function (data) {
                         let conImage = $('#container-img')
-                        data.forEach(function (data) {
+                        Object.assign(tempIds, data);  // Correctly merge new data into tempIds
+                        for (const [key, value] of Object.entries(data)) {
                             conImage.append(`
-                        <div class="image" data-id="${data.id}" style="margin-left:10px;">
-                            <img src="/api/images/display/${data.storeFilename}" alt="Image" width="240" height="160">
-                            <button class="delete-btn btn-square-small" data-id="${data.id}">삭제</button>
+                        <div class="image" data-id="${key}" style="margin-left:10px;">
+                            <img src="/api/images/display/${value}" alt="Image" width="240" height="160">
+                            <button class="delete-btn btn-square-small" data-id="${key}">삭제</button>
                         </div>`);
-                        })
+                        }
                     },
-                    error: function(error) {
+                    error: function (error) {
                         console.error('파일 업로드 실패:', error);
                     }
                 });
@@ -104,21 +90,37 @@
 
             const postDto = {
                 title : $('#title-text').val(),
-                body : $('#postBody').val(),
-                star : parseInt($('#star').val()),
-                location : $('#location').val(),
-                category : $('#category').val(),
-                hashtags : mergedHashtags.substring(0, mergedHashtags.length - 1)
+                body : $('#postBody').val()
             }
             $.ajax({
-                method: "PUT",
-                url:"http://3.34.251.147:8080/api/notice/update/" + urlParams,
+                method: "POST",
+                url:"/api/posts/notice/save",
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postDto),
                 success: function (response) {
-                    alert('등록에 성공했습니다.');
-                    location.href = "http://3.34.251.147:8080/api/posts/get?postId=" +response.id;
+                    imageIds = [];  // Clear imageIds before populating
+
+                    for (const key in tempIds) {
+                        if (tempIds.hasOwnProperty(key)) {
+                            imageIds.push(key);
+                        }
+                    }
+                    $.ajax({
+                        method: "POST",
+                        url: "/api/images/attachImages?postId=" + response.id,
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        data: JSON.stringify(imageIds),
+                        success: function (data) {
+                            alert('등록에 성공했습니다.');
+                            location.href = "/api/posts/notice/get?postId=" + response.id;
+                        },
+                        error: function (error) {
+                            console.error('Image attachment error:', error);  // Log detailed error
+                            alert('등록에 실패했습니다.');
+                        }
+                    });
                 },
                 error: function (error) {
                     alert('등록에 실패했습니다.');

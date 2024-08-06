@@ -1,7 +1,6 @@
 package com.springProject.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -88,10 +87,26 @@ public class PostsController {
         return new ModelAndView("postsDetails/myPost");
     }
 
+    @GetMapping("/notice/get")
+    public ModelAndView getNoticePost(@RequestParam Long postId) {
+        return new ModelAndView("post/noticeView");
+    }
+
     @GetMapping("/updateForm")
     public ModelAndView getPostDetails(@RequestParam Long postId) {
         return new ModelAndView("postsDetails/postUpdateForm");
     }
+
+    @GetMapping("/notice/updateForm")
+    public ModelAndView getUpdateNotice(@RequestParam Long postId) {
+        return new ModelAndView("post/noticeUpdate");
+    }
+
+    @GetMapping("/noticeForm")
+    public ModelAndView createPostNotice() {
+        return new ModelAndView("post/createNotice");
+    }
+
 
     //삭제
     @DeleteMapping("/{postId}")
@@ -155,7 +170,7 @@ public class PostsController {
 
 
     @PostMapping("/notice/save")
-    @PreAuthorize("hasAnyRole('ROLE_admin')")
+    //@PreAuthorize("hasAnyRole('ROLE_admin')")
     public ResponseEntity<PostsDto> createNotice(@RequestBody PostsDto postsDto, @AuthenticationPrincipal UserDetails users) {
 
         PostsDto savedPost = postsService.createNotice(postsDto, users.getUsername());

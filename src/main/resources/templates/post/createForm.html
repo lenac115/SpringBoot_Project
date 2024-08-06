@@ -286,7 +286,7 @@
                     }
                     $.ajax({
                         method: "POST",
-                        url: "http://localhost:8080/api/images/attachImages?postId=" + response.id,
+                        url: "/api/images/attachImages?postId=" + response.id,
                         contentType: 'application/json',
                         dataType: 'json',
                         data: JSON.stringify(imageIds),
