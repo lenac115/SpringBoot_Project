@@ -77,6 +77,13 @@ public class PostsController {
         return ResponseEntity.ok(postsDto);
     }
 
+
+    @GetMapping("/get")
+    public ModelAndView getPostDetails(@RequestParam Long postId, Model model) {
+        model.addAttribute("id", postId);
+        return new ModelAndView("postsDetails/myPost");
+    }
+
     @GetMapping("/updateForm") // 배포 후에 user 검증 넣을 예정
     @PreAuthorize("hasAnyRole('ROLE_admin', 'ROLE_user')")
     public ModelAndView getPostUpdateForm(@RequestParam Long postId) {
@@ -130,7 +137,6 @@ public class PostsController {
 
 		return new ModelAndView("post/search");
 	}
-
 
 	// HTTP 전송 용 코드
 	@ResponseBody

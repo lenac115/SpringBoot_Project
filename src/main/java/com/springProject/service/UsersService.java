@@ -224,7 +224,7 @@ public class UsersService {
         if (findUsers.getBannedUser() != null) {
             findUsers.setBannedUser(null);
         }
-        
+
         //정지 테이블의 로그는 그대로 남기고, 유저 테이블의 컬럼 값만 업데이트(banned_id)
         findUsers.setIsActivated(true);
         findUsers.setAuth(Users.UserAuth.user); //stop -> user
