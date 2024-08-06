@@ -93,12 +93,15 @@
                 body : $('#postBody').val()
             }
             $.ajax({
+
                 method: "POST",
                 url:"/api/posts/notice/save",
+
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(postDto),
                 success: function (response) {
+
                     imageIds = [];  // Clear imageIds before populating
 
                     for (const key in tempIds) {
@@ -121,6 +124,7 @@
                             alert('등록에 실패했습니다.');
                         }
                     });
+
                 },
                 error: function (error) {
                     alert('등록에 실패했습니다.');
