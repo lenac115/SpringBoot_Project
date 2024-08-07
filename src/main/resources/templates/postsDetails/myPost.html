@@ -249,7 +249,7 @@
 
                 function renderComment(comments, container) {
                     comments.forEach(function (comment) {
-                        const marginLeft = (comment.depth + 1) * 27;
+                        const marginLeft = (comment.depth + 1) * 40;
                         const commentHTML = `
                     <div class="comment-sec-line"></div>
                     <div class="comment" data-id="${comment.id}" data-user-id="${comment.loginId}">
@@ -266,7 +266,7 @@
                                     data-comment-id="${comment.id}" data-comment-depth="${comment.depth}" id="comment-reply-${comment.id}">답글</button>
                             </div>
                         </div>
-                        <div class="replies" style="margin-left: ${marginLeft};"></div>
+                        <div class="replies" style="margin-left: ${marginLeft}px;"></div>
                     </div>`;
                         const commentElement = $(commentHTML);
                         container.append(commentElement);
