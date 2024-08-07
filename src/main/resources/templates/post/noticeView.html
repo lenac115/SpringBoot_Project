@@ -114,14 +114,15 @@
     $(document).ready(function () {
         $.ajax({
             type: "GET",
-            url: "/api/posts/get?postId=" + urlParams.get('postId'),
+            url: "/api/posts/" + urlParams.get('postId'),
             success: function (data) {
+
                 $('#postBody').text(data.body);
                 $('#postTitle').text(data.title);
                 $('#detailTitle').text(data.title);
-                $('#updated').text(data.updatedAt);
+                $('#updated').text(data.updatedAt == null ? ' ': data.updatedAt);
                 $('#created').text(data.createdAt);
-                $('#userName').text(data.usersDto.nickname);
+                $('#userName').text("운영자");
                 users = data.usersDto;
                 username = data.presentId;
                 isNoticed = data.notice;

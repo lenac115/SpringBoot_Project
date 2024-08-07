@@ -37,7 +37,7 @@ public class PrefersController {
     @GetMapping("/get")
     public ResponseEntity<String> getPrefersById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
 
-        Boolean isPrefer = prefersService.isPrefer(postId, user.getUsername());
+        prefersService.isPrefer(postId, user.getUsername());
 
         return ResponseEntity.status(HttpStatus.OK).body("prefer 찾았어요!");
     }

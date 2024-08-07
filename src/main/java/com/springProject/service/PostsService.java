@@ -151,6 +151,7 @@ public class PostsService {
 
         // posts 기본값 설정
         savePost.setCreated_at(new Timestamp(System.currentTimeMillis()));
+        savePost.setUpdated_at(new Timestamp(System.currentTimeMillis()));
         savePost.setNotice(true);
 
         return ConvertUtils.convertPostsToDto(savePost);

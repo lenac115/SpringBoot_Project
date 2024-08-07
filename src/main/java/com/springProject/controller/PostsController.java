@@ -83,7 +83,7 @@ public class PostsController {
 
 
     @GetMapping("/get")
-    public ModelAndView getPostDetails(@RequestParam Long postId, Model model) {
+    public ModelAndView getPostDetails(@RequestParam(value="postId") Long postId, Model model) {
         model.addAttribute("id", postId);
         return new ModelAndView("postsDetails/myPost");
     }

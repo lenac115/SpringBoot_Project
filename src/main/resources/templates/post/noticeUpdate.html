@@ -12,23 +12,25 @@
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login"><p>로그인</p><img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login"><p>로그아웃</p><img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin"><p>관리자 페이지</p><img class="characterImg" th:src="@{/img/character.png}"></a>
 </header>
 <main>
-    <h1 style="font-size: 40px; width: 100%; text-align: center;">공지사항을 수정해주세요</h1>
+    <h1 style="font-size: 40px; width: 100%; text-align: center;">내 게시물 수정하기</h1>
     <h1 style="font-size:40px">제목 <textarea class="postTitle" id="title-text" placeholder="제목을 입력해주세요." required></textarea></h1>
     <textarea id="postBody" placeholder="본문을 입력해주세요." required></textarea>
     <h3>사진 등록하기<button id="btn-image">+</button></h3>
     <input type="file" id="file-input" style="display: none;">
     <div id="container-img"></div>
+
     <button class="btn-square" id="btn-edit" style="margin-bottom: 100px">수정</button>
 </main>
 </body>
 <script>
 
     const urlParams = new URL(location.href).searchParams;
+    let splitHashtags
     let tempIds = {};
     let imageIds = [];
 
@@ -36,10 +38,20 @@
 
         $.ajax({
             type: "GET",
-            url: "/api/posts/get?postId=" + urlParams.get('postId'),
+            url: "/api/posts/" + urlParams.get('postId'),
             success: function (data) {
                 $('#postBody').text(data.body);
                 $('.postTitle').text(data.title);
+
+
+                splitHashtags = data.hashtags.split('/');
+                for (let i = 0; i < splitHashtags.length; i++) {
+                    $('#container-hashtag').append(`
+                        <div class="hashtag" data-id="${i}" style="margin-left:10px;">
+                            <button class="btn-hashtags"><span class="btn-text">${splitHashtags[i]}</span></button>
+                            <button class="delete-btn hashtags-delete" data-id="${i}">X</button></h3>
+                        </div>`);
+                }
             },
             error: function (error) {
                 alert('조회에 실패했습니다.');
@@ -110,17 +122,18 @@
                 return;  // 본문이 비어있으면 요청 중단
             }
 
-            const postsDto = {
+
+            const postDto = {
                 title : $('#title-text').val(),
                 body : $('#postBody').val()
             }
-
+            console.log(postDto);
             $.ajax({
                 method: "PUT",
-                url: "/api/posts/update/" + urlParams.get('postId'),
+                url:"/api/posts/notice/update/" + urlParams.get('postId'),
                 contentType: 'application/json',
                 dataType: 'json',
-                data: JSON.stringify(postsDto),
+                data: JSON.stringify(postDto),
                 success: function (response) {
 
                     imageIds = [];  // Clear imageIds before populating
@@ -173,6 +186,18 @@
             });
         }
 
+        $('#container-hashtag').on('click', '.delete-btn', function () {
+            const tagIdx = $(this).data('id');
+            deleteTag(tagIdx);
+        });
+
+        function deleteTag (tagIdx) {
+            splitHashtags.splice(tagIdx, 1);
+            $(`div[data-id="${tagIdx}"]`).remove();
+        }
+
+        $('#save-btn').click(function () {
+        })
     });
 </script>
 </html>
