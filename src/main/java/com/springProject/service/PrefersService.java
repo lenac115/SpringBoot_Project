@@ -47,6 +47,9 @@ public class PrefersService {
     }
 
     public PrefersDto save(Long postId, String username) {
+        if(postsRepository.findById(postId).isPresent() && usersRepository.findByLoginId(username) != null)
+            return null;
+
         Users findUsers = usersRepository.findOptionalByLoginId(username).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
         Posts findPosts = postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다."));
 

@@ -174,7 +174,12 @@ public class PostsRepositoryImpl implements PostsRepositoryCustom {
 	// 날짜가 String으로 들어오기 때문에 TimeStamp 값으로 바꿔줘야함
 	private static Timestamp stringToTimeStamp(String point, String dateString) {
 		//  String to Timestamp
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat dateFormat;
+		if(point.equals("start")) {
+			dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		} else {
+			dateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		}
 		dateFormat.setLenient(false);// 날짜와 시간을 엄격하게 확인
 		if(StringUtils.hasText(dateString)) {
 			try {

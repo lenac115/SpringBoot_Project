@@ -11,11 +11,16 @@
 <header>
     <a id="backToHome" href="/api/posts/search">Home</a>
     <img id="header" th:src="@{/img/header.png}">
-    <a th:if="${user == null}" href="/api/users/login">로그인<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login">로그아웃<img class="characterImg" th:src="@{/img/character.png}"></a>
-    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin">관리자 페이지<img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user == null}" href="/api/users/login"><p>로그인</p><img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() != 'admin'}" href="/api/users/login"><p>로그아웃</p><img class="characterImg" th:src="@{/img/character.png}"></a>
+    <a th:if="${user != null && user.auth.name() == 'admin'}" href="/api/users/admin"><p>관리자 페이지</p><img class="characterImg" th:src="@{/img/character.png}"></a>
 </header>
 <main>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var user = [[${user}]];
+        /*]]>*/
+    </script>
     <h1 id="search-title">마음에 드는 게시물을 찾아보세요!</h1>
     <section id="notice-container">
         <div id="notice-container-title">
@@ -26,7 +31,7 @@
         <ul id="notice-list">
             <li th:each="notice : ${notices}">
                 <a class="notice-title" th:text="${notice.title}"
-                   th:href="@{/api/posts/{id}(id=${notice.id})}"></a>
+                   th:href="@{|/api/posts/notice/get?postId=${notice.id}|}"></a>
             </li>
         </ul>
         <button class="notice-button" id="up">
@@ -213,22 +218,15 @@
                 </option>
             </select>
             <ul id="post-list">
-                <li th:each="post : ${page}" >
-                    <img class="post-image" th:id="${post.id}" th:data-post-id="${post.id}"
-                         th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
+                <li th:each="post : ${page}" th:id="${post.id}">
+                    <img class="post-image" th:src="@{/img/dummyImg.png}" alt="게시글 대표 이미지"/>
                     <a class="post-title" th:text="${post.title}" th:href="@{|/api/posts/get?postId=${post.id}|}"></a>
                     <div class="post-sub-images">
-                        <script th:inline="javascript">
-                            /*<![CDATA[*/
-                            var user = [[${user}]];
-                            var postId = [[${post.id}]];
-                            /*]]>*/
-                        </script>
                         <img class="star" th:src="@{/img/star{num}.png(num=${post.star})}" />
-                        <img class="bookmark save" th:src="@{/img/before_bookmark.svg}"/>
-                        <img class="bookmark off delete" th:src="@{/img/after_bookmark.svg}">
-                        <img class="prefer save" th:src="@{/img/before_prefer.svg}"/>
-                        <img class="prefer off delete" th:src="@{/img/after_prefer.svg}"/>
+                        <img class="bookmark save" th:src="@{/img/before_bookmark.svg}" />
+                        <img class="bookmark delete off" th:src="@{/img/after_bookmark.svg}"/>
+                        <img class="prefer save" th:src="@{/img/before_prefer.svg}" />
+                        <img class="prefer delete off" th:src="@{/img/after_prefer.svg}"/>
                     </div>
                 </li>
             </ul>

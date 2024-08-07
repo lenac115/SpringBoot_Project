@@ -15,8 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Aspect
 @Component
+@Slf4j
 public class UserAccessAspect {
 
     private final UsersRepository usersRepository;

@@ -35,11 +35,11 @@ public class PrefersController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Boolean> getPrefersById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<String> getPrefersById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
 
         Boolean isPrefer = prefersService.isPrefer(postId, user.getUsername());
 
-        return ResponseEntity.status(HttpStatus.OK).body(isPrefer);
+        return ResponseEntity.status(HttpStatus.OK).body("prefer 찾았어요!");
     }
 
     @PostMapping("/save")

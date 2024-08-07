@@ -26,11 +26,11 @@ public class BookMarksController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<Boolean> getBookMarksById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<String> getBookMarksById(@RequestParam(value="postId") Long postId, @AuthenticationPrincipal UserDetails user) {
 
         Boolean isBookMark = bookMarksService.isBookMark(postId, user.getUsername());
 
-        return ResponseEntity.status(HttpStatus.OK).body(isBookMark);
+        return ResponseEntity.status(HttpStatus.OK).body("bookmark 찾았어요!");
     }
 
     @PostMapping("/save")

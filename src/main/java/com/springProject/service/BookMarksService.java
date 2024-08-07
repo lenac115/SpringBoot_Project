@@ -43,7 +43,8 @@ public class BookMarksService {
     }
 
     public BookMarksDto save(Long postId, String username) {
-
+        if(postsRepository.findById(postId).isPresent() && usersRepository.findByLoginId(username) != null)
+            return null;
         BookMarks newBookMarks = new BookMarks();
         newBookMarks.setPosts(postsRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("잘못된 ID 입니다.")));
         newBookMarks.setUsers(usersRepository.findByLoginId(username));

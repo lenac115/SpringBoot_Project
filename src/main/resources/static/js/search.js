@@ -71,14 +71,11 @@ let images = [];
 var bookmarks = document.querySelectorAll(".bookmark");
 var prefers = document.querySelectorAll(".prefer");
 
-var bookmarkUrl = "/api/bookmarks/";
-var preferUrl = "/api/prefers/";
-
 
 document.addEventListener("DOMContentLoaded", function() {
 
     imageTags.forEach(imageTag => {
-        var postId = imageTag.id;
+        var postId = imageTag.parentNode.id;
         fetch("/api/images/get?postId=" + postId, {
             method: 'GET'
         })
@@ -89,119 +86,146 @@ document.addEventListener("DOMContentLoaded", function() {
                 return response.json();
             })
             .then(data => {
-                imageTag.src = '/api/images/display/' + data[0].storeFilename;
+                if(data.length > 0) {
+                   imageTag.src = '/api/images/display/' + data[0].storeFilename;
+
+                }
             })
 
     });
-
     if (user !== null) {
         var postElements = document.querySelectorAll('#post-list > li');
 
-        postElements.forEach(function(postElement) {
-            var postId = postElement.querySelector(".post-image").getAttribute('data-post-id');
+        postElements.forEach(function (postElement) {
+            var post = postElement.getAttribute("id");
 
-            fetch("/api/prefers/get/" + postId, {
+            fetch("/api/prefers/get?postId=" + post, {
                 method: 'GET'
             }).then(response => {
+                console.log(response)
                 if (response.ok) {
                     var preferImages = postElement.querySelectorAll('.prefer');
 
-                    preferImages.forEach(function(image) {
+                    preferImages.forEach(function (image) {
                         image.classList.toggle("off");
                     });
                 }
             });
 
-            fetch("/api/bookmarks/get/" + postId, {
+            fetch("/api/bookmarks/get?postId=" + post, {
                 method: 'GET'
             }).then(response => {
+                console.log(response)
+
                 if (response.ok) {
                     var bookmarkImages = postElement.querySelectorAll('.bookmark');
 
-                    bookmarkImages.forEach(function(image) {
+                    bookmarkImages.forEach(function (image) {
                         image.classList.toggle("off");
                     });
                 }
             });
         });
+
     }
-});
+})
+
+var bookmarkUrl = "/api/bookmarks/";
+var preferUrl = "/api/prefers/";
 
 // 북마크 추가 및 취소
-bookmarks.forEach(bookmark =>
+bookmarks.forEach(bookmark => {
     bookmark.addEventListener("click", function () {
-        if(user !== null){
-            var offBookmark = this.parentNode.querySelector('.bookmark.off');
-            var deleteBookmark = this.parentNode.querySelector('.bookmark.delete');
+            if (user !== null) {
+                var post = this.parentNode.parentNode.getAttribute("id");
 
-            if(this === deleteBookmark) {
-                fetch(bookmarkUrl+"delete?postId="+postId, {
-                    method: "DELETE"
-                }).then(res => {
-                    if(res.ok) {
-                        this.classList.toggle('off');
-                        offBookmark.classList.toggle('off');
-                    } else {
+                var offBookmark = this.parentNode.querySelectorAll('.bookmark');
+                var deleteBookmark = this.parentNode.querySelector('.bookmark .delete');
+
+                if (this === deleteBookmark) {
+                    fetch(bookmarkUrl + "delete?postId=" + post, {
+                        method: "DELETE"
+                    }).then(res => {
                         console.log(res);
-                    }
-                })
-            }
-            else {
-                fetch(bookmarkUrl+"save?postId="+postId, {
-                    method: "POST"
-                }).then(res => {
-                    if(res.ok) {
-                        this.classList.toggle('off');
-                        offBookmark.classList.toggle('off');
-                    } else {
-                        console.log(res);
-                    }
+
+                        if (res.ok) {
+                            offBookmark.forEach(bookmark => {
+                                bookmark.classList.toggle('off');
+                            });
+
+                        } else {
+                            console.log(res);
+                        }
                     })
+                } else {
+                    fetch(bookmarkUrl + "save?postId=" + post, {
+                        method: "POST"
+                    }).then(res => {
+                        console.log(res);
+
+                        if (res.ok) {
+                            offBookmark.forEach(bookmark => {
+                                bookmark.classList.toggle('off');
+                            })
+
+                        } else {
+                            console.log(res);
+                        }
+                    })
+                }
+            } else {
+                window.location.href = "/api/users/login";
             }
         }
-        else {
-                window.location.href = "/api/users/login";
-        }
-    }
-))
+    )
+})
 
 // 좋아요 추가 및 취소
-prefers.forEach( prefer =>
+prefers.forEach(prefer => {
     prefer.addEventListener("click", function (e) {
         if (user !== null) {
-            var offPrefer = this.parentNode.querySelector('.prefer.off');
+            var post = this.parentNode.parentNode.getAttribute("id");
+            var offPrefer = this.parentNode.querySelectorAll('.prefer');
             var deletePrefer = this.parentNode.querySelector('.prefer.delete');
 
             if (this === deletePrefer) {
-                fetch(preferUrl + "delete?postId=" + postId, {
+                fetch(preferUrl + "delete?postId=" + post, {
                     method: "DELETE"
                 }).then(res => {
+                    console.log(res);
                     if (res.ok) {
-                        this.classList.toggle('off');
-                        offPrefer.classList.toggle('off');
+                        offPrefer.forEach(prefer => {
+                            prefer.classList.toggle('off');
+                        })
+
                     } else {
                         console.log(res);
                     }
                 })
             } else {
-                fetch(preferUrl + "save?postId=" + postId, {
+                fetch(preferUrl + "save?postId=" + post, {
                     method: "POST"
                 }).then(res => {
+                    console.log(res);
+
                     if (res.ok) {
-                        this.classList.toggle('off');
-                        offPrefer.classList.toggle('off');
+                        offPrefer.forEach(prefer => {
+                            prefer.classList.toggle('off');
+                        })
                     } else {
                         console.log(res);
                     }
                 })
             }
 
-        }
-        else {
+        } else {
             window.location.href = "/api/users/login";
         }
-    }
-))
+    })
+})
+
+
+
 
 
 

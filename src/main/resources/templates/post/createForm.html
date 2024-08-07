@@ -56,8 +56,7 @@
                     <div data-value="일식">일식</div>
                     <div data-value="양식">양식</div>
                     <div data-value="중식">중식</div>
-                    <div data-value="브런치">브런치</div>
-                    <div data-value="디저트">디저트</div>
+                    <div data-value="카페">카페</div>
                     <div data-value="ETC">ETC</div>
                 </div>
             </div>
@@ -74,7 +73,13 @@
                     <div data-value="서울">서울</div>
                     <div data-value="경기">경기</div>
                     <div data-value="인천">인천</div>
-                    <div data-value="강원">강원</div>
+                    <div data-value="부산">부산</div>
+                    <div data-value="대구">대구</div>
+                    <div data-value="광주">광주</div>
+                    <div data-value="대전">대전</div>
+                    <div data-value="대전">대전</div>
+                    <div data-value="울산">울산</div>
+                    <div data-value="세종">세종</div>
                     <div data-value="충북">충북</div>
                     <div data-value="충남">충남</div>
                     <div data-value="전북">전북</div>
@@ -201,6 +206,7 @@
 
         $('#file-input').change(function () {
             const file = this.files[0];
+
             if (file) {
                 const imageList = new FormData();
                 imageList.append('imageList', file);

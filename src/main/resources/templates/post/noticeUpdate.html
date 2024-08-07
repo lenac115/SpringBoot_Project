@@ -36,7 +36,7 @@
 
         $.ajax({
             type: "GET",
-            url: "/api/posts/" + urlParams.get('postId'),
+            url: "/api/posts/get?postId=" + urlParams.get('postId'),
             success: function (data) {
                 $('#postBody').text(data.body);
                 $('.postTitle').text(data.title);
