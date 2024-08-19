@@ -3,7 +3,7 @@ server:
 
 com:
   ex:
-    uploadPath: /SpringBoot_Project/src/main/resources/static/tmpImg/
+    uploadPath: /home/ubuntu/SpringBoot_Project/src/main/resources/static/tmpImg/
 
 spring:
   servlet:
