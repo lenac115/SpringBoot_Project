@@ -1,7 +1,6 @@
 package com.springProject.controller;
 
 import com.springProject.dto.PostImagesDto;
-import com.springProject.entity.PostImages;
 import com.springProject.service.PostImagesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class TempImageDeleteAspect {
     }
 
     @After("serviceMethod()")
-    public void tempImageDelete() throws Throwable {
+    @Transactional
+    public void tempImageDelete() {
         List<PostImages> postImagesList = postImagesRepository.findAll();
         for(PostImages postImages : postImagesList) {
             if (postImages.getPosts() == null) {
